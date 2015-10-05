@@ -40,11 +40,10 @@ Yo estoy usando **Mac**, por lo cual, es muy fácil, usaremos un App llamada [Ap
 de una manera muy sencilla, basta con seleccionar el drive destino, la imagen que vamos a flashear, presionar el boton **Restor Backup** y esperar algunos minutos a que se termine el proceso
 despues de eso ya pudieramos ponerla en nuestra Raspi y empezar a trabajar con ella.
 ![ApplePi-Baker](/images/nes/pi_baker.png)
-Si utilizas **Windows** o **Linux**, puedes seguir las guias disponibles en: [https://www.raspberrypi.org/documentation/installation/installing-images/](https://www.raspberrypi.org/documentation/installation/installing-images/).
+Si utilizas **Windows** o **Linux**, [puedes seguir las guias disponibles en su Sitio oficial](https://www.raspberrypi.org/documentation/installation/installing-images/).
 
 # ¡A Construir la consola!
-No detallare el proceso de desensamblado de la consola, puesto que ya hay mucha documentación acerca del proceso, pero les dejo un video donde muestran el proceso:
-<iframe width="420" height="315" src="http://www.youtube.com/embed/thVTgCLDoqI" frameborder="0" allowfullscreen></iframe>
+No detallare el proceso de desensamblado de la consola, puesto que ya hay mucha documentación acerca del proceso, [pero les dejo un video donde se muestra como desensamblar la consola.](http://www.youtube.com/embed/thVTgCLDoqI)
 ![NES completamente desensamblada](/images/nes/2.JPG)
 Una vez que ya tenemos la consola en partes, procederemos a identificar los cables de los puertos de los controles, ya que estos los conectaremos directamente a los pines del
 **GPIO** de nuestro Raspi, yo use un esquema que encontre en la página de [Gordon's Projects](https://projects.drogon.net/nes-controller-on-the-raspberry-pi/), está en alemán,
@@ -71,9 +70,10 @@ Esto nos abrira una ventana con fondo azul y seleccionaremos Expand Filesystem y
 # Instalando Driver Gamecon_GPIO_Rpi
 El Gamecon_GPIO_Rpi es un modulo de Kernel que nos permitira utilizar algunos controles con nuestra Raspi, entre ellos, podemos utilizar controles de NES, SNES, PSX, PS2, N64 y Gamecube,
 si bien vamos a poder utilizar estos, nos centraremos con los controles de NES, una vez que los sockets de nuestra consola estan armados, utilizaremos el siguiente diagrama:
-<div style="text-align: center"><img src="/images/nes/gpio_controller_pinout.png" alt="Diagrama de conexión para controladores" /></div>
+![Diagrama de conexión para controles](/images/nes/gpio_controller_pinout.png)
 Recomiendo utilizar los pines **PAD2** y **PAD3** para los dos controles, en concreto el cable Data.
-![Cableado del GPIO](/images/nes/4.JPG)<br/>
+![Cableado del GPIO](/images/nes/4.JPG)
+
 Una vez conectado todo, instalaremos el driver del control, asi como las dependencias, con los siguientes comandos:
 
 {% gist tavobarrientos/948d9c4280f7ebddd355 install_gamecon.sh %}
@@ -98,10 +98,10 @@ Con esto podemos hacer funcionar nuestros controles, en esta guia nos centramos 
 contienen la misma cantidad de cables(7, se usan solo 5, **VCC, GND, Clock, Latch y Data**), en teoría podriamos reutilizar el proceso solo que la configuración de **gamecon_gpio_rpi** cambiaria,
 para lo cual, recomiendo leer el README incluido **/usr/share/doc/gamecon_gpio_rpi/README.gz**
 <br/>
-Para la siguiente parte, cubririamos la siguiente parte:
-1. Usar un medio externo para guardar las ROMS
-2. Montar el Raspberry Pie en el case del NES
-3. Uso de los botones de Power y Reset
+Para la siguiente parte, cubririamos la siguiente parte:<br/>
+1. Usar un medio externo para guardar las ROMS<br/>
+2. Montar el Raspberry Pie en el case del NES<br/>
+3. Uso de los botones de Power y Reset<br/>
 <br/>
 
 Espero que esta guía sea de utilidad, espero sus comentarios en mi Twitter: [@tavobarrientos](http://www.twitter.com/tavobarrientos)
