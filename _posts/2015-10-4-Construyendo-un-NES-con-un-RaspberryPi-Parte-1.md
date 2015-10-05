@@ -48,11 +48,11 @@ No detallare el proceso de desensamblado de la consola, puesto que ya hay mucha 
 Una vez que ya tenemos la consola en partes, procederemos a identificar los cables de los puertos de los controles, ya que estos los conectaremos directamente a los pines del
 **GPIO** de nuestro Raspi, yo use un esquema que encontre en la página de [Gordon's Projects](https://projects.drogon.net/nes-controller-on-the-raspberry-pi/), está en alemán,
 asi que ahi les va una traducción rapida: <br/>
-- **Weiss** -> Blanco
-- **Braun** -> Café
-- **Gelb** -> Amarillo 
-- **Orange** -> Naranja
-- **Rot** -> Rojo
+- **Weiss** -> Blanco<br/>
+- **Braun** -> Café<br/>
+- **Gelb** -> Amarillo<br/>
+- **Orange** -> Naranja<br/>
+- **Rot** -> Rojo<br/>
 ![NES Wires](/images/nes/wires_controller_schematic.png)<br/>
 Si se fijan, los cables **Morado** y **Azul** no son requeridos, lo ideal seria que los identificaramos y cancelaramos mediante Termofit o cinta aislante, también podemos cortarlos sin ningun problema.<br/>
 Ya con los cables plenamente identificados, podemos cortar el conector original, en mi caso, yo los solde a unos conectores hembra, para colocarlos directo al **GPIO** de mi Raspi, aunque podemos soldarlos a unos conectores macho
@@ -70,7 +70,7 @@ Esto nos abrira una ventana con fondo azul y seleccionaremos Expand Filesystem y
 # Instalando Driver Gamecon_GPIO_Rpi
 El Gamecon_GPIO_Rpi es un modulo de Kernel que nos permitira utilizar algunos controles con nuestra Raspi, entre ellos, podemos utilizar controles de NES, SNES, PSX, PS2, N64 y Gamecube,
 si bien vamos a poder utilizar estos, nos centraremos con los controles de NES, una vez que los sockets de nuestra consola estan armados, utilizaremos el siguiente diagrama:
-![Diagrama de conexión para controles](/images/nes/gpio_controller_pinout.png)
+![Diagrama de conexión para controles](/images/nes/gpio_controller_pinout.png)<br/>
 Recomiendo utilizar los pines **PAD2** y **PAD3** para los dos controles, en concreto el cable Data.
 ![Cableado del GPIO](/images/nes/4.JPG)
 
