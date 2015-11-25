@@ -84,7 +84,7 @@ aunque podemos saltarnos este paso, y ejecutar el siguiente comando:
 sudo modprobe gamecon_gpio_rpi map=0,2,2,0
 {% endhighlight %}
 
-Despues de esto, podemos ver le directorio **/dev/input** nos daremos cuenta que tenemos dos nuevos dispositivos llamados **js0** y **js1**
+Despues de esto, podemos ver el directorio **/dev/input** nos daremos cuenta que tenemos dos nuevos dispositivos llamados **js0** y **js1**
 ![Joysticks detectados](/images/nes/joysticks.png)
 Para probar los controles, podemos utilizar estos comandos:<br/>
 {% highlight bash %}
