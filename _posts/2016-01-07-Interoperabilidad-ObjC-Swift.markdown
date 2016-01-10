@@ -5,7 +5,7 @@ date: 2016-01-07 4:37:00
 categories: ios mobile
 ---
 ![Swift](https://camo.githubusercontent.com/de32b354687f1cd9b05a89e4aa03c7f2d311f294/68747470733a2f2f73776966742e6f72672f6173736574732f696d616765732f73776966742e737667)
-Swift ya lleva tiempo en el terreno, aproximadamente 1 año y medio, e inclusive [Apple](http://www.apple.com) lo hizo [Open Source](https://www.github.com/apple/swift), pudiendo portarlo a Ubuntu, mientras tanto en 1 año, Objective-C se desplomo 18 posiciones en el indice [TIOBE](http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html), de estar en el 3er lugar de lenguajes mas usados junto con Java, C, C++ y C#, paso al 18 y Swift escalo 11 posiciones, ubicandose en el 14.
+Swift ya lleva tiempo en el terreno, aproximadamente 1 año y medio, e inclusive [Apple](http://www.apple.com) lo hizo [Open Source](https://www.github.com/apple/swift), pudiendo portarlo a Ubuntu, mientras tanto en 1 año, Objective-C se desplomo 15 posiciones en el indice [TIOBE](http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html), de estar en el 3er lugar de lenguajes mas usados junto con Java, C, C++ y C#, paso al 18 y Swift escalo 11 posiciones, ubicandose en el 14.
 ![Ranking TIOBE Enero 2016](/images/tiobe012016.png)
 
 En mi opinión, Objective-C es un lenguaje muy poderoso, tiene mucha base de código, pero Swift nos ofrece muchas ventajas, sobre todo en el aspecto funcional, la posibilidad de crear clases Genericas, nos ahorra mucho trabajo a bajo nivel.
