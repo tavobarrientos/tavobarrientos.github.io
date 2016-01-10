@@ -65,7 +65,7 @@ extension NSObject {
     class func createFromJson(attributes: NSDictionary) -> Self {
         var obj = self()
 
-        (object as NSObject).load(attributes)
+        (obj as NSObject).load(attributes)
 
         return obj
     }
