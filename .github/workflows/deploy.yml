@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Astro
-        uses: withastro/astro@v3
+        uses: withastro/action@v3
 
   deploy:
     needs: build
