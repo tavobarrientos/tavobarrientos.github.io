@@ -1,0 +1,88 @@
+---
+import { Image } from 'astro:assets';
+import { getEntries } from 'astro:content';
+
+const { related } = Astro.props;
+
+const relatedPosts = await getEntries(related);
+---
+
+<div class="related-posts-widget">
+  <h3>Related Posts</h3>
+  <div class="posts-container">
+    {relatedPosts && relatedPosts.map((post) => (
+      <a href={`/blog/${post.slug}/`} class="post-item" key={post.slug}>
+        <Image src={post.data.heroImage} alt={post.data.title} width={150} height={100} />
+        <div class="post-info">
+          <h4>{post.data.title}</h4>
+        </div>
+      </a>
+    ))}
+  </div>
+</div>
+
+<style>
+  .related-posts-widget {
+    padding: 1em;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+  }
+  .related-posts-widget h3 {
+    margin-bottom: 1em;
+  }
+  .posts-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+  }
+  .post-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    width: 150px;
+  }
+  .post-item img {
+    border-radius: 8px;
+    margin-bottom: 0.5em;
+  }
+  .post-info h4 {
+    margin: 0;
+    text-align: center;
+    font-weight: 300; /* Make the font thinner */
+    font-size: 0.9em; /* Make the font smaller */
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 720px) {
+    .posts-container {
+      flex-direction: column;
+      align-items: center;
+    }
+    .post-item {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 721px) and (max-width: 1024px) {
+    .posts-container {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    .post-item {
+      width: calc(50% - 0.5em);
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .posts-container {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    .post-item {
+      width: calc(33.33% - 0.5em);
+    }
+  }
+</style>

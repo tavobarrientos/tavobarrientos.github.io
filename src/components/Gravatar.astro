@@ -1,0 +1,10 @@
+---
+import { createHash } from 'crypto'
+import { Image } from 'astro:assets';
+
+const { email, size = 80, defaultImage = 'identicon', alt='' } = Astro.props;
+const hash = createHash('md5').update(email.trim().toLowerCase()).digest('hex');
+const gravatarUri = `https://www.gravatar.com/avatar/${hash}?s=${size}&d=${defaultImage}`;
+---
+
+<Image src={gravatarUri} alt="Avatar" width={size} height={size} style="border-radius: 50%" alt={alt} />

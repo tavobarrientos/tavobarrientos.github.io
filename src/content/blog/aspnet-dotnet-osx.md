@@ -3,6 +3,10 @@ title: 'Corriendo ASP.NET vNext en OSX'
 description: 'Corriendo ASP.NET vNEXT en OSX'
 pubDate: 'May 05 2015'
 heroImage: '/blog/web.png'
+author: tavobarrientos
+relatedPosts:
+    - construyendo-nes-raspberry
+    - corriendo-emuladores-ios-no-jailbreak
 hidden: false
 ---
 

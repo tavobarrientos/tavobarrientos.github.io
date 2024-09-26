@@ -1,0 +1,92 @@
+---
+import { getEntry } from "astro:content";
+import Gravatar from './Gravatar.astro';
+
+const { author } = Astro.props;
+
+const authorRef = author && await getEntry(author);
+---
+
+
+<div class="author-box">
+    <div class="avatar-column">
+      <Gravatar email={authorRef.data.email} size={80} />
+    </div>
+    <div class="info-column">
+      <p>Author</p>
+      <h5>{authorRef.data.name}</h5>
+      <p class="email">{authorRef.data.email}</p>
+    </div>
+  </div>
+  
+  <style>
+        .author-box {
+      display: flex;
+      align-items: center;
+      padding: 1em;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      flex-wrap: wrap;
+    }
+    .avatar-column {
+      margin-right: 1em;
+      flex-shrink: 0;
+    }
+    .info-column {
+      flex: 1;
+    }
+    .info-column h5 {
+      margin: 0 0 0.5em 0;
+    }
+    .info-column p {
+      margin: 0;
+    }
+  
+    /* Responsive Styles */
+    @media (max-width: 720px) {
+      .author-box {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .avatar-column {
+        margin-right: 0;
+        margin-bottom: 1em;
+      }
+      .info-column .email {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  
+    @media (min-width: 721px) and (max-width: 1024px) {
+      .author-box {
+        flex-direction: row;
+      }
+      .avatar-column {
+        margin-right: 1em;
+        margin-bottom: 0;
+      }
+      .info-column .email {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  
+    @media (min-width: 1025px) {
+      .author-box {
+        flex-direction: row;
+      }
+      .avatar-column {
+        margin-right: 1em;
+        margin-bottom: 0;
+      }
+      .info-column .email {
+        overflow: visible;
+        text-overflow: clip;
+        white-space: normal;
+      }
+    }
+  </style>
