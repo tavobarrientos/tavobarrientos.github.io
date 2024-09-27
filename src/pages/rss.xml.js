@@ -8,8 +8,8 @@ export async function GET(context) {
 		title: SITE_TITLE,
 		description: SITE_DESCRIPTION,
 		site: context.site,
-		items: posts.map((post) => ({
-			...post.data,
+		items: posts.filter((post) => post.data.hidden !== true).map((post) => ({
+			// ...post.data,
 			title: post.data.title,
 			pubDate: post.data.pubDate,
 			description: post.data.description,
