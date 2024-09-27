@@ -11,8 +11,8 @@ const relatedPosts = await getEntries(related);
   <h3>Related Posts</h3>
   <div class="posts-container">
     {relatedPosts && relatedPosts.map((post) => (
-      <a href={`/blog/${post.slug}/`} class="post-item" key={post.slug}>
-        <Image src={post.data.heroImage} alt={post.data.title} width={150} height={100} />
+      <a href={`/blog/${post.slug}/`} class="post-item">
+        { post.data.heroImage && <Image src={post.data.heroImage ?? '/blog-placeholder-about.jpg'} alt={post.data.title} width={150} height={100} /> }
         <div class="post-info">
           <h4>{post.data.title}</h4>
         </div>

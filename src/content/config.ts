@@ -13,6 +13,7 @@ const blog = defineCollection({
 		author: reference('authors').default("tavobarrientos"),
 		relatedPosts: z.array(reference('blog')).optional(),
 		hidden: z.boolean().optional(),
+		showAuthor: z.boolean().optional().default(true),
 	}),
 });
 
