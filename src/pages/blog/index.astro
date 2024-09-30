@@ -94,6 +94,7 @@ const posts = (await getCollection('blog')).sort(
 					{
 						posts
 						.filter(post => post.data.hidden !== true)
+						.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 						.map((post) => (
 							<li>
 								<p>{post.data.hidden}</p>
