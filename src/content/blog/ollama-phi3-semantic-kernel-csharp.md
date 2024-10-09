@@ -1,7 +1,7 @@
 ---
 title: 'Using a Phi3 Model with Semantic Kernel in C#'
 description: 'In this post we will cover the usage of a SLM like Phi3 with Semantic Kernel in C#'
-pubDate: 'Oct 1 2024'
+pubDate: 'Oct 8 2024'
 heroImage: '/blog/ai_developer.jpg'
 author: tavobarrientos
 hidden: false
@@ -31,7 +31,7 @@ At the end of the installation, it will start the Ollama service, I recommend th
 ![Ollama Running](/blog/ollama/running.png)
 
 For this post we will use the model PHi3, we have some tags from "variants" of the Phi3 model that we can install,
-for this post we gone to install a SML Phi3:mini, in trhis case, is a model that is trained with 3.8b of parameters.
+for this post we gone to install a SLM Phi3:mini, in trhis case, is a model that is trained with 3.8b of parameters.
 
 
 ![Phi3](/blog/ollama/phi3.png)
@@ -45,18 +45,18 @@ but also it could be the amount of RAM memory installed on our system that also 
 
 ![Phi3 memory space](/blog/ollama/space.png)
 
-For instance Phi3-Mini uses 2.2 gb of space, but it will requires up to 3.3gb of memory, please consider this before run a sml in your machine.
+For instance Phi3-Mini uses 2.2 gb of space, but it will requires up to 3.3gb of memory, please consider this before run a SLM in your machine.
 
 Also, the team behind of Ollama recommends in their docs, that your system has a dedicated Graphics Card(or if you have a Mac, one compatible with Metal), you can find the GPUs
 that are compatible in this [Link](https://github.com/ollama/ollama/blob/main/docs/gpu.md).
 
-##### Pulling the SML
+##### Pulling the SLM
 
 To pull the model from Ollama you can just type in a terminal the following command:
 ```powershell
 ollama pull phi3:mini
 ```
-With this command, Ollama will download and install the SML in your machine.
+With this command, Ollama will download and install the SLM in your machine.
 ![ollama pull phi3:mini](/blog/ollama/pulling.png)
 
 ##### Some Ollama commands
@@ -98,7 +98,7 @@ The library by itself is very extensible, so we can build powerful applications 
 In this post we going to create something very simple, in a future posts I hope that we can see something more complicated around Semantic Kernel.
 
 
-We need to create a console App, you can use Dotnet CLI or directly in Visual Studio or Rider, you can name your project as you want, the important part is when we add the connection to the SML.
+We need to create a console App, you can use Dotnet CLI or directly in Visual Studio or Rider, you can name your project as you want, the important part is when we add the connection to the SLM.
 
 ```powershell
 dotnet new console -n Ollama.SemanticKernel -o .
@@ -122,7 +122,7 @@ In previous versions of Semantic Kernel, we can connect using OpenAi connectors 
 
 ![Supressed Warnings](/blog/ollama/suppresed.png)
 
-First of all, you need to ensure that your SML is running with **ollama run phi3:mini**, the default endpoint for Ollama is: **http://localhost:11434/**.
+First of all, you need to ensure that your SLM is running with **ollama run phi3:mini**, the default endpoint for Ollama is: **http://localhost:11434/**.
 
 In this case we gonne need to initialize the Kernel with this lines:
 
@@ -169,5 +169,5 @@ while (true)
 
 With this final code we going to read a line in the console and send again another message until we close the app.
 
-At the end, we see the basic usage of Semantic Kernel to connect to a SML, I hope that in future posts we can see more advance concepts.
+At the end, we see the basic usage of Semantic Kernel to connect to a SLM, I hope that in future posts we can see more advance concepts.
 If you want the source code of the example, go to my GitHub: [https://github.com/tavobarrientos/ollama-semantic](https://github.com/tavobarrientos/ollama-semantic)
