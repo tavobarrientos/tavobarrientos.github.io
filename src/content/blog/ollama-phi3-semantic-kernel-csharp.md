@@ -87,6 +87,87 @@ on our system.
 
 
 ### Using Semantic Kernel
-Semantic Kernel is an open source sdk that allow us to interact with AI models using C# or Python, in this post, we going to use C# for the examples.
+Semantic Kernel is an open source sdk that allow us to interact with AI models using C#, Python or Java, in this post, we going to use C# for the examples.
 
-The library by itself is very extensible,  
+The library by itself is very extensible, so we can build powerful applications around it and integrate the very latest AI models in our code.
+
+![Enterprise Ready image by Microsoft](/blog/ollama/enterprise-ready.png)
+
+##### Let's create something cool!
+
+In this post we going to create something very simple, in a future posts I hope that we can see something more complicated around Semantic Kernel.
+
+
+We need to create a console App, you can use Dotnet CLI or directly in Visual Studio or Rider, you can name your project as you want, the important part is when we add the connection to the SML.
+
+```powershell
+dotnet new console -n Ollama.SemanticKernel -o .
+```
+
+Fire up your IDE and open your project, and open the file called **Program.cs**, we will type our code on it.
+![Visual Studio](/blog/ollama/vss.png)
+We gone need to install the Nuget from SemanticKernel and Ollama Connector (pre release), you can do this in Visual Studio/Rider or in Terminal
+
+```powershell
+dotnet add package Microsoft.SemanticKernel --version 1.22.0
+dotnet add package Microsoft.SemanticKernel.Connectors.Ollama --version 1.22.0-alpha
+```
+![Visual Studio Nuget install](/blog/ollama/nuget.png)
+
+In previous versions of Semantic Kernel, we can connect using OpenAi connectors to Ollama Models, in newer versions we need the proper connector, in that case, Microsoft created the Ollama connector, since some of the endpoints changed.
+
+**NOTE**: You may have some errors when you invoke some functions, don't worry, you are using code from a prerelease package, you need to supress the warnings with right click with the contextual actions and supress each of them or globally.
+
+![Warnings](/blog/ollama/warnings.png)
+
+![Supressed Warnings](/blog/ollama/suppresed.png)
+
+First of all, you need to ensure that your SML is running with **ollama run phi3:mini**, the default endpoint for Ollama is: **http://localhost:11434/**.
+
+In this case we gonne need to initialize the Kernel with this lines:
+
+```csharp
+var semanticKernelBuilder = Kernel.CreateBuilder().AddOllamaChatCompletion(modelId: "phi3:mini", endpoint: new Uri("http://localhost:11434/"));
+var kernel = semanticKernelBuilder.Build();
+
+var prompt = @"You can have any conversation about any topic. 
+   {{$history}}  
+   The user input is:{{$input}}  
+";
+
+var chat = kernel.CreateFunctionFromPrompt(prompt);
+var settings = new OllamaPromptExecutionSettings
+{
+    Temperature = 0.0f
+};
+
+```
+
+Basically, we tell to Semantic Kernel to connect to our Ollama and tell the model how to behave, also we set the Temperature, but, what is the Temperature?
+The temperature is a parameter that evaluates the creativity of the model, it controls the level of randomness that a model can have when it generate text,
+this means that a higher temperature value increases the probability of chaotic or dillusional results, otherwise, lower temperature values you gone to obtain
+more predictable results, the ideal is to find an ideal value.
+
+After this, we need to create a Chat with our model, for this example I set a very low temperature.
+
+```csharp
+while (true)
+{
+    Console.Write("You: ");
+    var input = Console.ReadLine();
+
+    var arguments = new KernelArguments(settings)
+    {
+        ["$input"] = input
+    };
+
+    var response = await chat.InvokeAsync(kernel, arguments);
+
+    Console.WriteLine($"ChatBot: {response}");
+}
+```
+
+With this final code we going to read a line in the console and send again another message until we close the app.
+
+At the end, we see the basic usage of Semantic Kernel to connect to a SML, I hope that in future posts we can see more advance concepts.
+If you want the source code of the example, go to my GitHub: [https://github.com/tavobarrientos/ollama-semantic](https://github.com/tavobarrientos/ollama-semantic)
