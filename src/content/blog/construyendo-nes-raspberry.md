@@ -2,7 +2,7 @@
 title: 'Construyendo una NES con Raspberry Pi'
 description: 'Lorem ipsum dolor sit amet'
 pubDate: 'Nov 04 2015'
-heroImage: '/blog-placeholder-3.jpg'
+heroImage: '/blog/running_emulators_xcode.png'
 hidden: false
 ---
 

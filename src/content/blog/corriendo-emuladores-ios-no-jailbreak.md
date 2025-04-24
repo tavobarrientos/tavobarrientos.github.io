@@ -2,7 +2,7 @@
 title: 'Corriendo Emuladores en iOS sin Jailbreak'
 description: 'Corriendo Emuladores en iOS sin Jailbreak'
 pubDate: 'Nov 24 2015'
-heroImage: '/blog-placeholder-3.jpg'
+heroImage: '/blog/build_nes_raspi.png'
 hidden: false
 ---
 
