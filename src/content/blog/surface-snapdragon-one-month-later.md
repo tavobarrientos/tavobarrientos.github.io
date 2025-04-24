@@ -9,7 +9,7 @@ hidden: false
 
 One month ago (or so lol), I got a 13" [Microsoft Surface Laptop 7](https://www.microsoft.com/en-us/surface/devices/surface-laptop-7th-edition). Initially, I was **very skeptical** about using an ARM-based device for my daily work as a Software Developer. But after several days of using it, I can honestly say I’ve been **pleasantly surprised**!
 
-The **performance is rock solid**. I’ve been able to run all my core dev tools like **Visual Studio**, **VSCode**, **Node.js**, and `.NET` without any major issues (okay, maybe **NVM**—but more on that later). The transition to ARM on Windows feels smoother than I expected. Not quite as seamless as Apple’s Intel to Apple Silicon migration, but still **very impressive**. Over time, I hope more apps adopt native support for Windows on ARM. 
+The **performance is rock solid**. I’ve been able to run all my core dev tools like **Visual Studio**, **VSCode**, **Node.js** without any major issues (okay, maybe **NVM**—but more on that later). The transition to ARM on Windows feels smoother than I expected. Not quite as seamless as Apple’s Intel to Apple Silicon migration, but still **very impressive**. Over time, I hope more apps adopt native support for Windows on ARM. 
 
 If you're curious about compatibility, check out [Windows on ARM](https://windowsonarm.org) — it’s a community-maintained list of what works natively.
 
