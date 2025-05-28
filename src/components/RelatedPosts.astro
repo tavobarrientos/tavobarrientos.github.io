@@ -1,10 +1,11 @@
 ---
 import { Image } from 'astro:assets';
-import { getEntries } from 'astro:content';
+import { getEntries, type CollectionEntry } from 'astro:content';
 
 const { related } = Astro.props;
 
-const relatedPosts = await getEntries(related);
+// Explicitly type relatedPosts as CollectionEntry<'blog'>[]
+const relatedPosts = await getEntries(related) as CollectionEntry<'blog'>[];
 ---
 
 <div class="related-posts-widget">

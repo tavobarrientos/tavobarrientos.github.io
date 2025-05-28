@@ -10,7 +10,7 @@ const author = await getEntry("authors", "tavobarrientos");
 <header>
 	<nav>
 		<div  style="display: flex; align-items: center;">
-			<Gravatar email={author.data.email} size={32} alt={SITE_TITLE} />
+			<Gravatar email={author?.data?.email} size={32} alt={SITE_TITLE} />
 			<h2>
 				<a href="/">{SITE_TITLE}</a>
 			</h2>
