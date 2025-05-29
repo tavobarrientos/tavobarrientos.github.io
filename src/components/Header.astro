@@ -81,5 +81,31 @@ const author = await getEntry("authors", "tavobarrientos");
 		.social-links {
 			display: none;
 		}
+		nav {
+			padding: 0.5em 0;
+		}
+		nav a {
+			padding: 0.75em 0.4em;
+		}
+	}
+	
+	@media (max-width: 480px) {
+		header {
+			padding: 0 0.75em;
+			box-shadow: 0 1px 4px rgba(var(--black), 5%);
+		}
+		h2 {
+			font-size: 0.9em;
+			margin-left: 0.3em;
+		}
+		.internal-links {
+			font-size: 0.9em;
+		}
+		nav a {
+			padding: 0.6em 0.3em;
+		}
+		nav {
+			padding: 0.25em 0;
+		}
 	}
 </style>

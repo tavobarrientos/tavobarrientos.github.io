@@ -46,10 +46,12 @@ const readingTime = getReadingTime(title + " " + description);
 			main {
                 width: calc(100% - 2em);
                 max-width: 100%;
-                margin: 0;
+                margin: 0 auto;
             }
             .hero-image {
                 width: 100%;
+                display: flex;
+                justify-content: center;
             }
             .hero-image img {
                 display: block;
@@ -90,10 +92,14 @@ const readingTime = getReadingTime(title + " " + description);
             @media (max-width: 720px) {
                 .prose {
                     width: 100%;
+                    max-width: calc(100% - 2em);
                     padding: 1em;
+                    margin: 0 auto;
+                    box-sizing: border-box;
                 }
                 .title {
                     padding: 0.5em 0;
+                    text-align: center;
                 }
                 .hero-image img {
                     width: 100%;
@@ -105,6 +111,8 @@ const readingTime = getReadingTime(title + " " + description);
                 .prose {
                     width: 90%;
                     padding: 1em;
+                    margin: 0 auto;
+                    box-sizing: border-box;
                 }
                 .hero-image img {
                     width: 100%;
@@ -116,9 +124,11 @@ const readingTime = getReadingTime(title + " " + description);
                 .prose {
                     width: 720px;
                     padding: 1em;
+                    margin: 0 auto;
                 }
                 .hero-image img {
-                    width: 40%;
+                    width: auto;
+                    max-width: 720px;
                     height: auto;
                 }
             }

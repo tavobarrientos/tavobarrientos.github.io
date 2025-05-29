@@ -45,4 +45,23 @@ const today = new Date();
 	.social-links a:hover {
 		color: rgb(var(--gray-dark));
 	}
+	@media (max-width: 480px) {
+		footer {
+			padding: 1.5em 1em 4em 1em;
+			font-size: 0.9rem;
+		}
+		.social-links {
+			gap: 1.5em;
+		}
+		.social-links svg {
+			width: 28px;
+			height: 28px;
+		}
+	}
+	@media (max-width: 360px) {
+		footer {
+			padding: 1.25em 0.75em 3em 0.75em;
+			font-size: 0.85rem;
+		}
+	}
 </style>

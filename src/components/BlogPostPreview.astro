@@ -36,6 +36,7 @@ const href = `/blog/${post.slug}/`;
             alt={`Cover image for ${title}`}
             loading="lazy"
             decoding="async"
+            sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 33vw"
           />
         </div>
       )
@@ -63,6 +64,9 @@ const href = `/blog/${post.slug}/`;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   .blog-preview:hover {
@@ -71,7 +75,9 @@ const href = `/blog/${post.slug}/`;
   }
 
   .blog-preview a {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     text-decoration: none;
     color: inherit;
   }
@@ -95,6 +101,9 @@ const href = `/blog/${post.slug}/`;
 
   .content {
     padding: 1rem 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   .title {
@@ -119,6 +128,7 @@ const href = `/blog/${post.slug}/`;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
+    flex-grow: 1;
   }
 
   .read-more {
@@ -126,10 +136,80 @@ const href = `/blog/${post.slug}/`;
     color: #4c1d95;
     display: inline-flex;
     align-items: center;
-    margin-top: 0.5rem;
+    margin-top: auto;
+    padding-top: 0.5rem;
   }
 
   .read-more:hover {
     text-decoration: underline;
+  }
+  
+  @media (max-width: 480px) {
+    .blog-preview {
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+      width: 100%;
+    }
+    
+    .title {
+      font-size: 1.25rem;
+    }
+    
+    .content {
+      padding: 0.875rem 1rem;
+    }
+    
+    .image-container {
+      height: 160px;
+    }
+    
+    .description {
+      font-size: 0.9rem;
+      -webkit-line-clamp: 2;
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+    
+    .read-more {
+      font-size: 0.9rem;
+    }
+    
+    .date {
+      font-size: 0.8rem;
+      margin: 0.25rem 0;
+    }
+    
+    /* Optimize hover effects for mobile - use active state instead */
+    .blog-preview:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .blog-preview:active {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  /* Optimize for very small screens */
+  @media (max-width: 360px) {
+    .title {
+      font-size: 1.125rem;
+    }
+    
+    .content {
+      padding: 0.75rem;
+    }
+    
+    .image-container {
+      height: 140px;
+    }
+    
+    .description {
+      -webkit-line-clamp: 2;
+      font-size: 0.875rem;
+    }
   }
 </style>
