@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://tavobarrientos.github.io/sitemap-index.xml

@@ -1,0 +1,19 @@
+---
+interface Props {
+  readingTime: string;
+}
+
+const { readingTime } = Astro.props;
+---
+
+<span class="reading-time">
+  {readingTime}
+</span>
+
+<style>
+  .reading-time {
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+  }
+</style>

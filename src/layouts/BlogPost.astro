@@ -7,15 +7,41 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Author from '../components/Author.astro';
 import RelatedPosts from '../components/RelatedPosts.astro';
+import ReadingTime from '../components/ReadingTime.astro';
+import SchemaOrg from '../components/SchemaOrg.astro';
+import SocialShare from '../components/SocialShare.astro';
+import { getReadingTime } from '../utils/readingTime';
 
 type Props = CollectionEntry<'blog'>['data'];
 
 const { title, description, pubDate, updatedDate, heroImage, author, relatedPosts, showAuthor = true } = Astro.props;
+
+// Generate keyword string from title and description
+const keywords = `${title}, ${description}, blog, ${author?.id || 'tavobarrientos'}`;
+
+// Estimate reading time based on title and description (simplified approach)
+const readingTime = getReadingTime(title + " " + description);
 ---
 
 <html lang="en">
 	<head>
-		<BaseHead title={title} description={description} image={heroImage} />
+		<BaseHead 
+			title={title} 
+			description={description} 
+			image={heroImage}
+			article={true}
+			publishDate={pubDate}
+			modifiedDate={updatedDate}
+			keywords={keywords}
+		/>
+		<SchemaOrg
+			title={title}
+			description={description}
+			publishDate={pubDate}
+			modifiedDate={updatedDate}
+			image={heroImage}
+			type="BlogPosting"
+		/>
 		<style>
 			main {
                 width: calc(100% - 2em);
@@ -53,6 +79,11 @@ const { title, description, pubDate, updatedDate, heroImage, author, relatedPost
             }
             .last-updated-on {
                 font-style: italic;
+            }
+            .reading-time-container {
+                margin-top: 0.5em;
+                display: flex;
+                justify-content: center;
             }
 
             /* Responsive Styles */
@@ -112,11 +143,19 @@ const { title, description, pubDate, updatedDate, heroImage, author, relatedPost
 									</div>
 								)
 							}
+							<div class="reading-time-container">
+								<ReadingTime readingTime={readingTime} />
+							</div>
 						</div>
 						<h1>{title}</h1>
 						<hr />
 					</div>
 					<slot />
+					<SocialShare 
+						url={Astro.url.toString()}
+						title={title}
+						description={description}
+					/>
 					{showAuthor && <Author author={author} />}
 					<br />
 					{relatedPosts && <RelatedPosts related={relatedPosts} />}

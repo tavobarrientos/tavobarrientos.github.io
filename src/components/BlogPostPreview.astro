@@ -1,0 +1,135 @@
+---
+import { Image } from 'astro:assets';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+  post: {
+    slug: string;
+    data: {
+      title: string;
+      description: string;
+      pubDate: Date;
+      updatedDate?: Date;
+      heroImage?: string;
+      author?: {
+        id: string;
+      };
+    };
+  };
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage } = post.data;
+
+const href = `/blog/${post.slug}/`;
+---
+
+<article class="blog-preview">
+  <a href={href} aria-label={title}>
+    {
+      heroImage && (
+        <div class="image-container">
+          <img 
+            width={720} 
+            height={360}
+            src={heroImage}
+            alt={`Cover image for ${title}`}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      )
+    }
+    <div class="content">
+      <header>
+        <h2 class="title">{title}</h2>
+        <div class="date">
+          <FormattedDate date={pubDate} />
+        </div>
+      </header>
+      <p class="description">{description}</p>
+      <div class="read-more">
+        <span>Read post →</span>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .blog-preview {
+    margin-bottom: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+  }
+
+  .blog-preview:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .blog-preview a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .image-container {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+  }
+
+  .image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .blog-preview:hover .image-container img {
+    transform: scale(1.05);
+  }
+
+  .content {
+    padding: 1rem 1.5rem;
+  }
+
+  .title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1c1c1c;
+  }
+
+  .date {
+    color: #666;
+    font-size: 0.875rem;
+    margin: 0.5rem 0;
+  }
+
+  .description {
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  .read-more {
+    font-weight: 500;
+    color: #4c1d95;
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.5rem;
+  }
+
+  .read-more:hover {
+    text-decoration: underline;
+  }
+</style>

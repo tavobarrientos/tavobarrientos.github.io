@@ -1,0 +1,70 @@
+---
+import { SITE_TITLE, SITE_URL, AUTHOR } from '../consts';
+
+interface Props {
+  title: string;
+  description: string;
+  publishDate?: Date;
+  modifiedDate?: Date;
+  image?: string;
+  type?: 'Article' | 'BlogPosting' | 'WebSite' | 'WebPage';
+  section?: string;
+}
+
+const { 
+  title, 
+  description, 
+  publishDate, 
+  modifiedDate, 
+  image = '/avatar.jpg', 
+  type = 'WebPage',
+  section = 'blog'
+} = Astro.props;
+
+const imageUrl = image.startsWith('http') ? image : new URL(image, Astro.url).toString();
+const authorData = {
+  "@type": "Person",
+  "name": AUTHOR,
+  "url": SITE_URL
+};
+
+let schema;
+
+if (type === 'BlogPosting' || type === 'Article') {
+  schema = {
+    "@context": "https://schema.org",
+    "@type": type,
+    "headline": title,
+    "image": [imageUrl],
+    "datePublished": publishDate ? publishDate.toISOString() : null,
+    "dateModified": modifiedDate ? modifiedDate.toISOString() : (publishDate ? publishDate.toISOString() : null),
+    "author": authorData,
+    "publisher": {
+      "@type": "Organization",
+      "name": SITE_TITLE,
+      "url": SITE_URL,
+      "logo": {
+        "@type": "ImageObject",
+        "url": new URL("/avatar.jpg", SITE_URL).toString()
+      }
+    },
+    "description": description,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": Astro.url.toString()
+    },
+    "articleSection": section
+  };
+} else {
+  schema = {
+    "@context": "https://schema.org",
+    "@type": type,
+    "name": title,
+    "description": description,
+    "url": Astro.url.toString(),
+    "author": authorData
+  };
+}
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

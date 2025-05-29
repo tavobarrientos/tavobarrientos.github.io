@@ -1,0 +1,134 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+import BlogPostPreview from '../../../components/BlogPostPreview.astro';
+import SchemaOrg from '../../../components/SchemaOrg.astro';
+import Pagination from '../../../components/Pagination.astro';
+
+// This is a dynamic route that generates pages for each page of blog posts
+export async function getStaticPaths() {
+  const postsPerPage = 10;
+  
+  // Get all posts, filter out hidden ones, and sort by date in descending order (newest first)
+  const allPosts = (await getCollection('blog'))
+    .filter(post => !post.data.hidden)
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  
+  // Calculate total number of pages
+  const totalPages = Math.ceil(allPosts.length / postsPerPage);
+  
+  // Generate paths for all pages except the first one (which is handled by /blog/index.astro)
+  // Create pages from page 2 to totalPages
+  const pagesToGenerate = [];
+  for (let i = 2; i <= totalPages; i++) {
+    pagesToGenerate.push(i);
+  }
+  
+  return pagesToGenerate.map((pageNum) => {
+    // Page numbers start from 2, since page 1 is the main blog index
+    const startIndex = (pageNum - 1) * postsPerPage;
+    const endIndex = startIndex + postsPerPage;
+    const pagePosts = allPosts.slice(startIndex, endIndex);
+    
+    return {
+      params: { page: String(pageNum) },
+      props: { page: pageNum, posts: pagePosts, totalPages }
+    };
+  });
+}
+
+const { page, posts, totalPages } = Astro.props;
+const currentPage = page;
+const pageTitle = `Blog | Page ${currentPage} | Gustavo Barrientos`;
+const pageDescription = `Page ${currentPage} of articles and tutorials about software development, Azure, AI and more`;
+
+// Generate prev/next page URLs for metadata
+const prevPage = currentPage > 1 ? (currentPage === 2 ? '/blog' : `/blog/page/${currentPage - 1}`) : null;
+const nextPage = currentPage < totalPages ? `/blog/page/${currentPage + 1}` : null;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={pageTitle} description={pageDescription} />
+		<SchemaOrg
+			title={pageTitle}
+			description={pageDescription}
+			type="WebPage"
+		/>
+		{prevPage && <link rel="prev" href={prevPage} />}
+		{nextPage && <link rel="next" href={nextPage} />}
+		<style>
+			.blog-container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 0 1rem;
+			}
+			
+			.blog-header {
+				text-align: center;
+				margin: 2rem 0 3rem;
+			}
+			
+			.blog-header h1 {
+				font-size: 2.5rem;
+				margin-bottom: 1rem;
+			}
+			
+			.blog-description {
+				color: #666;
+				font-size: 1.2rem;
+				max-width: 800px;
+				margin: 0 auto;
+			}
+			
+			.blog-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+				gap: 2rem;
+			}
+			
+			.featured-post {
+				grid-column: 1 / -1;
+				margin-bottom: 1rem;
+			}
+			
+			@media (max-width: 768px) {
+				.blog-grid {
+					grid-template-columns: 1fr;
+					gap: 1.5rem;
+				}
+			}
+			
+			/* Pagination styles are now in the Pagination component */
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main class="blog-container">
+			<div class="blog-header">
+				<h1>Latest Articles</h1>
+				<p class="blog-description">
+					Tutorials, guides, and insights on software development, Azure, AI, and more.
+				</p>
+			</div>
+			
+			<div class="blog-grid">
+				{posts.length > 0 && (
+					<div class="featured-post">
+						<BlogPostPreview post={posts[0]} />
+					</div>
+				)}
+				
+				{posts.slice(1).map((post) => (
+					<BlogPostPreview post={post} />
+				))}
+			</div>
+
+			<Pagination currentPage={currentPage} totalPages={totalPages} />
+		</main>
+		<Footer />
+	</body>
+</html>
