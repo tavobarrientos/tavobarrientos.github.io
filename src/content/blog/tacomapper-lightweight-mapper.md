@@ -13,7 +13,7 @@ I even went as far as mapping objects manually—while that approach works and r
 
 That’s why I decided to build something lightweight and easy to use. And that’s how [TacoMapper](https://barrientos.io/TacoMapper) was born.
 
-![TacoMapper](/public/blog/taco.png)
+![TacoMapper](/blog/taco.png)
 
 ### How do I try TacoMapper?
 
