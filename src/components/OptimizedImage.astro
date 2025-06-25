@@ -1,0 +1,80 @@
+---
+import { Image } from 'astro:assets';
+
+/**
+ * OptimizedImage Component
+ * 
+ * A wrapper around Astro's Image component that applies best practices for performance:
+ * - Lazy loading
+ * - Responsive sizes
+ * - Low-quality image placeholder effect
+ * - Native lazy loading
+ */
+
+interface Props {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  class?: string;
+  sizes?: string;
+  priority?: boolean;
+  css?: string;
+}
+
+const { 
+  src, 
+  alt, 
+  width, 
+  height, 
+  class: className, 
+  sizes = "(max-width: 480px) 100vw, (max-width: 768px) 50vw, 33vw", 
+  priority = false,
+  css
+} = Astro.props;
+
+// Determine if this image should be eagerly loaded (for above the fold content)
+const loading = priority ? "eager" : "lazy";
+---
+
+<div class={`optimized-image ${className || ''}`}>
+  <Image 
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    decoding={priority ? "sync" : "async"}
+    sizes={sizes}
+    class={css || ''}
+  />
+</div>
+
+<style>
+  .optimized-image {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  .optimized-image img {
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: var(--box-shadow);
+  }
+
+  /* Add a minimal fade-in effect */
+  @keyframes fadeIn {
+    from { opacity: 0.6; }
+    to { opacity: 1; }
+  }
+
+  .optimized-image img {
+    animation: fadeIn 0.3s ease-in;
+  }
+</style>

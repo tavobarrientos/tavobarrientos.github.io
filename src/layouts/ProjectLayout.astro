@@ -1,0 +1,731 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SchemaOrg from '../components/SchemaOrg.astro';
+import OptimizedImage from '../components/OptimizedImage.astro';
+
+type Props = CollectionEntry<'projects'>['data'] & {
+  slug: string;
+};
+
+const { 
+  title, 
+  description, 
+  heroImage, 
+  images, 
+  links, 
+  tags, 
+  slug 
+} = Astro.props;
+
+// Generate keyword string from title and description
+const keywords = `${title}, ${description}, project, portfolio, software development`;
+---
+
+<html lang="en">
+	<head>
+		<BaseHead 
+			title={title} 
+			description={description} 
+			image={heroImage}
+			keywords={keywords}
+		/>
+		<SchemaOrg
+			title={title}
+			description={description}
+			image={heroImage}
+			type="WebPage"
+		/>
+		<style>
+			main {
+				width: calc(100% - 2em);
+				max-width: 100%;
+				margin: 0 auto;
+			}
+			
+			.project-hero {
+				width: 100%;
+				display: flex;
+				justify-content: center;
+				margin-bottom: 2rem;
+			}
+			
+			.project-hero img {
+				display: block;
+				margin: 0 auto;
+				border-radius: 12px;
+				box-shadow: var(--box-shadow);
+			}
+			
+			.project-content {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 1em;
+				color: rgb(var(--gray-dark));
+			}
+			
+			.project-header {
+				margin-bottom: 2em;
+				padding: 1em 0;
+				text-align: center;
+				line-height: 1;
+			}
+			
+			.project-header h1 {
+				margin: 0 0 0.5em 0;
+				font-size: 2.5rem;
+			}
+			
+			.project-description {
+				font-size: 1.2rem;
+				color: rgb(var(--gray));
+				margin-bottom: 1.5rem;
+			}
+			
+			.project-meta {
+				display: flex;
+				justify-content: center;
+				gap: 2rem;
+				margin-bottom: 2rem;
+				flex-wrap: wrap;
+			}
+			
+			.project-links {
+				display: flex;
+				justify-content: center;
+				gap: 1rem;
+				margin-bottom: 1.5rem;
+				flex-wrap: wrap;
+			}
+			
+			.project-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.75rem 1.5rem;
+				background-color: #4c1d95;
+				color: white;
+				text-decoration: none;
+				border-radius: 8px;
+				font-weight: 500;
+				transition: background-color 0.2s ease, transform 0.2s ease;
+			}
+			
+			.project-link:hover {
+				background-color: #7c3aed;
+				transform: translateY(-2px);
+			}
+			
+			.project-link.secondary {
+				background-color: #f3f4f6;
+				color: #374151;
+			}
+			
+			.project-link.secondary:hover {
+				background-color: #e5e7eb;
+			}
+			
+			.project-tags {
+				display: flex;
+				justify-content: center;
+				gap: 0.5rem;
+				margin-bottom: 2rem;
+				flex-wrap: wrap;
+			}
+			
+			.tag {
+				background-color: #f0f0f0;
+				color: #666;
+				padding: 0.5rem 1rem;
+				border-radius: 6px;
+				font-size: 0.9rem;
+				font-weight: 500;
+			}
+			
+			.project-images {
+				margin: 2rem 0;
+			}
+			
+			.project-images h3 {
+				text-align: center;
+				margin-bottom: 1rem;
+			}
+			
+			.images-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 1rem;
+				margin-bottom: 2rem;
+			}
+			
+			.image-item {
+				border-radius: 8px;
+				overflow: hidden;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				cursor: pointer;
+				transition: transform 0.3s ease, box-shadow 0.3s ease;
+				position: relative;
+			}
+			
+			.image-item:hover {
+				transform: translateY(-5px);
+				box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+			}
+			
+			.image-item:hover::after {
+				content: '';
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				background: rgba(0, 0, 0, 0.8);
+				color: white;
+				padding: 10px;
+				border-radius: 50%;
+				width: 40px;
+				height: 40px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				pointer-events: none;
+				opacity: 0;
+				animation: fadeInIcon 0.3s ease forwards;
+			}
+			
+			.image-item:hover::after {
+				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E");
+				background-size: 20px 20px;
+				background-repeat: no-repeat;
+				background-position: center;
+			}
+			
+			@keyframes fadeInIcon {
+				from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+				to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+			}
+			
+			.image-item img {
+				width: 100%;
+				height: auto;
+				display: block;
+				transition: transform 0.3s ease;
+			}
+			
+			.image-item:hover img {
+				transform: scale(1.05);
+			}
+			
+			/* Modal Styles */
+			.modal {
+				display: none;
+				position: fixed;
+				z-index: 1000;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.9);
+				animation: fadeIn 0.3s ease;
+			}
+			
+			.modal.show {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			
+			.modal-content {
+				position: relative;
+				max-width: 90%;
+				max-height: 90%;
+				margin: auto;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+			
+			.modal-close {
+				position: absolute;
+				top: -40px;
+				right: 0;
+				color: white;
+				font-size: 35px;
+				font-weight: bold;
+				cursor: pointer;
+				z-index: 1001;
+				transition: color 0.3s ease;
+			}
+			
+			.modal-close:hover {
+				color: #ccc;
+			}
+			
+			#modalImage {
+				max-width: 100%;
+				max-height: 80vh;
+				object-fit: contain;
+				border-radius: 8px;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+			}
+			
+			.modal-navigation {
+				position: absolute;
+				top: 50%;
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				pointer-events: none;
+				transform: translateY(-50%);
+			}
+			
+			.nav-button {
+				background: rgba(255, 255, 255, 0.9);
+				border: none;
+				color: #333;
+				font-size: 18px;
+				font-weight: bold;
+				width: 50px;
+				height: 50px;
+				cursor: pointer;
+				border-radius: 50%;
+				transition: all 0.3s ease;
+				pointer-events: all;
+				margin: 0 20px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+			}
+			
+			.nav-button:hover {
+				background: rgba(255, 255, 255, 1);
+				transform: scale(1.1);
+			}
+			
+			.nav-button:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+				transform: none;
+			}
+			
+			.modal-counter {
+				margin-top: 15px;
+				color: white;
+				font-size: 14px;
+				text-align: center;
+			}
+			
+			.swipe-hint {
+				margin-top: 8px;
+				color: rgba(255, 255, 255, 0.7);
+				font-size: 12px;
+				text-align: center;
+				display: none;
+			}
+			
+			@keyframes fadeIn {
+				from { opacity: 0; }
+				to { opacity: 1; }
+			}
+			
+			/* Mobile responsive modal */
+			@media (max-width: 768px) {
+				.modal-content {
+					max-width: 95%;
+					max-height: 95%;
+				}
+				
+				.modal-close {
+					top: -35px;
+					font-size: 28px;
+				}
+				
+				#modalImage {
+					max-height: 70vh;
+					touch-action: none;
+				}
+				
+				.nav-button {
+					width: 45px;
+					height: 45px;
+					font-size: 16px;
+					margin: 0 15px;
+				}
+				
+				.modal-counter {
+					font-size: 12px;
+					margin-top: 10px;
+				}
+				
+				.modal-navigation {
+					display: none; /* Hide buttons on mobile, use swipe instead */
+				}
+				
+				.swipe-hint {
+					display: block;
+				}
+				
+				.image-item:hover::after {
+					width: 35px;
+					height: 35px;
+					background-size: 18px 18px;
+				}
+			}
+			
+			@media (max-width: 480px) {
+				.modal-close {
+					top: -30px;
+					font-size: 24px;
+				}
+				
+				#modalImage {
+					max-height: 65vh;
+				}
+			}
+
+			/* Responsive Styles */
+			@media (max-width: 720px) {
+				.project-content {
+					width: 100%;
+					max-width: calc(100% - 2em);
+					padding: 1em;
+					margin: 0 auto;
+					box-sizing: border-box;
+				}
+				
+				.project-header {
+					padding: 0.5em 0;
+				}
+				
+				.project-header h1 {
+					font-size: 2rem;
+				}
+				
+				.project-hero img {
+					width: 100%;
+					height: auto;
+				}
+				
+				.project-meta {
+					gap: 1rem;
+				}
+				
+				.project-links {
+					gap: 0.75rem;
+				}
+				
+				.project-link {
+					padding: 0.6rem 1.2rem;
+					font-size: 0.9rem;
+				}
+				
+				.images-grid {
+					grid-template-columns: 1fr;
+					gap: 0.75rem;
+				}
+			}
+
+			@media (min-width: 721px) and (max-width: 1024px) {
+				.project-content {
+					width: 90%;
+					padding: 1em;
+					margin: 0 auto;
+					box-sizing: border-box;
+				}
+				
+				.project-hero img {
+					width: 100%;
+					height: auto;
+				}
+			}
+
+			@media (min-width: 1025px) {
+				.project-content {
+					width: 720px;
+					padding: 1em;
+					margin: 0 auto;
+				}
+				
+				.project-hero img {
+					width: auto;
+					max-width: 800px;
+					height: auto;
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+		<Header />
+		<main>
+			<article>
+				{heroImage && (
+					<div class="project-hero">
+						<OptimizedImage 
+							width={500} 
+							height={510} 
+							src={heroImage} 
+							alt={`Hero image for ${title}`}
+							priority={true}
+						/>
+					</div>
+				)}
+				
+				<div class="project-content">
+					<div class="project-header">
+						<h1>{title}</h1>
+						<p class="project-description">{description}</p>
+						
+						{tags && tags.length > 0 && (
+							<div class="project-tags">
+								{tags.map((tag) => (
+									<span class="tag">{tag}</span>
+								))}
+							</div>
+						)}
+						
+						{links && (
+							<div class="project-links">
+								{links.website && (
+									<a href={links.website} target="_blank" rel="noopener noreferrer" class="project-link">
+										<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+											<circle cx="12" cy="12" r="10"></circle>
+											<line x1="2" y1="12" x2="22" y2="12"></line>
+											<path d="m2 12c2.5-4 6-6 10-6s7.5 2 10 6c-2.5 4-6 6-10 6s-7.5-2-10-6z"></path>
+										</svg>
+										Visit Website
+									</a>
+								)}
+								{links.demo && (
+									<a href={links.demo} target="_blank" rel="noopener noreferrer" class="project-link">
+										<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+											<polygon points="5 3 19 12 5 21 5 3"></polygon>
+										</svg>
+										View Demo
+									</a>
+								)}
+								{links.github && (
+									<a href={links.github} target="_blank" rel="noopener noreferrer" class="project-link secondary">
+										<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+											<path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+										</svg>
+										View on GitHub
+									</a>
+								)}
+							</div>
+						)}
+					</div>
+					
+					<hr />
+					
+					<slot />
+					
+					{images && images.length > 0 && (
+						<div class="project-images">
+							<h3>Gallery</h3>
+							<div class="images-grid">
+								{images.map((image, index) => (
+									<div class="image-item" data-image={image} data-index={index}>
+										<OptimizedImage
+											width={400}
+											height={250}
+											src={image}
+											alt={`${title} screenshot ${index + 1}`}
+										/>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
+					
+					<!-- Image Modal -->
+					<div id="imageModal" class="modal">
+						<div class="modal-content">
+							<span class="modal-close">&times;</span>
+							<img id="modalImage" src="" alt="" />
+							<div class="modal-navigation">
+								<button id="prevImage" class="nav-button">‹</button>
+								<button id="nextImage" class="nav-button">›</button>
+							</div>
+							<div class="modal-counter">
+								<span id="imageCounter">1 / 1</span>
+								<div class="swipe-hint">Swipe to navigate</div>
+							</div>
+						</div>
+					}
+				</div>
+			</article>
+		</main>
+		<Footer />
+		
+		<script>
+			// Gallery Modal Functionality
+			document.addEventListener('DOMContentLoaded', function() {
+				const modal = document.getElementById('imageModal');
+				const modalImage = document.getElementById('modalImage') as HTMLImageElement;
+				const modalClose = document.querySelector('.modal-close');
+				const prevButton = document.getElementById('prevImage') as HTMLButtonElement;
+				const nextButton = document.getElementById('nextImage') as HTMLButtonElement;
+				const imageCounter = document.getElementById('imageCounter');
+				const swipeHint = document.querySelector('.swipe-hint') as HTMLElement;
+				const imageItems = document.querySelectorAll('.image-item');
+				
+				if (!modal || !modalImage || !modalClose || !prevButton || !nextButton || !imageCounter || !swipeHint) {
+					return; // Exit if essential elements are missing
+				}
+				
+				let currentImageIndex = 0;
+				let images: { src: string; alt: string }[] = [];
+				let touchStartX = 0;
+				let touchEndX = 0;
+				let touchStartY = 0;
+				let touchEndY = 0;
+				
+				// Collect all images from the gallery
+				imageItems.forEach((item, index) => {
+					const img = item.querySelector('img');
+					if (img) {
+						images.push({
+							src: img.src,
+							alt: img.alt || `Image ${index + 1}`
+						});
+					}
+				});
+				
+				// Open modal when clicking on an image
+				imageItems.forEach((item, index) => {
+					item.addEventListener('click', function() {
+						currentImageIndex = index;
+						showModal();
+					});
+				});
+				
+				// Close modal when clicking the close button
+				modalClose.addEventListener('click', hideModal);
+				
+				// Close modal when clicking outside the image
+				modal.addEventListener('click', function(e) {
+					if (e.target === modal) {
+						hideModal();
+					}
+				});
+				
+				// Navigation buttons
+				prevButton.addEventListener('click', function() {
+					if (currentImageIndex > 0) {
+						currentImageIndex--;
+						updateModalImage();
+					}
+				});
+				
+				nextButton.addEventListener('click', function() {
+					if (currentImageIndex < images.length - 1) {
+						currentImageIndex++;
+						updateModalImage();
+					}
+				});
+				
+				// Keyboard navigation
+				document.addEventListener('keydown', function(e) {
+					if (!modal.classList.contains('show')) return;
+					
+					switch(e.key) {
+						case 'Escape':
+							hideModal();
+							break;
+						case 'ArrowLeft':
+							if (currentImageIndex > 0) {
+								currentImageIndex--;
+								updateModalImage();
+							}
+							break;
+						case 'ArrowRight':
+							if (currentImageIndex < images.length - 1) {
+								currentImageIndex++;
+								updateModalImage();
+							}
+							break;
+					}
+				});
+				
+				// Touch/Swipe support for mobile
+				modalImage.addEventListener('touchstart', function(e) {
+					touchStartX = e.changedTouches[0].screenX;
+					touchStartY = e.changedTouches[0].screenY;
+				}, false);
+				
+				modalImage.addEventListener('touchend', function(e) {
+					touchEndX = e.changedTouches[0].screenX;
+					touchEndY = e.changedTouches[0].screenY;
+					handleSwipe();
+				}, false);
+				
+				function handleSwipe() {
+					const swipeThreshold = 50;
+					const swipeDistanceX = Math.abs(touchEndX - touchStartX);
+					const swipeDistanceY = Math.abs(touchEndY - touchStartY);
+					
+					// Only process horizontal swipes (ignore vertical scrolling)
+					if (swipeDistanceX > swipeThreshold && swipeDistanceX > swipeDistanceY) {
+						if (touchEndX < touchStartX) {
+							// Swipe left - next image
+							if (currentImageIndex < images.length - 1) {
+								currentImageIndex++;
+								updateModalImage();
+							}
+						} else {
+							// Swipe right - previous image
+							if (currentImageIndex > 0) {
+								currentImageIndex--;
+								updateModalImage();
+							}
+						}
+					}
+				}
+				
+				function showModal() {
+					if (!modal) return;
+					modal.classList.add('show');
+					document.body.style.overflow = 'hidden';
+					updateModalImage();
+				}
+				
+				function hideModal() {
+					if (!modal) return;
+					modal.classList.remove('show');
+					document.body.style.overflow = 'auto';
+				}
+				
+				function updateModalImage() {
+					if (images.length === 0 || !modalImage || !imageCounter || !prevButton || !nextButton || !swipeHint) return;
+					
+					const currentImage = images[currentImageIndex];
+					modalImage.src = currentImage.src;
+					modalImage.alt = currentImage.alt;
+					
+					// Update counter
+					imageCounter.textContent = `${currentImageIndex + 1} / ${images.length}`;
+					
+					// Update navigation buttons
+					prevButton.disabled = currentImageIndex === 0;
+					nextButton.disabled = currentImageIndex === images.length - 1;
+					
+					// Hide navigation buttons if only one image
+					if (images.length <= 1) {
+						prevButton.style.display = 'none';
+						nextButton.style.display = 'none';
+						swipeHint.style.display = 'none';
+					} else {
+						prevButton.style.display = 'block';
+						nextButton.style.display = 'block';
+						// Show swipe hint only on mobile (check if nav buttons are hidden)
+						swipeHint.style.display = window.innerWidth <= 768 ? 'block' : 'none';
+					}
+				}
+			});
+		</script>
+	</body>
+</html>

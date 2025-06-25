@@ -1,0 +1,60 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+import ProjectPreview from '../../components/ProjectPreview.astro';
+import SchemaOrg from '../../components/SchemaOrg.astro';
+import '../../styles/projects.css';
+
+// Get all projects, filter out hidden ones, and sort by newest first
+const allProjects = (await getCollection('projects'))
+  .filter(project => !project.data.hidden)
+  .sort((a, b) => {
+    // Sort by creation date if available, otherwise alphabetically by title
+    return b.id.localeCompare(a.id);
+  });
+
+const pageTitle = "Projects | Gustavo Barrientos";
+const pageDescription = "Explore my portfolio of software development projects, including web applications, tools, and open-source contributions.";
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead 
+			title={pageTitle} 
+			description={pageDescription}
+			keywords="projects, portfolio, software development, web applications, open source"
+		/>
+		<SchemaOrg
+			title={pageTitle}
+			description={pageDescription}
+			type="WebPage"
+		/>
+	</head>
+	<body>
+		<Header />
+		<main class="projects-container">
+			<div class="projects-header">
+				<h1>My Projects</h1>
+				<p class="projects-description">
+					A collection of software projects I've built, ranging from web applications to developer tools and open-source contributions.
+				</p>
+			</div>
+			
+			{allProjects.length > 0 ? (
+				<div class="projects-grid">
+					{allProjects.filter(project => !project.data.hidden).map((project) => (
+						<ProjectPreview project={project} />
+					))}
+				</div>
+			) : (
+				<div class="no-projects">
+					<p>No projects to display at the moment. Check back soon!</p>
+				</div>
+			)}
+		</main>
+		<Footer />
+	</body>
+</html>
