@@ -15,7 +15,12 @@ const authorRef = author && await getEntry(author);
     <div class="info-column">
       <p>Author</p>
       <h5>{authorRef.data.name}</h5>
-      <p class="email">{authorRef.data.email}</p>
+      <p class="bio">{authorRef.data.bio}</p>
+      <p class="email">
+        <a href={`mailto:${authorRef.data.email}`}>
+          {authorRef.data.email}
+        </a>
+      </p>
     </div>
   </div>
   
@@ -42,7 +47,23 @@ const authorRef = author && await getEntry(author);
     .info-column p {
       margin: 0;
     }
-  
+
+    .info-column .bio {
+      margin: 0.5em 0;
+      font-size: 0.8em;
+      color: #555;
+    }
+
+    .info-column .email a {
+      font-size: 0.9em;
+      color: #000;
+      text-decoration: none;
+    }
+
+    .info-column .email a:hover {
+      text-decoration: underline;
+    }
+
     /* Responsive Styles */
     @media (max-width: 720px) {
       .author-box {
