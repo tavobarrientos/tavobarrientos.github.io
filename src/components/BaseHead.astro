@@ -73,6 +73,15 @@ const formattedTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={new URL(image, Astro.url)} />
 
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=GTM-59NK9D2X" is:inline></script>
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'GTM-59NK9D2X');
+</script>
+
 <!-- Structured Data JSON-LD -->
 {article && (
   <script type="application/ld+json" set:html={JSON.stringify({
