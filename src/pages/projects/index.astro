@@ -5,7 +5,6 @@ import Footer from '../../components/Footer.astro';
 import { getCollection } from 'astro:content';
 import ProjectPreview from '../../components/ProjectPreview.astro';
 import SchemaOrg from '../../components/SchemaOrg.astro';
-import '../../styles/projects.css';
 
 // Get all projects, filter out hidden ones, and sort by newest first
 const allProjects = (await getCollection('projects'))

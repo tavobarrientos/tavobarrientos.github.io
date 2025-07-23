@@ -1,70 +1,148 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import Layout from '../layouts/Layout.astro';
 import {Image} from 'astro:assets';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import profileData from '../data/profile.json';
+
+const profile = profileData;
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<div class="intro-container">
-				<div class="text-column">
-				  <h1>🧑‍🚀 Hello!</h1>
-				  <p>
-					Welcome! I'm Gustavo, a Mexico-based software developer with 15+ years of experience. I'm passionate about building software that helps people and businesses.
-				  </p>
-				  <p>
-					I love to share my knowledge and experiences with others. I write about Software development, Artificial Intelligence, and other topics that I find interesting.
-				  </p>
+<Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+			<!-- Hero Section -->
+			<section class="relative py-20 lg:py-24">
+				<!-- Background floating elements -->
+				<div class="absolute inset-0 overflow-hidden pointer-events-none">
+					<div class="absolute top-1/4 left-1/4 w-32 h-32 bg-accent/5 rounded-full animate-float"></div>
+					<div class="absolute top-3/4 right-1/4 w-20 h-20 bg-accent-secondary/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+					<div class="absolute top-1/2 left-3/4 w-16 h-16 bg-accent/10 rounded-full animate-float" style="animation-delay: 2s;"></div>
 				</div>
-				<div class="image-column">
-				  <Image src="https://github.com/tavobarrientos.png" alt="Gustavo" width={500} height={500} style="border-radius: 50%" loading="eager" />
+				
+				<div class="grid lg:grid-cols-2 gap-12 items-center relative z-10">
+					<!-- Text Content -->
+					<div class="space-y-8 animate-slide-in-left">
+						<div class="space-y-4">
+							{profile.availableForProjects && (
+								<div class="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 text-sm font-medium text-gray-700 shadow-sm hover-glow animate-fade-in-up stagger-1">
+									<span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse-gentle"></span>
+									Available for projects
+								</div>
+							)}
+							<h1 class="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight animate-fade-in-up stagger-2">
+								Hello, I'm
+								<span class="bg-gradient-to-r from-accent to-accent-secondary bg-clip-text text-transparent animate-pulse-gentle"> {profile.name.split(' ')[0]}</span>
+								<span class="inline-block animate-wiggle hover:animate-bounce-gentle" style="animation-delay: 3s;">🧑‍🚀</span>
+							</h1>
+						</div>
+						
+						<div class="space-y-6 text-lg text-gray-600 leading-relaxed animate-fade-in-up stagger-3">
+							<p>
+								{profile.bio}
+							</p>
+						</div>
+						
+						<!-- CTA Buttons -->
+						<div class="flex flex-wrap gap-4 animate-fade-in-up stagger-4">
+							<a href="/blog" class="inline-flex items-center px-6 py-3 bg-accent text-white font-medium rounded-lg hover:bg-accent-dark transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-2 hover-glow hover-shimmer">
+								Read my blog
+								<svg class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+								</svg>
+							</a>
+							<a href="/projects" class="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur-sm text-gray-700 font-medium rounded-lg border border-gray-200 hover:bg-white hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover-lift">
+								View projects
+							</a>
+						</div>
+					</div>
+					
+					<!-- Image -->
+					<div class="relative flex justify-center lg:justify-end animate-slide-in-right">
+						<div class="relative">
+							<!-- Decorative rings -->
+							<div class="absolute inset-0 -m-8 rounded-full bg-gradient-to-r from-accent/20 to-accent-secondary/20 animate-pulse-gentle"></div>
+							<div class="absolute inset-0 -m-4 rounded-full bg-white/50 backdrop-blur-sm animate-float" style="animation-delay: 0.5s;"></div>
+							
+							<!-- Profile Image -->
+							<Image 
+								src={profile.avatar.url} 
+								alt={profile.avatar.alt} 
+								width={300} 
+								height={300} 
+								class="relative z-10 rounded-full shadow-2xl hover:scale-110 transition-all duration-500 hover-glow animate-float" 
+								style="animation-delay: 1s;"
+								loading="eager" 
+							/>
+						</div>
+					</div>
 				</div>
-			  </div>
-		</main>
-		<Footer />
-	</body>
-</html>
+			</section>
+			
+			<!-- Featured Content Section -->
+			<section class="py-16">
+				<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+					<!-- Latest Blog Posts Card -->
+					<div class="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-lg hover-lift transition-all duration-300 animate-fade-in-up stagger-1">
+						<div class="flex items-center mb-4">
+							<div class="p-2 bg-accent/10 rounded-lg animate-pulse-gentle">
+								<svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+								</svg>
+							</div>
+							<h3 class="text-lg font-semibold text-gray-900 ml-3">Latest Articles</h3>
+						</div>
+						<p class="text-gray-600 mb-4">Technical insights, AI developments, and software engineering best practices.</p>
+						<a href="/blog" class="text-accent hover:text-accent-dark font-medium text-sm inline-flex items-center group hover-shimmer">
+							Read all posts
+							<svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+							</svg>
+						</a>
+					</div>
+					
+					<!-- Projects Card -->
+					<div class="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-lg hover-lift transition-all duration-300 animate-fade-in-up stagger-2">
+						<div class="flex items-center mb-4">
+							<div class="p-2 bg-green-100 rounded-lg animate-pulse-gentle" style="animation-delay: 0.5s;">
+								<svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+								</svg>
+							</div>
+							<h3 class="text-lg font-semibold text-gray-900 ml-3">Projects</h3>
+						</div>
+						<p class="text-gray-600 mb-4">Open source tools and projects I've built to solve real-world problems.</p>
+						<a href="/projects" class="text-green-600 hover:text-green-700 font-medium text-sm inline-flex items-center group hover-shimmer">
+							View projects
+							<svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+							</svg>
+						</a>
+					</div>
+					
+					<!-- Connect Card -->
+					<div class="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-lg hover-lift transition-all duration-300 md:col-span-2 lg:col-span-1 animate-fade-in-up stagger-3">
+						<div class="flex items-center mb-4">
+							<div class="p-2 bg-blue-100 rounded-lg animate-pulse-gentle" style="animation-delay: 1s;">
+								<svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+								</svg>
+							</div>
+							<h3 class="text-lg font-semibold text-gray-900 ml-3">Let's Connect</h3>
+						</div>
+						<p class="text-gray-600 mb-4">Follow me on social media for updates on my latest work and tech insights.</p>
+						<div class="flex space-x-3">
+							<a href={profile.social.twitter} target="_blank" class="inline-flex items-center justify-center w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-300 hover:scale-110 hover-glow">
+								<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+									<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+								</svg>
+							</a>
+							<a href={profile.social.github} target="_blank" class="inline-flex items-center justify-center w-10 h-10 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-all duration-300 hover:scale-110 hover-glow">
+								<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+									<path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.30.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+								</svg>
+							</a>
+						</div>
+					</div>
+				</div>
+			</section>
+</Layout>
 
 
-<style>
-	.intro-container {
-	  display: flex;
-	  flex-wrap: wrap;
-	  gap: 1em;
-	  align-items: center;
-	}
-	.text-column {
-	  flex: 1;
-	}
-	.image-column {
-	  flex: 1;
-	  display: flex;
-	  justify-content: center;
-	}
-	.image-column img {
-	  max-width: 100%;
-	  height: auto;
-	  border-radius: 50%;
-	}
-  
-	/* Responsive Styles */
-	@media (max-width: 720px) {
-	  .intro-container {
-		flex-direction: column;
-	  }
-	}
-  
-	@media (min-width: 721px) {
-	  .intro-container {
-		flex-direction: row;
-	  }
-	}
-  </style>

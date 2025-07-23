@@ -1,0 +1,65 @@
+{
+  "name": "Gustavo Barrientos",
+  "email": "gustavo.barrientos@ambystech.com",
+  "bio": "Azure AI Certified Engineer | 15+ yrs in full-stack, cloud & AI architecture | Building intelligent, production-ready systems with .NET & LLMs",
+  "title": "Developer & Writer",
+  "availableForProjects": true,
+  "location": "Mexico",
+  "experience": "15+ years",
+  "about": {
+    "intro": "I'm a passionate software engineer with over 15 years of experience building scalable applications and intelligent systems. My journey spans from traditional web development to cutting-edge AI solutions, always with a focus on creating meaningful technology that solves real-world problems.",
+    "highlights": [
+      "Azure AI Certified Engineer with deep expertise in cloud architecture",
+      "Specialized in .NET ecosystem and modern web technologies",
+      "Experience with Large Language Models (LLMs) and AI integration",
+      "Strong background in full-stack development and system design",
+      "Advocate for clean code, testing, and sustainable development practices"
+    ]
+  },
+  "skills": [
+    {
+      "category": "Programming Languages",
+      "items": [
+        { "name": "C# / .NET", "level": 95, "icon": "heroicons:code-bracket" },
+        { "name": "JavaScript/TypeScript", "level": 90, "icon": "heroicons:code-bracket-square" },
+        { "name": "Python", "level": 85, "icon": "heroicons:command-line" },
+        { "name": "SQL", "level": 88, "icon": "heroicons:circle-stack" }
+      ]
+    },
+    {
+      "category": "Cloud & DevOps",
+      "items": [
+        { "name": "Microsoft Azure", "level": 92, "icon": "heroicons:cloud" },
+        { "name": "Docker & Containers", "level": 85, "icon": "heroicons:cube" },
+        { "name": "CI/CD Pipelines", "level": 88, "icon": "heroicons:arrow-path" },
+        { "name": "Infrastructure as Code", "level": 82, "icon": "heroicons:chart-bar" }
+      ]
+    },
+    {
+      "category": "AI & Machine Learning",
+      "items": [
+        { "name": "Large Language Models", "level": 87, "icon": "heroicons:cpu-chip" },
+        { "name": "Azure Cognitive Services", "level": 90, "icon": "heroicons:light-bulb" },
+        { "name": "Semantic Kernel", "level": 85, "icon": "heroicons:cog-6-tooth" },
+        { "name": "Prompt Engineering", "level": 88, "icon": "heroicons:chat-bubble-left-right" }
+      ]
+    },
+    {
+      "category": "Web Technologies",
+      "items": [
+        { "name": "React/Angular", "level": 88, "icon": "heroicons:window" },
+        { "name": "Node.js", "level": 85, "icon": "heroicons:server" },
+        { "name": "REST/GraphQL APIs", "level": 92, "icon": "heroicons:globe-alt" },
+        { "name": "Microservices", "level": 87, "icon": "heroicons:squares-plus" }
+      ]
+    }
+  ],
+  "social": {
+    "github": "https://github.com/tavobarrientos",
+    "twitter": "https://twitter.com/tavobarrientos"
+  },
+  "avatar": {
+    "url": "https://github.com/tavobarrientos.png",
+    "alt": "Gustavo Barrientos"
+  }
+}

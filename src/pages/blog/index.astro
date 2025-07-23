@@ -6,7 +6,6 @@ import { getCollection } from 'astro:content';
 import BlogPostPreview from '../../components/BlogPostPreview.astro';
 import SchemaOrg from '../../components/SchemaOrg.astro';
 import Pagination from '../../components/Pagination.astro';
-import '../../styles/blog.css';
 
 // Number of posts per page
 const postsPerPage = 10;
@@ -41,35 +40,32 @@ const nextPage = currentPage < totalPages ? `/blog/page/${currentPage + 1}` : nu
 	</head>
 	<body>
 		<Header />
-		<main class="blog-container">
-			<div class="blog-header">
-				<h1>Latest Articles</h1>
-				<p class="blog-description">
-					Tutorials, guides, and insights on software development, Azure, AI, and more.
-				</p>
-			</div>
+		<main>
+			<!-- Blog Header -->
+			<section class="text-center mb-16">
+				<div class="max-w-4xl mx-auto">
+					<h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Latest Articles</h1>
+					<p class="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
+						Tutorials, guides, and insights on software development, Azure, AI, and more.
+					</p>
+				</div>
+			</section>
 			
-			<div class="blog-grid">
+			<!-- Blog Posts Grid -->
+			<section class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
 				{posts.length > 0 && (
-					<div class="featured-post">
+					<div class="md:col-span-2 lg:col-span-3">
 						<BlogPostPreview post={posts[0]} />
 					</div>
 				)}
 				
-				{/* Display first set of posts */}
-				{posts.slice(1, 4).map((post) => (
-					<div class="blog-post-item">
-						<BlogPostPreview post={post} />
-					</div>
-				))}
-
 				{/* Display remaining posts */}
-				{posts.slice(4).map((post) => (
-					<div class="blog-post-item">
+				{posts.slice(1).map((post) => (
+					<div>
 						<BlogPostPreview post={post} />
 					</div>
 				))}
-			</div>
+			</section>
 
 			<Pagination currentPage={currentPage} totalPages={totalPages} />
 		</main>
