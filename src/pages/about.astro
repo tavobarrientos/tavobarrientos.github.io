@@ -1,64 +1,355 @@
 ---
-import Layout from '../layouts/BlogPost.astro';
+import Layout from '../layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import profileData from '../data/profile.json';
+
+const profile = profileData;
 ---
 
-<Layout
-	title="About Me"
-	description="Lorem ipsum dolor sit amet"
-	pubDate={new Date('August 08 2021')}
-	heroImage="/blog-placeholder-about.jpg"
-	author={{ collection: "authors", id: "tavobarrientos" }}
-	showAuthor={false}
+<Layout 
+	title="About Me - Gustavo Barrientos" 
+	description="Learn about my journey as a software engineer, my expertise in Azure AI, .NET development, and how I can help bring your projects to life."
 >
-	<p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-		labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
-		viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam
-		adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus
-		et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus
-		vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque
-		sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
-	</p>
+	<!-- reCAPTCHA Script -->
+	<script src="https://www.google.com/recaptcha/api.js" async defer is:inline></script>
+	<!-- Hero Section -->
+	<section class="py-20 lg:py-24">
+		<div class="max-w-4xl mx-auto">
+			<div class="text-center mb-16 animate-fade-in-up">
+				<div class="relative w-40 h-40 mx-auto mb-8">
+					<Image 
+						src={profile.avatar.url} 
+						alt={profile.avatar.alt}
+						width={160}
+						height={160}
+						class="rounded-full shadow-2xl hover:scale-105 transition-transform duration-300 hover-glow"
+						loading="eager"
+					/>
+					<div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 border-4 border-white rounded-full animate-pulse-gentle"></div>
+				</div>
+				<h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+					About <span class="bg-gradient-to-r from-accent to-accent-secondary bg-clip-text text-transparent">{profile.name.split(' ')[0]}</span>
+				</h1>
+				<p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+					{profile.about.intro}
+				</p>
+			</div>
+		</div>
+	</section>
 
-	<p>
-		Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non
-		tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non
-		blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna
-		porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis
-		massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc.
-		Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis
-		bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra
-		massa massa ultricies mi.
-	</p>
+	<!-- Stats Section -->
+	<section class="py-16 bg-white/80 backdrop-blur-sm">
+		<div class="max-w-4xl mx-auto">
+			<div class="grid md:grid-cols-3 gap-8 text-center">
+				<div class="animate-fade-in-up stagger-1">
+					<div class="text-3xl font-bold text-accent mb-2">{profile.experience}</div>
+					<div class="text-gray-600">Experience</div>
+				</div>
+				<div class="animate-fade-in-up stagger-2">
+					<div class="text-3xl font-bold text-accent mb-2">50+</div>
+					<div class="text-gray-600">Projects Completed</div>
+				</div>
+				<div class="animate-fade-in-up stagger-3">
+					<div class="text-3xl font-bold text-accent mb-2">{profile.location}</div>
+					<div class="text-gray-600">Based in</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
-	<p>
-		Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl
-		suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet
-		nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae
-		turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem
-		dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat
-		semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus
-		vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum
-		facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam
-		vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla
-		urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
-	</p>
+	<!-- Highlights Section -->
+	<section class="py-16">
+		<div class="max-w-4xl mx-auto">
+			<h2 class="text-3xl font-bold text-gray-900 mb-12 text-center animate-fade-in-up">Key Highlights</h2>
+			<div class="grid md:grid-cols-2 gap-6">
+				{profile.about.highlights.map((highlight, index) => (
+					<div class={`flex items-start space-x-4 p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover-lift animate-fade-in-up stagger-${index + 1}`}>
+						<div class="flex-shrink-0 w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center">
+							<Icon name="heroicons:check" class="w-5 h-5 text-accent" />
+						</div>
+						<p class="text-gray-700 leading-relaxed">{highlight}</p>
+					</div>
+				))}
+			</div>
+		</div>
+	</section>
 
-	<p>
-		Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper
-		viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc
-		scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur
-		gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus
-		pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim
-		blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id
-		cursus metus aliquam eleifend mi.
-	</p>
+	<!-- Skills Section -->
+	<section class="py-16 bg-white/80 backdrop-blur-sm">
+		<div class="max-w-4xl mx-auto px-6 lg:px-8">
+			<h2 class="text-3xl font-bold text-gray-900 mb-12 text-center animate-fade-in-up">Technical Expertise</h2>
+			<div class="space-y-12">
+				{profile.skills.map((skillCategory, categoryIndex) => (
+					<div class={`animate-fade-in-up stagger-${categoryIndex + 1}`}>
+						<h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+							<span class="w-1 h-6 bg-gradient-to-b from-accent to-accent-secondary rounded-full mr-3"></span>
+							{skillCategory.category}
+						</h3>
+						<div class="grid md:grid-cols-2 gap-6">
+							{skillCategory.items.map((skill, skillIndex) => (
+								<div class="space-y-2">
+									<div class="flex items-center justify-between">
+										<div class="flex items-center space-x-3">
+											<Icon name={skill.icon} class="w-5 h-5 text-accent" />
+											<span class="font-medium text-gray-900">{skill.name}</span>
+										</div>
+										<span class="text-sm font-medium text-gray-600">{skill.level}%</span>
+									</div>
+									<div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+										<div 
+											class="h-2 bg-gradient-to-r from-accent to-accent-secondary rounded-full transition-all duration-1000 ease-out skill-bar"
+											style={`width: ${skill.level}%; animation-delay: ${(categoryIndex * 4 + skillIndex) * 0.1}s;`}
+										></div>
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
+				))}
+			</div>
+		</div>
+	</section>
 
-	<p>
-		Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta
-		nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam
-		tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci
-		ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar
-		proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
-	</p>
+	<!-- Contact Form Section -->
+	<section class="py-16" id="contact">
+		<div class="max-w-2xl mx-auto">
+			<div class="text-center mb-12 animate-fade-in-up">
+				<h2 class="text-3xl font-bold text-gray-900 mb-4">Let's Work Together</h2>
+				<p class="text-lg text-gray-600">
+					Have a project in mind? I'd love to hear about it and discuss how we can bring your ideas to life.
+				</p>
+			</div>
+
+			<form 
+				action="https://api.web3forms.com/submit" 
+				method="POST" 
+				class="space-y-6 bg-white/80 backdrop-blur-sm rounded-xl p-8 border border-gray-200 shadow-lg animate-fade-in-up stagger-2"
+			>
+				<input type="hidden" name="access_key" value="3605798a-7225-4eab-9e19-d255812085d7" />
+				<input type="hidden" name="subject" value="New Contact Form Submission from Portfolio" />
+				<input type="hidden" name="from_name" value="Portfolio Contact Form" />
+
+				<div class="grid md:grid-cols-2 gap-6">
+					<div>
+						<label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name *</label>
+						<input 
+							type="text" 
+							id="name" 
+							name="name" 
+							required 
+							class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 hover:border-gray-400"
+							placeholder="Your full name"
+						/>
+					</div>
+					<div>
+						<label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+						<input 
+							type="email" 
+							id="email" 
+							name="email" 
+							required 
+							class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 hover:border-gray-400"
+							placeholder="your.email@example.com"
+						/>
+					</div>
+				</div>
+
+				<div>
+					<label for="company" class="block text-sm font-medium text-gray-700 mb-2">Company</label>
+					<input 
+						type="text" 
+						id="company" 
+						name="company" 
+						class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 hover:border-gray-400"
+						placeholder="Your company name (optional)"
+					/>
+				</div>
+
+				<div>
+					<label for="project-type" class="block text-sm font-medium text-gray-700 mb-2">Project Type</label>
+					<select 
+						id="project-type" 
+						name="project_type" 
+						class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 hover:border-gray-400"
+					>
+						<option value="">Select project type</option>
+						<option value="web-development">Web Development</option>
+						<option value="ai-integration">AI Integration</option>
+						<option value="cloud-architecture">Cloud Architecture</option>
+						<option value="consulting">Technical Consulting</option>
+						<option value="other">Other</option>
+					</select>
+				</div>
+
+				<div>
+					<label for="message" class="block text-sm font-medium text-gray-700 mb-2">Message *</label>
+					<textarea 
+						id="message" 
+						name="message" 
+						rows="5" 
+						required 
+						class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 hover:border-gray-400"
+						placeholder="Tell me about your project, goals, and how I can help..."
+					></textarea>
+				</div>
+
+				<!-- reCAPTCHA -->
+				<div class="flex justify-center">
+					<div class="g-recaptcha" data-sitekey="6LfOMYwrAAAAAEOw96zDGnyjuJPqzxr3J6fYMnDY"></div>
+				</div>
+
+				<div class="flex items-center">
+					<input 
+						type="checkbox" 
+						id="privacy" 
+						name="privacy_accepted" 
+						required 
+						class="w-4 h-4 text-accent border-gray-300 rounded focus:ring-accent"
+					/>
+					<label for="privacy" class="ml-2 text-sm text-gray-600">
+						I agree to the privacy policy and consent to data processing *
+					</label>
+				</div>
+
+				<button 
+					type="submit" 
+					class="w-full px-8 py-4 bg-accent text-white font-medium rounded-lg hover:bg-accent-dark transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 hover-glow hover-shimmer flex items-center justify-center"
+				>
+					<Icon name="heroicons:paper-airplane" class="w-5 h-5 mr-2" />
+					Send Message
+				</button>
+			</form>
+		</div>
+	</section>
 </Layout>
+
+<style>
+	.skill-bar {
+		width: 0%;
+		animation: fillSkillBar 1.5s ease-out forwards;
+	}
+
+	@keyframes fillSkillBar {
+		from {
+			width: 0%;
+		}
+		to {
+			width: var(--target-width);
+		}
+	}
+
+	/* Enhanced form styles */
+	input:focus, textarea:focus, select:focus {
+		outline: none;
+		box-shadow: 0 0 0 3px rgba(60, 105, 231, 0.1);
+	}
+
+	input::placeholder, textarea::placeholder {
+		color: #9ca3af;
+	}
+
+	/* Success message styles */
+	.form-success {
+		background: linear-gradient(135deg, #10b981, #059669);
+		color: white;
+		padding: 1rem;
+		border-radius: 0.5rem;
+		text-align: center;
+		margin-top: 1rem;
+	}
+
+	/* reCAPTCHA styling */
+	.g-recaptcha {
+		margin: 1rem 0;
+		display: inline-block;
+	}
+
+	/* Dark mode friendly reCAPTCHA styling */
+	.g-recaptcha > div {
+		border-radius: 0.5rem;
+		overflow: hidden;
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	}
+</style>
+
+<script>
+	// Animate skill bars on scroll
+	const observeSkillBars = () => {
+		const skillBars = document.querySelectorAll('.skill-bar');
+		const observer = new IntersectionObserver((entries) => {
+			entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+					const bar = entry.target as HTMLElement;
+					const level = bar.style.width;
+					bar.style.setProperty('--target-width', level);
+					bar.classList.add('animate');
+				}
+			});
+		}, { threshold: 0.5 });
+
+		skillBars.forEach(bar => observer.observe(bar));
+	};
+
+	// Form submission handling
+	const handleFormSubmission = () => {
+		const form = document.querySelector('form') as HTMLFormElement;
+		if (!form) return;
+
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			
+			// Validate reCAPTCHA
+			const recaptchaResponse = (window as any).grecaptcha?.getResponse();
+			if (!recaptchaResponse) {
+				alert('Please complete the reCAPTCHA verification.');
+				return;
+			}
+			
+			const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+			const originalText = submitButton.innerHTML;
+			
+			// Show loading state
+			submitButton.innerHTML = '<svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Sending...';
+			submitButton.disabled = true;
+
+			try {
+				const formData = new FormData(form);
+				
+				// Add reCAPTCHA response to form data
+				if (recaptchaResponse) {
+					formData.delete('g-recaptcha-response');
+				}
+				
+				const response = await fetch(form.action, {
+					method: 'POST',
+					body: formData
+				});
+
+				if (response.ok) {
+					// Success
+					form.innerHTML = '<div class="form-success">✅ Thank you! Your message has been sent successfully. I\'ll get back to you soon.</div>';
+				} else {
+					throw new Error('Form submission failed');
+				}
+			} catch (error) {
+				// Error
+				submitButton.innerHTML = originalText;
+				submitButton.disabled = false;
+				
+				// Reset reCAPTCHA
+				if ((window as any).grecaptcha) {
+					(window as any).grecaptcha.reset();
+				}
+				
+				alert('Sorry, there was an error sending your message. Please try again or contact me directly.');
+			}
+		});
+	};
+
+	// Initialize when DOM is loaded
+	document.addEventListener('DOMContentLoaded', () => {
+		observeSkillBars();
+		handleFormSubmission();
+	});
+</script>

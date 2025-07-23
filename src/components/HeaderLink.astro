@@ -10,16 +10,27 @@ const subpath = pathname.match(/[^\/]+/g);
 const isActive = href === pathname || href === '/' + subpath?.[0];
 ---
 
-<a href={href} class:list={[className, { active: isActive }]} {...props}>
-	<slot />
+<a 
+	href={href} 
+	class:list={[
+		'relative px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:text-accent hover:bg-accent/5 transition-all duration-300 group hover:shadow-lg hover:-translate-y-0.5 hover-glow overflow-hidden',
+		{ 'text-accent bg-accent/10 font-semibold shadow-md': isActive },
+		className
+	]} 
+	{...props}
+>
+	<!-- Shimmer effect on hover -->
+	<div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+	
+	<span class="relative z-10 group-hover:scale-105 transition-transform duration-200">
+		<slot />
+	</span>
+	
+	<!-- Active state indicator -->
+	{isActive && (
+		<div class="absolute inset-0 bg-accent/10 rounded-full ring-2 ring-accent/20 animate-pulse-gentle"></div>
+	)}
+	
+	<!-- Hover background effect -->
+	<div class="absolute inset-0 bg-gradient-to-r from-accent/0 via-accent/5 to-accent/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
 </a>
-<style>
-	a {
-		display: inline-block;
-		text-decoration: none;
-	}
-	a.active {
-		font-weight: bolder;
-		text-decoration: underline;
-	}
-</style>

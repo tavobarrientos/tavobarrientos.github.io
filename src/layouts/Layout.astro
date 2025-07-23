@@ -1,0 +1,49 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+export interface Props {
+	title: string;
+	description?: string;
+	image?: string;
+	article?: boolean;
+	publishDate?: Date;
+	modifiedDate?: Date;
+	keywords?: string;
+	class?: string;
+}
+
+const { 
+	title, 
+	description, 
+	image, 
+	article = false, 
+	publishDate, 
+	modifiedDate, 
+	keywords,
+	class: className 
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead 
+			title={title} 
+			description={description} 
+			image={image}
+			article={article}
+			publishDate={publishDate}
+			modifiedDate={modifiedDate}
+			keywords={keywords}
+		/>
+	</head>
+	<body>
+		<Header />
+		<main class:list={["page-enter", className]}>
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>
