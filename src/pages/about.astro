@@ -31,9 +31,19 @@ const profile = profileData;
 				<h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
 					About <span class="bg-gradient-to-r from-accent to-accent-secondary bg-clip-text text-transparent">{profile.name.split(' ')[0]}</span>
 				</h1>
-				<p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+				<p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-8">
 					{profile.about.intro}
 				</p>
+				<!-- Download CV Button -->
+				<a 
+					href="/cv/gustavo-barrientos-cv.pdf" 
+					download="Gustavo_Barrientos_CV.pdf"
+					class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-accent to-accent-secondary text-white font-semibold rounded-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 hover-glow hover-shimmer animate-pulse-gentle"
+				>
+					<Icon name="heroicons:document-arrow-down" class="w-6 h-6 mr-3" />
+					Download My CV
+					<span class="ml-2 px-2 py-1 bg-white/20 rounded text-sm">PDF</span>
+				</a>
 			</div>
 		</div>
 	</section>
