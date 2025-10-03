@@ -1,0 +1,78 @@
+---
+export interface Props {
+  text: string;
+  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark';
+  dismissible?: boolean;
+  action?: {
+    label: string;
+    onClick: string;
+  };
+}
+
+const {
+  text,
+  variant = 'primary',
+  dismissible = false,
+  action
+} = Astro.props;
+
+const variantClasses = {
+  primary: 'bg-blue-100 border-blue-400 text-blue-950 dark:bg-blue-900/40 dark:border-blue-700 dark:text-blue-50',
+  secondary: 'bg-slate-100 border-slate-400 text-slate-950 dark:bg-slate-800/60 dark:border-slate-700 dark:text-slate-50',
+  success: 'bg-green-100 border-green-400 text-green-950 dark:bg-green-900/40 dark:border-green-700 dark:text-green-50',
+  danger: 'bg-red-100 border-red-400 text-red-950 dark:bg-red-900/40 dark:border-red-700 dark:text-red-50',
+  warning: 'bg-yellow-100 border-yellow-400 text-orange-950 dark:bg-yellow-900/40 dark:border-yellow-700 dark:text-orange-50',
+  info: 'bg-sky-100 border-sky-400 text-sky-950 dark:bg-sky-900/40 dark:border-sky-700 dark:text-sky-50',
+  light: 'bg-gray-50 border-gray-300 text-gray-950 dark:bg-gray-700/40 dark:border-gray-600 dark:text-gray-50',
+  dark: 'bg-gray-700 border-gray-600 text-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-50'
+};
+
+const buttonClasses = {
+  primary: 'border border-blue-300 text-blue-950 hover:bg-blue-200 dark:border-blue-800 dark:text-blue-50 dark:hover:bg-blue-900/60',
+  secondary: 'border border-slate-300 text-slate-950 hover:bg-slate-200 dark:border-slate-800 dark:text-slate-50 dark:hover:bg-slate-800/80',
+  success: 'border border-green-300 text-green-950 hover:bg-green-200 dark:border-green-800 dark:text-green-50 dark:hover:bg-green-900/60',
+  danger: 'border border-red-300 text-red-950 hover:bg-red-200 dark:border-red-800 dark:text-red-50 dark:hover:bg-red-900/60',
+  warning: 'border border-yellow-300 text-orange-950 hover:bg-yellow-200 dark:border-yellow-800 dark:text-orange-50 dark:hover:bg-yellow-900/60',
+  info: 'border border-sky-100 text-sky-950 hover:bg-sky-200 dark:border-sky-800 dark:text-sky-50 dark:hover:bg-sky-900/60',
+  light: 'border border-gray-200 text-gray-950 hover:bg-gray-200 dark:border-gray-700 dark:text-gray-50 dark:hover:bg-gray-700/60',
+  dark: 'border border-gray-500 text-gray-50 hover:bg-gray-600 dark:border-gray-800 dark:text-gray-50 dark:hover:bg-gray-700'
+};
+
+const dismissClasses = {
+  primary: 'text-blue-950 hover:bg-blue-200 dark:text-blue-50 dark:hover:bg-blue-900/60',
+  secondary: 'text-slate-950 hover:bg-slate-200 dark:text-slate-50 dark:hover:bg-slate-800/80',
+  success: 'text-green-950 hover:bg-green-200 dark:text-green-50 dark:hover:bg-green-900/60',
+  danger: 'text-red-950 hover:bg-red-200 dark:text-red-50 dark:hover:bg-red-900/60',
+  warning: 'text-orange-950 hover:bg-orange-200 dark:text-orange-50 dark:hover:bg-orange-900/60',
+  info: 'text-sky-950 hover:bg-sky-200 dark:text-sky-50 dark:hover:bg-sky-900/60',
+  light: 'text-gray-950 hover:bg-gray-200 dark:text-gray-50 dark:hover:bg-gray-700/60',
+  dark: 'text-gray-50 hover:bg-gray-600 dark:text-gray-50 dark:hover:bg-gray-700'
+};
+---
+
+<div class={`relative border rounded-lg p-4 ${variantClasses[variant]}`} role="alert">
+  <div class="flex items-center justify-between gap-4">
+    <p class="mb-0 flex-1">{text}</p>
+    {action && (
+      <button
+        type="button"
+        class={`px-3 py-1.5 rounded font-medium transition-colors whitespace-nowrap ${buttonClasses[variant]}`}
+        onclick={action.onClick}
+      >
+        {action.label}
+      </button>
+    )}
+    {dismissible && (
+      <button
+        type="button"
+        class={`p-1.5 rounded transition-colors ${dismissClasses[variant]}`}
+        onclick="this.closest('[role=alert]').remove()"
+        aria-label="Close"
+      >
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+    )}
+  </div>
+</div>

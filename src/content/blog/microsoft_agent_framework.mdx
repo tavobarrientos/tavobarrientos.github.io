@@ -1,0 +1,180 @@
+---
+title: 'Agents with Microsoft Agent Framework'
+description: 'Explore the capabilities of the Microsoft Agent Framework for building intelligent agents.'
+pubDate: 'Oct 2 2025'
+heroImage: '/blog/agent_smith.png'
+author: tavobarrientos
+relatedPosts:
+    - microsoft-build-2025
+hidden: false
+---
+import Alert from '../../components/Alert.astro';
+
+<Alert 
+  text="Microsoft Agent Framework is in preview and may change. Make sure to check the official documentation for the most up-to-date information." 
+  variant="warning" 
+/>
+
+
+A few days ago (specifically on September 17, 2025), Microsoft announced the launch of its new framework for building intelligent agents, the [Microsoft Agent Framework](https://devblogs.microsoft.com/foundry/introducing-microsoft-agent-framework-the-open-source-engine-for-agentic-ai-apps/). This framework promises to make it easier to create advanced conversational agents that can interact naturally with users.
+
+I remember the last Microsoft Build 2025, where the focus was on agent capabilities and how they can help us perform complex tasks and assist us in our daily lives. In particular, Satya Nadella, Microsoft’s CEO, emphasized the importance of agents in today’s AI-driven era.
+
+![Satya Nadella](/blog/build/agents.jpg)
+
+That said, I’ve been working a lot recently with tools like Semantic Kernel, LangChain, and Promptflow. Having a new tool to experiment with is always exciting. MAF promises to be an open-source framework that allows developers to easily create, train, and deploy agents.
+
+### What is Microsoft Agent Framework?
+The Microsoft Agent Framework (MAF) is an open-source framework that enables developers to build AI agents and multi-agent workflows in .NET and Python. Its main goal is to unify and extend the capabilities of Semantic Kernel and AutoGen while also incorporating advanced features like state management, external tool integration, and orchestration of complex workflows.
+
+MAF is designed to transform how we build AI applications: it’s not just about generating text, but about creating autonomous and collaborative systems, where multiple agents can interact with each other and with the external world to accomplish sophisticated tasks.
+
+It offers a number of interesting features:
+
+##### AI Agents
+
+Agents in MAF are **autonomous entities** capable of:
+
+- Processing user input through **large language models (LLMs)** like GPT or Claude.
+- Calling external tools or APIs using standard connectors like **Model Context Protocol (MCP)**.
+- Maintaining **persistent state**, allowing for long conversations or multi-step processes.
+- Specializing according to their role:
+  - **Planner Agents**: decide the most appropriate actions based on context.
+  - **Tool Agents**: perform specific tasks or complex calculations.
+  - **Supervisor Agents**: coordinate and supervise other agents within a workflow.
+
+##### Workflows 
+
+A workflow in Microsoft Agent Framework can be seen as a structured sequence of operations, where AI agents act as key components. These workflows not only ensure consistency and reliability but are designed to handle complex, long-running processes, involving multiple agents, human interactions, and integrations with external systems.
+
+Additionally, the execution sequence can be explicitly defined, giving developers more control over the workflow path. This allows modeling everything from simple interactions to advanced orchestration scenarios.
+
+##### Orchestration Patterns
+
+MAF supports several orchestration patterns to manage how agents interact and collaborate when performing tasks:
+
+- **Concurrent**: Orchestrates multiple agents to work on a task in parallel; each agent processes its part independently, and the results are aggregated at the end. This is useful for tasks that can be divided into independent subtasks.
+- **Sequential**: Agents are organized in a pipeline, each agent processes a task and passes its output to the next agent in sequence. This pattern is useful for tasks that require ordered steps or multi-stage reasoning.
+- **Handoff**: One agent can transfer control to a specialized agent when encountering a task it cannot handle. This pattern is useful for scenarios where different agents have specialized skills or knowledge.
+
+##### Integration with External Tools
+
+Support for external tools is a key feature of MAF. This is similar to **Functions** in Semantic Kernel or **Tools** in LangChain, allowing agents to interact with external systems.  
+
+Another way to orchestrate interactions with external tools is through connectors that implement **Model Context Protocol (MCP)**, an open standard for integrating language models with external applications and services. MCP allows agents to interact with APIs, databases, and other systems in a uniform and consistent manner.
+
+##### Creating a Simple Agent
+
+Here’s a simple example of creating an agent with MAF. In this case, we’ll build an agent to help answer questions on a specific topic — the framework itself. We’ll start with a **C#** version:
+
+First, create a .NET console project and add the packages needed to work with Microsoft Agent Framework and Azure OpenAI. Note that MAF is in a preview version, so you need to use the `--prerelease` flag when installing the package; otherwise, NuGet won’t install it. We’ll also install libraries to manage application configuration. Here, we’ll use `UserSecrets` to securely handle Azure OpenAI keys:
+
+```bash
+dotnet new console -n SimpleMAFTest -o .
+dotnet add package Microsoft.Extensions.Configuration
+dotnet add package Microsoft.Extensions.Configuration.Json
+dotnet add package Microsoft.Extensions.Configuration.UserSecrets
+dotnet add package Azure.AI.OpenAI
+dotnet add package Azure.Identity
+dotnet add package Microsoft.Agents.AI.OpenAI --prerelease
+```
+
+Once the packages are installed, configure your Azure OpenAI keys using `UserSecrets`:
+
+```bash
+dotnet user-secrets init
+dotnet user-secrets set "AzureOpenAI:Endpoint" "https://<your-endpoint>.openai.azure.com/"
+dotnet user-secrets set "AzureOpenAI:ApiKey" "<your-api-key>"
+```
+
+You can also add an `appsettings.json` file to manage your app configuration, including your Azure OpenAI endpoint and key:
+
+```json
+{
+  "AzureOpenAI": {
+    "Endpoint": "https://<your-endpoint>.openai.azure.com/",
+    "ApiKey": "<your-api-key>"
+  }
+}
+```
+
+Make sure to replace `<your-endpoint>` and `<your-api-key>` with your actual Azure OpenAI values.
+
+##### Creating the Agent
+
+Now let’s create a very simple agent using `AzureOpenAIClient` to use the GPT-4o-Mini model from Azure OpenAI. This agent will be able to interact with the user:
+
+```csharp
+using Microsoft.Agents.AI.OpenAI;
+using Microsoft.Extensions.Configuration;
+
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .AddUserSecrets<Program>()
+    .Build();
+
+var endpoint = configuration["AzureOpenAI:Endpoint"];
+var apiKey = configuration["AzureOpenAI:ApiKey"];
+var deploymentName = configuration["AzureOpenAI:DeploymentName"];
+
+var agent = new AzureOpenAIClient(
+    new Uri(endpoint), 
+    new AzureKeyCredential(apiKey)
+)
+    .GetChatClient(deploymentName)
+    .CreateAIAgent(instructions: "You are a polite, professional personal assistant who manages tasks, reminders, and schedules, gives clear answers, suggests solutions with confirmation, protects privacy, and asks if unclear.",
+                   name: "MyAssistant",
+                   description: "A personal assistant for managing tasks and schedules.");
+```
+
+With this, our agent is created. To interact with it, we can use the `RunAsync` method from the `AIAgent` class, which exposes all the agent’s functionality:
+
+```csharp
+var response = await agent.RunAsync("What is Microsoft Agent Framework?");
+Console.WriteLine(response);
+```
+
+This gives us a simple agent that can answer questions about Microsoft Agent Framework. If you want the agent to respond in streaming mode, you can use `RunStreamingAsync`, which returns an `IAsyncEnumerable<string>` to iterate through real-time responses:
+
+```csharp
+await foreach (var chunk in agent.RunStreamingAsync("Explain to my grandmother what AI is"))
+{
+    Console.Write(chunk);
+}
+```
+
+##### Using Agent Tools
+
+If you’ve used Semantic Kernel or LangChain, you know one of the most interesting features is using external tools to extend the language model’s capabilities. MAF is no exception. You can create custom tools and assign them to your agent.  
+
+Here’s an example of a simple tool to get the current date and time. We create a method with a `Description` attribute to define the tool:
+
+```csharp
+[Description("Gets the current date and time.")]
+static string GetDateTime() => DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+var agent = new AzureOpenAIClient(
+    new Uri(endpoint), 
+    new AzureKeyCredential(apiKey)
+)
+    .GetChatClient(deploymentName)
+    .CreateAIAgent(instructions: "You are a polite, professional personal assistant who manages tasks, reminders, and schedules, gives clear answers, suggests solutions with confirmation, protects privacy, and asks if unclear.",
+                   name: "MyAssistant",
+                   description: "A personal assistant for managing tasks and schedules.",
+                   tools: [
+                       AIFunctionFactory.Create(GetDateTime)
+                       ]);
+
+var response = await agent.RunAsync("What is the current date and time?");
+```
+
+Now we have an agent that can use the `GetDateTime` tool to fetch the current date and time. When asked, the agent will use this tool and return the correct information.
+
+![Our Agent Running](/blog/agent_running.png)
+
+### Conclusion
+Microsoft Agent Framework is a powerful tool for building AI agents and multi-agent workflows. Its ability to integrate external tools, manage state, and orchestrate complex workflows makes it an attractive choice for developers aiming to create advanced AI applications.  
+
+Even though MAF is in an early stage, its focus on modularity and extensibility positions it as a strong option — a natural evolution of Semantic Kernel and AutoGen. I’m excited to explore its capabilities further and see how this framework evolves in the future.
+
+You can download the code from Github in: [https://github.com/tavobarrientos/MAFTest](https://github.com/tavobarrientos/MAFTest)
