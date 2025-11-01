@@ -8,82 +8,126 @@ const { related } = Astro.props;
 const relatedPosts = await getEntries(related) as CollectionEntry<'blog'>[];
 ---
 
-<div class="related-posts-widget">
-  <h3>Related Posts</h3>
-  <div class="posts-container">
-    {relatedPosts && relatedPosts.map((post) => (
-      <a href={`/blog/${post.slug}/`} class="post-item">
-        { post.data.heroImage && <Image src={post.data.heroImage ?? '/blog-placeholder-about.jpg'} alt={post.data.title} width={150} height={100} /> }
-        <div class="post-info">
-          <h4>{post.data.title}</h4>
-        </div>
-      </a>
-    ))}
+<div class="p-4 rounded-xl shadow-md bg-white">
+  <h3 class="mb-4 text-xl font-semibold">Related Posts</h3>
+  <div class="relative group overflow-hidden">
+    <!-- Left Chevron -->
+    <button
+      id="scroll-left"
+      class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 disabled:opacity-0"
+      aria-label="Scroll left"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+
+    <!-- Posts Container -->
+    <div id="posts-container" class="flex gap-4 overflow-x-auto scrollbar-hide">
+      {relatedPosts && relatedPosts.map((post) => (
+        <a href={`/blog/${post.slug}/`} class="flex flex-col items-center flex-shrink-0 w-[150px] no-underline text-inherit hover:opacity-80 transition-opacity">
+          { post.data.heroImage && <Image src={post.data.heroImage ?? '/blog-placeholder-about.jpg'} alt={post.data.title} width={150} height={145} class="rounded-lg mb-2 object-cover w-full aspect-[150/145]" /> }
+          <div>
+            <h4 class="m-0 text-center font-light text-sm line-clamp-2">{post.data.title}</h4>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Right Chevron -->
+    <button
+      id="scroll-right"
+      class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 disabled:opacity-0"
+      aria-label="Scroll right"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
   </div>
 </div>
 
+<script>
+  const container = document.getElementById('posts-container');
+  const leftBtn = document.getElementById('scroll-left');
+  const rightBtn = document.getElementById('scroll-right');
+
+  if (container && leftBtn && rightBtn) {
+    const scrollAmount = 300;
+    let isScrolling = false;
+
+    // Update button states based on scroll position
+    const updateButtons = () => {
+      const isAtStart = container.scrollLeft <= 0;
+      const isAtEnd = container.scrollLeft >= container.scrollWidth - container.clientWidth - 1;
+
+      leftBtn.disabled = isAtStart;
+      rightBtn.disabled = isAtEnd;
+    };
+
+    // Smooth scroll with easing animation
+    const smoothScroll = (target) => {
+      if (isScrolling) return;
+      isScrolling = true;
+
+      const start = container.scrollLeft;
+      const distance = target - start;
+      const duration = 500; // Animation duration in ms
+      let startTime = null;
+
+      const easeInOutCubic = (t) => {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      };
+
+      const animation = (currentTime) => {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const progress = Math.min(timeElapsed / duration, 1);
+        const easedProgress = easeInOutCubic(progress);
+
+        container.scrollLeft = start + distance * easedProgress;
+
+        if (progress < 1) {
+          requestAnimationFrame(animation);
+        } else {
+          isScrolling = false;
+          updateButtons();
+        }
+      };
+
+      requestAnimationFrame(animation);
+    };
+
+    leftBtn.addEventListener('click', () => {
+      const target = Math.max(0, container.scrollLeft - scrollAmount);
+      smoothScroll(target);
+    });
+
+    rightBtn.addEventListener('click', () => {
+      const target = Math.min(
+        container.scrollWidth - container.clientWidth,
+        container.scrollLeft + scrollAmount
+      );
+      smoothScroll(target);
+    });
+
+    container.addEventListener('scroll', updateButtons);
+
+    // Initial state
+    updateButtons();
+
+    // Update on window resize
+    window.addEventListener('resize', updateButtons);
+  }
+</script>
+
 <style>
-  .related-posts-widget {
-    padding: 1em;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-  }
-  .related-posts-widget h3 {
-    margin-bottom: 1em;
-  }
-  .posts-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1em;
-  }
-  .post-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: inherit;
-    width: 150px;
-  }
-  .post-item img {
-    border-radius: 8px;
-    margin-bottom: 0.5em;
-  }
-  .post-info h4 {
-    margin: 0;
-    text-align: center;
-    font-weight: 300; /* Make the font thinner */
-    font-size: 0.9em; /* Make the font smaller */
+  #posts-container {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
   }
 
-  /* Responsive Styles */
-  @media (max-width: 720px) {
-    .posts-container {
-      flex-direction: column;
-      align-items: center;
-    }
-    .post-item {
-      width: 100%;
-    }
-  }
-
-  @media (min-width: 721px) and (max-width: 1024px) {
-    .posts-container {
-      flex-direction: row;
-      justify-content: space-between;
-    }
-    .post-item {
-      width: calc(50% - 0.5em);
-    }
-  }
-
-  @media (min-width: 1025px) {
-    .posts-container {
-      flex-direction: row;
-      justify-content: space-between;
-    }
-    .post-item {
-      width: calc(33.33% - 0.5em);
-    }
+  #posts-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
   }
 </style>
