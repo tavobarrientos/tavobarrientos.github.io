@@ -1,5 +1,7 @@
-// Reveals `.reveal` sections as they scroll into view. Loaded once per page
-// from Layout.astro (MPA — no view transitions, so no re-init concerns).
+// Fades `.reveal` sections in as they enter the viewport and back out as
+// they leave (either edge), so content passes over the fixed page background.
+// Loaded once per page from Layout.astro (MPA — no view transitions, so no
+// re-init concerns).
 
 function revealAll(): void {
 	document.querySelectorAll<HTMLElement>('.reveal').forEach((el) => {
@@ -15,17 +17,13 @@ if (reduceMotion || !('IntersectionObserver' in window)) {
 	const observer = new IntersectionObserver(
 		(entries) => {
 			for (const entry of entries) {
-				if (entry.isIntersecting) {
-					entry.target.classList.add('reveal-visible');
-					observer.unobserve(entry.target);
-				}
+				entry.target.classList.toggle('reveal-visible', entry.isIntersecting);
 			}
 		},
 		{ threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
 	);
 
 	document.querySelectorAll<HTMLElement>('.reveal').forEach((el) => {
-		// Anything already in the viewport on load reveals immediately
 		observer.observe(el);
 	});
 }

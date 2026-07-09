@@ -6,9 +6,11 @@ const firstName = profile.name.split(' ')[0];
 ---
 
 <section data-hero class="relative -mt-16 h-[100svh] min-h-[560px] overflow-hidden">
-	<!-- Interactive node-graph canvas (decorative) -->
-	<canvas id="hero-canvas" class="absolute inset-0 h-full w-full" aria-hidden="true" tabindex="-1"
-	></canvas>
+	<!-- Interactive lattice canvas: fixed to the viewport so it backs the whole
+	     page while content scrolls over it (decorative) -->
+	<div class="pointer-events-none fixed inset-0 -z-10" aria-hidden="true">
+		<canvas id="hero-canvas" class="h-full w-full" tabindex="-1"></canvas>
+	</div>
 
 	<!-- Static fallback: shown until (unless) the 3D scene boots -->
 	<div class="hero-fallback absolute inset-0" aria-hidden="true">
@@ -16,13 +18,17 @@ const firstName = profile.name.split(' ')[0];
 		<div class="absolute inset-0 hero-glow"></div>
 	</div>
 
-	<!-- Overlay content -->
+	<!-- Soft scrim so the copy stays legible over the lattice -->
+	<div class="hero-scrim pointer-events-none absolute inset-0" aria-hidden="true"></div>
+
+	<!-- Overlay content (counter-parallaxes toward the cursor; see hero-graph.ts) -->
 	<div
-		class="pointer-events-none relative z-10 flex h-full flex-col items-center justify-center px-6 text-center"
+		data-hero-content
+		class="pointer-events-none relative z-10 flex h-full w-full flex-col items-center justify-center px-6 text-center will-change-transform"
 	>
 		{
 			profile.availableForProjects && (
-				<div class="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-4 py-2 text-sm font-medium text-ink-mid backdrop-blur-sm animate-fade-in-up stagger-1">
+				<div class="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-4 py-2 text-sm font-medium text-ink-mid backdrop-blur-sm animate-hero-in stagger-1">
 					<span class="h-2 w-2 rounded-full bg-green-500 animate-pulse-gentle" />
 					Available for projects
 				</div>
@@ -30,7 +36,7 @@ const firstName = profile.name.split(' ')[0];
 		}
 
 		<h1
-			class="mt-8 max-w-5xl text-6xl font-bold leading-[1.05] text-ink md:text-7xl lg:text-8xl animate-fade-in-up stagger-2"
+			class="mt-8 max-w-5xl text-6xl font-bold leading-[1.05] text-ink md:text-7xl lg:text-8xl animate-hero-in stagger-2"
 		>
 			Hello, I'm
 			<span class="bg-gradient-to-r from-brand-400 to-fuchsia-400 bg-clip-text text-transparent">
@@ -39,12 +45,12 @@ const firstName = profile.name.split(' ')[0];
 		</h1>
 
 		<p
-			class="mt-8 max-w-3xl text-xl leading-relaxed text-ink-mid md:text-2xl animate-fade-in-up stagger-3"
+			class="mt-8 max-w-3xl text-xl leading-relaxed text-ink-mid md:text-2xl animate-hero-in stagger-3"
 		>
 			{profile.bio}
 		</p>
 
-		<div class="mt-12 flex flex-wrap items-center justify-center gap-5 animate-fade-in-up stagger-4">
+		<div class="mt-12 flex flex-wrap items-center justify-center gap-5 animate-hero-in stagger-4">
 			<a
 				href="/blog"
 				class="pointer-events-auto inline-flex items-center gap-2 rounded-lg bg-accent px-8 py-4 text-lg font-medium text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-accent-strong glow-accent"
@@ -65,7 +71,7 @@ const firstName = profile.name.split(' ')[0];
 
 		<a
 			href="#featured"
-			class="pointer-events-auto absolute bottom-8 inline-flex flex-col items-center gap-1 text-ink-lo transition-colors hover:text-accent"
+			class="pointer-events-auto absolute bottom-8 inline-flex flex-col items-center gap-1 text-ink-lo transition-colors hover:text-accent animate-hero-in stagger-6"
 			aria-label="Scroll to featured content"
 		>
 			<svg class="h-6 w-6 animate-float" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -90,8 +96,20 @@ const firstName = profile.name.split(' ')[0];
 		opacity: 0.8;
 	}
 
-	/* Once the 3D scene is live, hide the static fallback */
-	section[data-3d='on'] .hero-fallback {
+	/* A soft pool of page background behind the copy, so headline and buttons
+	   keep contrast without muting the lattice at the edges of the frame */
+	.hero-scrim {
+		background: radial-gradient(
+			ellipse 58% 48% at 50% 44%,
+			color-mix(in srgb, var(--bg-base) 82%, transparent),
+			color-mix(in srgb, var(--bg-base) 38%, transparent) 58%,
+			transparent 78%
+		);
+	}
+
+	/* Once the 3D scene is live, drop the static dot grid but keep the ambient
+	   glow — it reads as depth haze behind the lattice */
+	section[data-3d='on'] .hero-dots {
 		display: none;
 	}
 </style>
