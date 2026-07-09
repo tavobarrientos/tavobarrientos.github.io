@@ -1,7 +1,5 @@
 ---
-import BaseHead from '../../../components/BaseHead.astro';
-import Header from '../../../components/Header.astro';
-import Footer from '../../../components/Footer.astro';
+import Layout from '../../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 import BlogPostPreview from '../../../components/BlogPostPreview.astro';
 import SchemaOrg from '../../../components/SchemaOrg.astro';
@@ -10,28 +8,26 @@ import Pagination from '../../../components/Pagination.astro';
 // This is a dynamic route that generates pages for each page of blog posts
 export async function getStaticPaths() {
   const postsPerPage = 10;
-  
+
   // Get all posts, filter out hidden ones, and sort by date in descending order (newest first)
   const allPosts = (await getCollection('blog'))
     .filter(post => !post.data.hidden)
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-  
+
   // Calculate total number of pages
   const totalPages = Math.ceil(allPosts.length / postsPerPage);
-  
+
   // Generate paths for all pages except the first one (which is handled by /blog/index.astro)
-  // Create pages from page 2 to totalPages
   const pagesToGenerate = [];
   for (let i = 2; i <= totalPages; i++) {
     pagesToGenerate.push(i);
   }
-  
+
   return pagesToGenerate.map((pageNum) => {
-    // Page numbers start from 2, since page 1 is the main blog index
     const startIndex = (pageNum - 1) * postsPerPage;
     const endIndex = startIndex + postsPerPage;
     const pagePosts = allPosts.slice(startIndex, endIndex);
-    
+
     return {
       params: { page: String(pageNum) },
       props: { page: pageNum, posts: pagePosts, totalPages }
@@ -49,52 +45,41 @@ const prevPage = currentPage > 1 ? (currentPage === 2 ? '/blog' : `/blog/page/${
 const nextPage = currentPage < totalPages ? `/blog/page/${currentPage + 1}` : null;
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={pageTitle} description={pageDescription} />
-		<SchemaOrg
-			title={pageTitle}
-			description={pageDescription}
-			type="WebPage"
-		/>
+<Layout title={pageTitle} description={pageDescription}>
+	<Fragment slot="head">
+		<SchemaOrg title={pageTitle} description={pageDescription} type="WebPage" />
 		{prevPage && <link rel="prev" href={prevPage} />}
 		{nextPage && <link rel="next" href={nextPage} />}
-	</head>
-	<body>
-		<Header />
-		<main class="blog-container">
-			<div class="blog-header">
-				<h1>Latest Articles</h1>
-				<p class="blog-description">
-					Tutorials, guides, and insights on software development, Azure, AI, and more.
-				</p>
-			</div>
-			
-			<div class="blog-grid">
-				{posts.length > 0 && (
-					<div class="featured-post">
-						<BlogPostPreview post={posts[0]} />
-					</div>
-				)}
-				
-				{/* Display first set of posts */}
-				{posts.slice(1, 4).map((post) => (
-					<div class="blog-post-item">
-						<BlogPostPreview post={post} />
-					</div>
-				))}
+	</Fragment>
 
-				{/* Display remaining posts */}
-				{posts.slice(4).map((post) => (
-					<div class="blog-post-item">
-						<BlogPostPreview post={post} />
-					</div>
-				))}
-			</div>
+	<!-- Blog Header -->
+	<section class="mb-16 text-center">
+		<div class="mx-auto max-w-4xl">
+			<h1 class="mb-6 text-4xl font-bold text-ink lg:text-5xl">Latest Articles</h1>
+			<p class="mx-auto max-w-3xl text-xl leading-relaxed text-ink-mid">
+				Tutorials, guides, and insights on software development, Azure, AI, and more.
+			</p>
+		</div>
+	</section>
 
-			<Pagination currentPage={currentPage} totalPages={totalPages} />
-		</main>
-		<Footer />
-	</body>
-</html>
+	<!-- Blog Posts Grid -->
+	<section class="mb-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+		{
+			posts.length > 0 && (
+				<div class="md:col-span-2 lg:col-span-3">
+					<BlogPostPreview post={posts[0]} />
+				</div>
+			)
+		}
+
+		{
+			posts.slice(1).map((post) => (
+				<div>
+					<BlogPostPreview post={post} />
+				</div>
+			))
+		}
+	</section>
+
+	<Pagination currentPage={currentPage} totalPages={totalPages} />
+</Layout>

@@ -4,10 +4,33 @@
   "bio": "Azure AI Certified Engineer | 15+ yrs in full-stack, cloud & AI architecture | Building intelligent, production-ready systems with .NET & LLMs",
   "title": "Developer & Writer",
   "availableForProjects": true,
-  "location": "Mexico",
+  "location": "Monterrey, Mexico",
+  "coordinates": { "lat": 25.6866, "lon": -100.3161, "city": "Monterrey, Mexico" },
   "experience": "15+ years",
+  "company": {
+    "name": "Ambystech",
+    "url": "https://www.ambystech.com",
+    "tagline": "Custom software, AI systems, and specialized talent",
+    "services": [
+      {
+        "title": "Custom Software Development",
+        "description": "End-to-end web and mobile applications built with .NET, modern JavaScript, and cloud-native architecture — from MVP to enterprise scale.",
+        "icon": "heroicons:code-bracket"
+      },
+      {
+        "title": "AI Systems & LLM Integration",
+        "description": "Production-ready AI solutions: LLM-powered products, Azure AI services, agents, and intelligent automation tailored to your business.",
+        "icon": "heroicons:cpu-chip"
+      },
+      {
+        "title": "Staff Augmentation",
+        "description": "Specialized engineering talent to extend your team — vetted developers with deep experience in cloud, AI, and full-stack development.",
+        "icon": "heroicons:user-group"
+      }
+    ]
+  },
   "about": {
-    "intro": "I'm a passionate software engineer with over 15 years of experience building scalable applications and intelligent systems. My journey spans from traditional web development to cutting-edge AI solutions, always with a focus on creating meaningful technology that solves real-world problems.",
+    "intro": "I'm a software engineer with over 15 years of experience designing and delivering scalable applications and intelligent systems. My work spans the full spectrum — from enterprise web platforms to production AI solutions — always focused on building technology that creates measurable business value.",
     "highlights": [
       "Azure AI Certified Engineer with deep expertise in cloud architecture",
       "Specialized in .NET ecosystem and modern web technologies",

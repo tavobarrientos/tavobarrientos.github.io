@@ -29,10 +29,12 @@ const authorRef = author && await getEntry(author);
       display: flex;
       align-items: center;
       padding: 1em;
+      margin: 2rem 0;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      background-color: #fff;
+      border: 1px solid var(--line);
+      background-color: var(--bg-surface);
       flex-wrap: wrap;
+      color: var(--text-mid);
     }
     .avatar-column {
       margin-right: 1em;
@@ -48,15 +50,19 @@ const authorRef = author && await getEntry(author);
       margin: 0;
     }
 
+    .info-column h5 {
+      color: var(--text-hi);
+    }
+
     .info-column .bio {
       margin: 0.5em 0;
       font-size: 0.8em;
-      color: #555;
+      color: var(--text-lo);
     }
 
     .info-column .email a {
       font-size: 0.9em;
-      color: #000;
+      color: var(--accent);
       text-decoration: none;
     }
 

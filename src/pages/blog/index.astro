@@ -1,7 +1,5 @@
 ---
-import BaseHead from '../../components/BaseHead.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
+import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 import BlogPostPreview from '../../components/BlogPostPreview.astro';
 import SchemaOrg from '../../components/SchemaOrg.astro';
@@ -25,50 +23,45 @@ const posts = allPosts.slice(0, postsPerPage);
 
 // Generate page URLs for metadata
 const nextPage = currentPage < totalPages ? `/blog/page/${currentPage + 1}` : null;
+
+const pageTitle = 'Blog | Gustavo Barrientos';
+const pageDescription = 'Articles and tutorials about software development, Azure, AI and more';
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title="Blog | Gustavo Barrientos" description="Articles and tutorials about software development, Azure, AI and more" />
-		<SchemaOrg
-			title="Blog | Gustavo Barrientos"
-			description="Articles and tutorials about software development, Azure, AI and more"
-			type="WebPage"
-		/>
+<Layout title={pageTitle} description={pageDescription}>
+	<Fragment slot="head">
+		<SchemaOrg title={pageTitle} description={pageDescription} type="WebPage" />
 		{nextPage && <link rel="next" href={nextPage} />}
-	</head>
-	<body>
-		<Header />
-		<main>
-			<!-- Blog Header -->
-			<section class="text-center mb-16">
-				<div class="max-w-4xl mx-auto">
-					<h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Latest Articles</h1>
-					<p class="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
-						Tutorials, guides, and insights on software development, Azure, AI, and more.
-					</p>
-				</div>
-			</section>
-			
-			<!-- Blog Posts Grid -->
-			<section class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-				{posts.length > 0 && (
-					<div class="md:col-span-2 lg:col-span-3">
-						<BlogPostPreview post={posts[0]} />
-					</div>
-				)}
-				
-				{/* Display remaining posts */}
-				{posts.slice(1).map((post) => (
-					<div>
-						<BlogPostPreview post={post} />
-					</div>
-				))}
-			</section>
+	</Fragment>
 
-			<Pagination currentPage={currentPage} totalPages={totalPages} />
-		</main>
-		<Footer />
-	</body>
-</html>
+	<!-- Blog Header -->
+	<section class="mb-16 text-center">
+		<div class="mx-auto max-w-4xl">
+			<h1 class="mb-6 text-4xl font-bold text-ink lg:text-5xl">Latest Articles</h1>
+			<p class="mx-auto max-w-3xl text-xl leading-relaxed text-ink-mid">
+				Tutorials, guides, and insights on software development, Azure, AI, and more.
+			</p>
+		</div>
+	</section>
+
+	<!-- Blog Posts Grid -->
+	<section class="mb-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+		{
+			posts.length > 0 && (
+				<div class="md:col-span-2 lg:col-span-3">
+					<BlogPostPreview post={posts[0]} />
+				</div>
+			)
+		}
+
+		{
+			posts.slice(1).map((post) => (
+				<div>
+					<BlogPostPreview post={post} />
+				</div>
+			))
+		}
+	</section>
+
+	<Pagination currentPage={currentPage} totalPages={totalPages} />
+</Layout>

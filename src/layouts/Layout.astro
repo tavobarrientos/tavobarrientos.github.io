@@ -12,32 +12,35 @@ export interface Props {
 	modifiedDate?: Date;
 	keywords?: string;
 	class?: string;
+	fullBleed?: boolean;
 }
 
-const { 
-	title, 
-	description, 
-	image, 
-	article = false, 
-	publishDate, 
-	modifiedDate, 
+const {
+	title,
+	description,
+	image,
+	article = false,
+	publishDate,
+	modifiedDate,
 	keywords,
-	class: className 
+	class: className,
+	fullBleed = false,
 } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead 
-			title={title} 
-			description={description} 
+		<BaseHead
+			title={title}
+			description={description}
 			image={image}
 			article={article}
 			publishDate={publishDate}
 			modifiedDate={modifiedDate}
 			keywords={keywords}
 		/>
+		<slot name="head" />
 	</head>
 	<body>
 		<!-- Google Tag Manager (noscript) -->
@@ -45,9 +48,19 @@ const {
 		height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 		<!-- End Google Tag Manager (noscript) -->
 		<Header />
-		<main class:list={["page-enter", className]}>
+		<main
+			class:list={[
+				'w-full flex-1',
+				// pt clears the floating nav capsule, which takes no layout space
+				!fullBleed && 'max-w-6xl mx-auto px-6 lg:px-8 pt-28 pb-12',
+				className,
+			]}
+		>
 			<slot />
 		</main>
 		<Footer />
+		<script>
+			import '../scripts/scroll-reveal';
+		</script>
 	</body>
 </html>

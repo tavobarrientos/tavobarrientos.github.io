@@ -1,8 +1,5 @@
 ---
-// Import the global.css first, then tailwind.css so that Tailwind can override when needed.
-// All pages will include these styles through the use of the <BaseHead /> component.
-import '../styles/global.css';
-import '../styles/tailwind.css';
+import '../styles/main.css';
 import { SITE_TITLE, AUTHOR, KEYWORDS, SITE_URL } from '../consts';
 
 interface Props {
@@ -35,6 +32,7 @@ const formattedTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta name="generator" content={Astro.generator} />
+<meta name="theme-color" content="#f6f8fc" />
 
 <!-- Font preloads -->
 <link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />

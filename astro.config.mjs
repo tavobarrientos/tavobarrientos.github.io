@@ -22,8 +22,7 @@ export default defineConfig({
 
   markdown: {
       shikiConfig: {
-          // Choose from Shiki's built-in themes (or add your own)
-          theme: 'github-dark',
+          theme: 'github-light',
           // Add custom languages
           langs: [],
           // Enable word wrap to prevent horizontal scrolling
