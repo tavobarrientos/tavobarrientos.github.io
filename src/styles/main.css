@@ -82,6 +82,8 @@
 
   html {
     scroll-behavior: smooth;
+    /* Anchor jumps clear the floating nav capsule */
+    scroll-padding-top: 5.5rem;
   }
 
   body {
@@ -181,6 +183,25 @@
     }
   }
 
+  /* The nav capsule drops in from above and lands with a small bounce */
+  @keyframes navDrop {
+    0% {
+      opacity: 0;
+      transform: translateY(-140%);
+    }
+    55% {
+      opacity: 1;
+      transform: translateY(10%);
+    }
+    78% {
+      transform: translateY(-4%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   /* Hero copy resolves out of the lattice: rises, settles, and sharpens */
   @keyframes heroIn {
     from {
@@ -211,6 +232,11 @@
 
   .animate-hero-in {
     animation: heroIn 1s var(--ease-out-expo) both;
+  }
+
+  .animate-nav-drop {
+    animation: navDrop 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 0.1s;
   }
 
   .animate-fade-in-scale {
@@ -305,6 +331,7 @@
   .animate-fade-in-up,
   .animate-fade-in-scale,
   .animate-hero-in,
+  .animate-nav-drop,
   .animate-float,
   .animate-pulse-gentle {
     animation: none;

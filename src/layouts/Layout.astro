@@ -51,7 +51,8 @@ const {
 		<main
 			class:list={[
 				'w-full flex-1',
-				!fullBleed && 'max-w-6xl mx-auto px-6 lg:px-8 py-12',
+				// pt clears the floating nav capsule, which takes no layout space
+				!fullBleed && 'max-w-6xl mx-auto px-6 lg:px-8 pt-28 pb-12',
 				className,
 			]}
 		>

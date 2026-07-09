@@ -1,0 +1,145 @@
+---
+import HeaderLink from './HeaderLink.astro';
+import { SITE_TITLE } from '../consts';
+import Gravatar from './Gravatar.astro';
+import profileData from '../data/profile.json';
+
+const profile = profileData;
+const { pathname } = Astro.url;
+const subpath = pathname.match(/[^\/]+/g);
+
+const links = [
+	{ href: '/', label: 'Home' },
+	{ href: '/about', label: 'About' },
+	{ href: '/blog', label: 'Blog' },
+	{ href: '/projects', label: 'Projects' },
+];
+
+const isActive = (href: string) => href === pathname || href === '/' + subpath?.[0];
+---
+
+<!-- Floating capsule nav. nav-physics.ts drives the spring indicator, the
+     inertial hang on scroll, and the magnetic icons; everything degrades to
+     static styles without JS or with reduced motion. -->
+<div data-navbar class="pointer-events-auto relative">
+	<nav
+		data-nav-capsule
+		aria-label="Main"
+		class="flex items-center gap-1 rounded-full border border-line/70 bg-surface/60 py-1.5 pl-1.5 pr-2 shadow-[0_8px_32px_rgb(15_21_38/0.1)] backdrop-blur-xl will-change-transform"
+	>
+		<!-- Brand -->
+		<a href="/" class="group flex items-center gap-2.5 rounded-full py-0.5 pl-0.5 pr-1 lg:pr-2">
+			<span class="relative flex-shrink-0">
+				<Gravatar email={profile.email} size={34} alt={SITE_TITLE} />
+				<span
+					class="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-surface bg-green-500"
+				></span>
+			</span>
+			<span
+				class="hidden text-sm font-bold leading-none tracking-tight text-ink transition-colors group-hover:text-accent lg:block"
+			>
+				{SITE_TITLE}
+			</span>
+		</a>
+
+		<div class="mx-1 hidden h-6 w-px bg-line/80 md:block"></div>
+
+		<!-- Desktop links + spring indicator -->
+		<div data-nav-links class="relative hidden items-center md:flex">
+			<span
+				data-nav-indicator
+				aria-hidden="true"
+				class="absolute bottom-1 left-0 top-1 rounded-full bg-accent-soft opacity-0 transition-opacity duration-300 will-change-transform"
+				style="width: 0px"></span>
+			{
+				links.map((link) => (
+					<a
+						data-nav-link
+						href={link.href}
+						aria-current={isActive(link.href) ? 'page' : undefined}
+						class:list={[
+							'relative z-10 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-200',
+							isActive(link.href) ? 'font-semibold text-accent' : 'text-ink-mid hover:text-ink',
+						]}
+					>
+						{link.label}
+					</a>
+				))
+			}
+		</div>
+
+		<div class="mx-1 hidden h-6 w-px bg-line/80 sm:block"></div>
+
+		<!-- Actions -->
+		<a
+			data-magnetic
+			href={profile.social.twitter}
+			target="_blank"
+			rel="noopener"
+			class="hidden rounded-full p-2 text-ink-lo transition-colors hover:text-accent sm:inline-flex"
+		>
+			<span class="sr-only">Follow on X (Twitter)</span>
+			<svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+				<path
+					d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+				></path>
+			</svg>
+		</a>
+		<a
+			data-magnetic
+			href={profile.social.github}
+			target="_blank"
+			rel="noopener"
+			class="hidden rounded-full p-2 text-ink-lo transition-colors hover:text-accent sm:inline-flex"
+		>
+			<span class="sr-only">Follow on GitHub</span>
+			<svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+				<path
+					d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+				></path>
+			</svg>
+		</a>
+
+		<!-- Mobile menu button -->
+		<button
+			data-magnetic
+			id="mobile-menu-button"
+			type="button"
+			class="rounded-full p-2 text-ink-mid transition-colors hover:text-ink md:hidden"
+			aria-expanded="false"
+			aria-controls="mobile-menu"
+		>
+			<span class="sr-only">Open menu</span>
+			<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"
+				></path>
+			</svg>
+		</button>
+	</nav>
+
+	<!-- Mobile menu: its own capsule dropping below the pill -->
+	<div
+		id="mobile-menu"
+		class="animate-fade-in-scale absolute right-0 top-[calc(100%+0.5rem)] hidden w-60 origin-top-right rounded-2xl border border-line/70 bg-surface/80 p-2 shadow-xl backdrop-blur-xl md:hidden"
+	>
+		<div class="flex flex-col gap-1">
+			{links.map((link) => <HeaderLink href={link.href}>{link.label}</HeaderLink>)}
+		</div>
+	</div>
+</div>
+
+<style>
+	/* No-JS / pre-JS fallback: the active pill and hover wash are plain CSS
+	   until nav-physics.ts adds .nav-js and the spring indicator takes over */
+	[data-nav-links]:not(.nav-js) [data-nav-link][aria-current='page'] {
+		background-color: var(--accent-soft);
+	}
+
+	[data-nav-links]:not(.nav-js) [data-nav-link]:hover {
+		background-color: var(--bg-raised);
+	}
+</style>
+
+<script>
+	import '../scripts/nav-physics';
+</script>
