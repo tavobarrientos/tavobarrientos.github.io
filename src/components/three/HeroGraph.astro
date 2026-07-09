@@ -1,0 +1,109 @@
+---
+import profileData from '../../data/profile.json';
+
+const profile = profileData;
+const firstName = profile.name.split(' ')[0];
+---
+
+<section data-hero class="relative -mt-16 h-[100svh] min-h-[560px] overflow-hidden">
+	<!-- Interactive node-graph canvas (decorative) -->
+	<canvas id="hero-canvas" class="absolute inset-0 h-full w-full" aria-hidden="true" tabindex="-1"
+	></canvas>
+
+	<!-- Static fallback: shown until (unless) the 3D scene boots -->
+	<div class="hero-fallback absolute inset-0" aria-hidden="true">
+		<div class="absolute inset-0 hero-dots"></div>
+		<div class="absolute inset-0 hero-glow"></div>
+	</div>
+
+	<!-- Overlay content -->
+	<div
+		class="pointer-events-none relative z-10 flex h-full flex-col items-center justify-center px-6 text-center"
+	>
+		{
+			profile.availableForProjects && (
+				<div class="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-4 py-2 text-sm font-medium text-ink-mid backdrop-blur-sm animate-fade-in-up stagger-1">
+					<span class="h-2 w-2 rounded-full bg-green-500 animate-pulse-gentle" />
+					Available for projects
+				</div>
+			)
+		}
+
+		<h1
+			class="mt-8 max-w-5xl text-6xl font-bold leading-[1.05] text-ink md:text-7xl lg:text-8xl animate-fade-in-up stagger-2"
+		>
+			Hello, I'm
+			<span class="bg-gradient-to-r from-brand-400 to-fuchsia-400 bg-clip-text text-transparent">
+				{firstName}</span
+			>
+		</h1>
+
+		<p
+			class="mt-8 max-w-3xl text-xl leading-relaxed text-ink-mid md:text-2xl animate-fade-in-up stagger-3"
+		>
+			{profile.bio}
+		</p>
+
+		<div class="mt-12 flex flex-wrap items-center justify-center gap-5 animate-fade-in-up stagger-4">
+			<a
+				href="/blog"
+				class="pointer-events-auto inline-flex items-center gap-2 rounded-lg bg-accent px-8 py-4 text-lg font-medium text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-accent-strong glow-accent"
+			>
+				Read my blog
+				<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"
+					></path>
+				</svg>
+			</a>
+			<a
+				href="/projects"
+				class="pointer-events-auto inline-flex items-center rounded-lg border border-line bg-surface/70 px-8 py-4 text-lg font-medium text-ink backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent/50"
+			>
+				View projects
+			</a>
+		</div>
+
+		<a
+			href="#featured"
+			class="pointer-events-auto absolute bottom-8 inline-flex flex-col items-center gap-1 text-ink-lo transition-colors hover:text-accent"
+			aria-label="Scroll to featured content"
+		>
+			<svg class="h-6 w-6 animate-float" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"
+				></path>
+			</svg>
+		</a>
+	</div>
+</section>
+
+<style>
+	.hero-dots {
+		background-image: radial-gradient(var(--line) 1px, transparent 1px);
+		background-size: 28px 28px;
+		opacity: 0.7;
+	}
+
+	.hero-glow {
+		background:
+			radial-gradient(ellipse 60% 45% at 50% 42%, var(--accent-soft), transparent 70%),
+			radial-gradient(ellipse 40% 30% at 68% 62%, var(--glow), transparent 75%);
+		opacity: 0.8;
+	}
+
+	/* Once the 3D scene is live, hide the static fallback */
+	section[data-3d='on'] .hero-fallback {
+		display: none;
+	}
+</style>
+
+<script>
+	const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement | null;
+	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	if (canvas && !reduceMotion) {
+		import('../../scripts/three/hero-graph').then(({ initHeroGraph }) => {
+			initHeroGraph(canvas);
+			canvas.closest('[data-hero]')?.setAttribute('data-3d', 'on');
+		});
+	}
+</script>

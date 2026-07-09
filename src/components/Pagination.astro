@@ -109,26 +109,29 @@ const getPageUrl = (pageNum: number) => `/blog${pageNum > 1 ? `/page/${pageNum}`
   }
   
   .pagination a {
-    background-color: #f4f4f4;
-    color: #333;
+    background-color: var(--bg-raised);
+    color: var(--text-mid);
+    border: 1px solid var(--line);
     transition: all 0.2s ease-in-out;
   }
-  
+
   .pagination .ellipsis {
-    color: #666;
+    color: var(--text-lo);
     font-weight: bold;
   }
-  
+
   .pagination a:hover {
-    background-color: #e0e0e0;
+    color: var(--text-hi);
+    border-color: var(--accent);
     transform: translateY(-2px);
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 8px var(--glow);
   }
-  
+
   .pagination a.active {
-    background-color: #4c1d95;
+    background-color: var(--accent);
+    border-color: var(--accent);
     color: white;
-    box-shadow: 0 3px 5px rgba(76, 29, 149, 0.3);
+    box-shadow: 0 3px 8px var(--glow);
   }
 
   .pagination-arrow {

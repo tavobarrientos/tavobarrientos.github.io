@@ -1,56 +1,24 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
-
+import Layout from '../layouts/Layout.astro';
+import { SITE_DESCRIPTION } from '../consts';
 ---
 
-<html lang="en">
-	<head>
-		<BaseHead title="404: Page Not Found" description={SITE_DESCRIPTION} />
-		<style>
-			.error-container {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				height: 70vh;
-				text-align: center;
-				padding: 0 1rem;
-			}
-			h1 {
-				font-size: 4rem;
-				margin-bottom: 0;
-			}
-			p {
-				color: #666;
-				margin-bottom: 2rem;
-			}
-			.home-link {
-				display: inline-block;
-				background-color: #4c1d95;
-				color: white;
-				padding: 0.5rem 1rem;
-				border-radius: 0.25rem;
-				text-decoration: none;
-				transition: background-color 0.2s;
-			}
-			.home-link:hover {
-				background-color: #6d28d9;
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<div class="error-container">
-				<h1>404</h1>
-				<p>Page not found</p>
-				<p>The page you're looking for doesn't exist or has been moved.</p>
-				<a href="/" class="home-link">Go back to homepage</a>
-			</div>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Layout title="404: Page Not Found" description={SITE_DESCRIPTION}>
+	<div class="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
+		<p
+			class="bg-gradient-to-r from-brand-400 to-fuchsia-400 bg-clip-text text-8xl font-bold text-transparent"
+		>
+			404
+		</p>
+		<h1 class="mt-4 text-2xl font-bold text-ink">Page not found</h1>
+		<p class="mt-2 mb-8 text-ink-mid">
+			The page you're looking for doesn't exist or has been moved.
+		</p>
+		<a
+			href="/"
+			class="inline-flex items-center rounded-lg bg-accent px-6 py-3 font-medium text-white transition-all duration-300 hover:-translate-y-1 hover:bg-accent-strong glow-accent"
+		>
+			Go back to homepage
+		</a>
+	</div>
+</Layout>

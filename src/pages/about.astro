@@ -1,262 +1,445 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Globe from '../components/three/Globe.astro';
 import { Icon } from 'astro-icon/components';
 import { Image } from 'astro:assets';
 import profileData from '../data/profile.json';
 
 const profile = profileData;
+const company = profile.company;
+const coordinates = profile.coordinates;
+
+// "15+ years" -> 15, for the count-up animation in the credentials strip
+const experienceYears = parseInt(profile.experience, 10) || 0;
 ---
 
-<Layout 
-	title="About Me - Gustavo Barrientos" 
+<Layout
+	title="About Me - Gustavo Barrientos"
 	description="Learn about my journey as a software engineer, my expertise in Azure AI, .NET development, and how I can help bring your projects to life."
+	fullBleed
 >
 	<!-- reCAPTCHA Script -->
 	<script src="https://www.google.com/recaptcha/api.js" async defer is:inline></script>
-	<!-- Hero Section -->
-	<section class="py-20 lg:py-24">
-		<div class="max-w-4xl mx-auto">
-			<div class="text-center mb-16 animate-fade-in-up">
-				<div class="relative w-40 h-40 mx-auto mb-8">
-					<Image 
-						src={profile.avatar.url} 
-						alt={profile.avatar.alt}
-						width={160}
-						height={160}
-						class="rounded-full shadow-2xl hover:scale-105 transition-transform duration-300 hover-glow"
-						loading="eager"
-					/>
-					<div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 border-4 border-white rounded-full animate-pulse-gentle"></div>
-				</div>
-				<h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-					About <span class="bg-gradient-to-r from-accent to-accent-secondary bg-clip-text text-transparent">{profile.name.split(' ')[0]}</span>
-				</h1>
-				<p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-8">
-					{profile.about.intro}
-				</p>
-				<!-- Download CV Button -->
-				<a 
-					href="/cv/gustavo-barrientos-cv.pdf" 
-					download="Gustavo_Barrientos_CV.pdf"
-					class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-accent to-accent-secondary text-white font-semibold rounded-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 hover-glow hover-shimmer animate-pulse-gentle"
+
+	<!-- Globe Hero: -mt-16 slides it behind the translucent sticky header so it
+	     covers the full first viewport -->
+	<section class="relative -mt-16 h-[100svh] min-h-[640px] overflow-hidden">
+		<Globe
+			lat={coordinates.lat}
+			lon={coordinates.lon}
+			city={coordinates.city}
+			variant="hero"
+		/>
+
+		<!-- Readability overlays (never intercept the globe drag) -->
+		<div
+			class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_38%,var(--bg-base)_0%,transparent_75%)] opacity-60"
+		>
+		</div>
+		<div
+			class="pointer-events-none absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-base via-base/70 to-transparent"
+		>
+		</div>
+
+		<!-- Overlay content -->
+		<div
+			class="pointer-events-none relative z-10 flex h-full flex-col items-center justify-center px-6 text-center"
+		>
+			<div class="relative mb-6 h-28 w-28 animate-fade-in-scale">
+				<Image
+					src={profile.avatar.url}
+					alt={profile.avatar.alt}
+					width={112}
+					height={112}
+					class="rounded-full border-2 border-line shadow-2xl glow-accent"
+					loading="eager"
+				/>
+				<div
+					class="absolute -bottom-1 -right-1 h-6 w-6 rounded-full border-4 border-surface bg-green-500 animate-pulse-gentle"
 				>
-					<Icon name="heroicons:document-arrow-down" class="w-6 h-6 mr-3" />
+				</div>
+			</div>
+
+			<p
+				class="text-xs font-semibold uppercase tracking-[0.25em] text-accent-2 animate-fade-in-up stagger-1"
+			>
+				Software Engineer · Azure AI Certified
+			</p>
+
+			<h1
+				class="mt-4 text-4xl font-bold leading-tight text-ink md:text-5xl lg:text-6xl animate-fade-in-up stagger-2"
+			>
+				About <span class="bg-gradient-to-r from-brand-400 to-fuchsia-400 bg-clip-text text-transparent"
+					>{profile.name.split(' ')[0]}</span
+				>
+			</h1>
+
+			<p
+				class="mt-6 max-w-2xl text-lg leading-relaxed text-ink-mid md:text-xl animate-fade-in-up stagger-3"
+			>
+				{profile.about.intro}
+			</p>
+
+			<div
+				class="mt-10 flex flex-wrap items-center justify-center gap-4 animate-fade-in-up stagger-4"
+			>
+				<a
+					href="/cv/gustavo-barrientos-cv.pdf"
+					download="Gustavo_Barrientos_CV.pdf"
+					class="pointer-events-auto inline-flex items-center rounded-lg bg-gradient-to-r from-brand-500 to-fuchsia-500 px-7 py-3.5 font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl glow-accent"
+				>
+					<Icon name="heroicons:document-arrow-down" class="mr-3 h-5 w-5" />
 					Download My CV
-					<span class="ml-2 px-2 py-1 bg-white/20 rounded text-sm">PDF</span>
+					<span class="ml-2 rounded bg-white/20 px-2 py-0.5 text-xs">PDF</span>
+				</a>
+				<a
+					href="#contact"
+					class="pointer-events-auto inline-flex items-center rounded-lg border border-line bg-surface/70 px-7 py-3.5 font-medium text-ink backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent/50"
+				>
+					Let's work together
 				</a>
 			</div>
-		</div>
-	</section>
 
-	<!-- Stats Section -->
-	<section class="py-16 bg-white/80 backdrop-blur-sm">
-		<div class="max-w-4xl mx-auto">
-			<div class="grid md:grid-cols-3 gap-8 text-center">
-				<div class="animate-fade-in-up stagger-1">
-					<div class="text-3xl font-bold text-accent mb-2">{profile.experience}</div>
-					<div class="text-gray-600">Experience</div>
-				</div>
-				<div class="animate-fade-in-up stagger-2">
-					<div class="text-3xl font-bold text-accent mb-2">50+</div>
-					<div class="text-gray-600">Projects Completed</div>
-				</div>
-				<div class="animate-fade-in-up stagger-3">
-					<div class="text-3xl font-bold text-accent mb-2">{profile.location}</div>
-					<div class="text-gray-600">Based in</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- Highlights Section -->
-	<section class="py-16">
-		<div class="max-w-4xl mx-auto">
-			<h2 class="text-3xl font-bold text-gray-900 mb-12 text-center animate-fade-in-up">Key Highlights</h2>
-			<div class="grid md:grid-cols-2 gap-6">
-				{profile.about.highlights.map((highlight, index) => (
-					<div class={`flex items-start space-x-4 p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover-lift animate-fade-in-up stagger-${index + 1}`}>
-						<div class="flex-shrink-0 w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center">
-							<Icon name="heroicons:check" class="w-5 h-5 text-accent" />
-						</div>
-						<p class="text-gray-700 leading-relaxed">{highlight}</p>
-					</div>
-				))}
-			</div>
-		</div>
-	</section>
-
-	<!-- Skills Section -->
-	<section class="py-16 bg-white/80 backdrop-blur-sm">
-		<div class="max-w-4xl mx-auto px-6 lg:px-8">
-			<h2 class="text-3xl font-bold text-gray-900 mb-12 text-center animate-fade-in-up">Technical Expertise</h2>
-			<div class="space-y-12">
-				{profile.skills.map((skillCategory, categoryIndex) => (
-					<div class={`animate-fade-in-up stagger-${categoryIndex + 1}`}>
-						<h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-							<span class="w-1 h-6 bg-gradient-to-b from-accent to-accent-secondary rounded-full mr-3"></span>
-							{skillCategory.category}
-						</h3>
-						<div class="grid md:grid-cols-2 gap-6">
-							{skillCategory.items.map((skill, skillIndex) => (
-								<div class="space-y-2">
-									<div class="flex items-center justify-between">
-										<div class="flex items-center space-x-3">
-											<Icon name={skill.icon} class="w-5 h-5 text-accent" />
-											<span class="font-medium text-gray-900">{skill.name}</span>
-										</div>
-										<span class="text-sm font-medium text-gray-600">{skill.level}%</span>
-									</div>
-									<div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-										<div 
-											class="h-2 bg-gradient-to-r from-accent to-accent-secondary rounded-full transition-all duration-1000 ease-out skill-bar"
-											style={`width: ${skill.level}%; animation-delay: ${(categoryIndex * 4 + skillIndex) * 0.1}s;`}
-										></div>
-									</div>
-								</div>
-							))}
-						</div>
-					</div>
-				))}
-			</div>
-		</div>
-	</section>
-
-	<!-- Contact Form Section -->
-	<section class="py-16" id="contact">
-		<div class="max-w-2xl mx-auto">
-			<div class="text-center mb-12 animate-fade-in-up">
-				<h2 class="text-3xl font-bold text-gray-900 mb-4">Let's Work Together</h2>
-				<p class="text-lg text-gray-600">
-					Have a project in mind? I'd love to hear about it and discuss how we can bring your ideas to life.
-				</p>
-			</div>
-
-			<form 
-				action="https://api.web3forms.com/submit" 
-				method="POST" 
-				class="space-y-6 bg-white/80 backdrop-blur-sm rounded-xl p-8 border border-gray-200 shadow-lg animate-fade-in-up stagger-2"
+			<div
+				class="pointer-events-auto mt-8 inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-4 py-2 text-sm font-medium text-ink-mid backdrop-blur-sm animate-fade-in-up stagger-5"
 			>
-				<input type="hidden" name="access_key" value="3605798a-7225-4eab-9e19-d255812085d7" />
-				<input type="hidden" name="subject" value="New Contact Form Submission from Portfolio" />
-				<input type="hidden" name="from_name" value="Portfolio Contact Form" />
+				<Icon name="heroicons:map-pin" class="h-4 w-4 text-accent-2" />
+				{coordinates.city} — partnering with teams worldwide
+			</div>
 
-				<div class="grid md:grid-cols-2 gap-6">
-					<div>
-						<label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name *</label>
-						<input 
-							type="text" 
-							id="name" 
-							name="name" 
-							required 
-							class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 hover:border-gray-400"
-							placeholder="Your full name"
-						/>
-					</div>
-					<div>
-						<label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-						<input 
-							type="email" 
-							id="email" 
-							name="email" 
-							required 
-							class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 hover:border-gray-400"
-							placeholder="your.email@example.com"
-						/>
-					</div>
-				</div>
-
-				<div>
-					<label for="company" class="block text-sm font-medium text-gray-700 mb-2">Company</label>
-					<input 
-						type="text" 
-						id="company" 
-						name="company" 
-						class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 hover:border-gray-400"
-						placeholder="Your company name (optional)"
-					/>
-				</div>
-
-				<div>
-					<label for="project-type" class="block text-sm font-medium text-gray-700 mb-2">Project Type</label>
-					<select 
-						id="project-type" 
-						name="project_type" 
-						class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 hover:border-gray-400"
-					>
-						<option value="">Select project type</option>
-						<option value="web-development">Web Development</option>
-						<option value="ai-integration">AI Integration</option>
-						<option value="cloud-architecture">Cloud Architecture</option>
-						<option value="consulting">Technical Consulting</option>
-						<option value="other">Other</option>
-					</select>
-				</div>
-
-				<div>
-					<label for="message" class="block text-sm font-medium text-gray-700 mb-2">Message *</label>
-					<textarea 
-						id="message" 
-						name="message" 
-						rows="5" 
-						required 
-						class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 hover:border-gray-400"
-						placeholder="Tell me about your project, goals, and how I can help..."
-					></textarea>
-				</div>
-
-				<!-- reCAPTCHA -->
-				<div class="flex justify-center">
-					<div class="g-recaptcha" data-sitekey="6LfOMYwrAAAAAEOw96zDGnyjuJPqzxr3J6fYMnDY"></div>
-				</div>
-
-				<div class="flex items-center">
-					<input 
-						type="checkbox" 
-						id="privacy" 
-						name="privacy_accepted" 
-						required 
-						class="w-4 h-4 text-accent border-gray-300 rounded focus:ring-accent"
-					/>
-					<label for="privacy" class="ml-2 text-sm text-gray-600">
-						I agree to the privacy policy and consent to data processing *
-					</label>
-				</div>
-
-				<button 
-					type="submit" 
-					class="w-full px-8 py-4 bg-accent text-white font-medium rounded-lg hover:bg-accent-dark transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 hover-glow hover-shimmer flex items-center justify-center"
+			<a
+				href="#credentials"
+				class="pointer-events-auto absolute bottom-6 inline-flex flex-col items-center gap-1 text-ink-lo transition-colors hover:text-accent"
+				aria-label="Scroll to credentials"
+			>
+				<span class="text-[11px] font-medium uppercase tracking-[0.2em]">Drag the globe</span>
+				<svg
+					class="h-6 w-6 animate-float"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+					aria-hidden="true"
 				>
-					<Icon name="heroicons:paper-airplane" class="w-5 h-5 mr-2" />
-					Send Message
-				</button>
-			</form>
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"
+					></path>
+				</svg>
+			</a>
 		</div>
 	</section>
+
+	<div class="mx-auto w-full max-w-6xl px-6 lg:px-8">
+		<!-- Credentials strip -->
+		<section id="credentials" class="reveal scroll-mt-24 py-14">
+			<div
+				class="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4"
+			>
+				<div class="bg-surface p-8 text-center">
+					<div
+						class="text-3xl font-bold text-accent tabular-nums"
+						data-count-to={experienceYears}
+						data-count-suffix="+"
+					>
+						{experienceYears}+
+					</div>
+					<div class="mt-1 text-sm text-ink-lo">Years of experience</div>
+				</div>
+				<div class="bg-surface p-8 text-center">
+					<div
+						class="text-3xl font-bold text-accent tabular-nums"
+						data-count-to="50"
+						data-count-suffix="+"
+					>
+						50+
+					</div>
+					<div class="mt-1 text-sm text-ink-lo">Projects delivered</div>
+				</div>
+				<div class="bg-surface p-8 text-center">
+					<div class="text-3xl font-bold text-accent">AI-102</div>
+					<div class="mt-1 text-sm text-ink-lo">Azure AI Engineer certified</div>
+				</div>
+				<div class="bg-surface p-8 text-center">
+					<div class="text-3xl font-bold text-accent">GMT-6</div>
+					<div class="mt-1 text-sm text-ink-lo">Remote-first, async-friendly</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Highlights Section -->
+		<section class="reveal py-16">
+			<div class="mx-auto max-w-4xl">
+				<div class="mb-12 text-center">
+					<p class="text-xs font-semibold uppercase tracking-[0.25em] text-accent-2">Background</p>
+					<h2 class="mt-3 text-3xl font-bold text-ink md:text-4xl">Key Highlights</h2>
+					<p class="mx-auto mt-4 max-w-2xl text-ink-mid">
+						The pillars of my practice — where I've invested fifteen years of deliberate,
+						production-focused work.
+					</p>
+				</div>
+				<div class="grid gap-6 md:grid-cols-2">
+					{
+						profile.about.highlights.map((highlight) => (
+							<div class="flex items-start gap-4 rounded-xl border border-line bg-surface p-6 hover-lift">
+								<div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent-soft">
+									<Icon name="heroicons:check" class="h-5 w-5 text-accent" />
+								</div>
+								<p class="leading-relaxed text-ink-mid">{highlight}</p>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<!-- Skills Section -->
+		<section class="reveal py-16">
+			<div class="mx-auto max-w-4xl">
+				<div class="mb-12 text-center">
+					<p class="text-xs font-semibold uppercase tracking-[0.25em] text-accent-2">Capabilities</p>
+					<h2 class="mt-3 text-3xl font-bold text-ink md:text-4xl">Technical Expertise</h2>
+					<p class="mx-auto mt-4 max-w-2xl text-ink-mid">
+						Depth across the stack — from cloud infrastructure and .NET services to
+						production-grade AI systems.
+					</p>
+				</div>
+				<div class="space-y-12">
+					{
+						profile.skills.map((skillCategory, categoryIndex) => (
+							<div>
+								<h3 class="mb-6 flex items-center text-xl font-semibold text-ink">
+									<span class="mr-3 h-6 w-1 rounded-full bg-gradient-to-b from-brand-500 to-fuchsia-400" />
+									{skillCategory.category}
+								</h3>
+								<div class="grid gap-6 md:grid-cols-2">
+									{skillCategory.items.map((skill, skillIndex) => (
+										<div
+											class="space-y-2"
+											data-skill
+											data-level={skill.level}
+											data-delay={(categoryIndex * 4 + skillIndex) * 100}
+										>
+											<div class="flex items-center justify-between">
+												<div class="flex items-center gap-3">
+													<Icon name={skill.icon} class="h-5 w-5 text-accent" />
+													<span class="font-medium text-ink">{skill.name}</span>
+												</div>
+												<span class="skill-percent text-sm font-medium text-ink-lo tabular-nums">
+													{skill.level}%
+												</span>
+											</div>
+											<div class="h-2 w-full overflow-hidden rounded-full bg-raised">
+												<div
+													class="skill-bar h-2 rounded-full bg-gradient-to-r from-brand-500 to-fuchsia-400"
+													style={`width: ${skill.level}%`}
+												/>
+											</div>
+										</div>
+									))}
+								</div>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<!-- Services / Ambystech Section -->
+		<section class="reveal py-16">
+			<div class="mx-auto max-w-5xl">
+				<div class="mb-12 text-center">
+					<p class="text-xs font-semibold uppercase tracking-[0.25em] text-accent-2">
+						Work with me
+					</p>
+					<h2 class="mt-3 text-3xl font-bold text-ink md:text-4xl">Consulting &amp; Services</h2>
+					<p class="mx-auto mt-4 max-w-2xl text-lg text-ink-mid">
+						I engage with clients directly and through <span class="font-semibold text-accent-2"
+							>{company.name}</span
+						>, my software company — {company.tagline.toLowerCase()}.
+					</p>
+				</div>
+
+				<div class="grid gap-6 md:grid-cols-3">
+					{
+						company.services.map((service) => (
+							<div class="flex flex-col rounded-xl border border-line bg-surface p-6 hover-lift">
+								<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-soft">
+									<Icon name={service.icon} class="h-6 w-6 text-accent" />
+								</div>
+								<h3 class="mb-2 text-lg font-semibold text-ink">{service.title}</h3>
+								<p class="text-sm leading-relaxed text-ink-mid">{service.description}</p>
+							</div>
+						))
+					}
+				</div>
+
+				<div
+					class="relative mt-8 overflow-hidden rounded-2xl border border-line bg-surface p-8 md:p-10"
+				>
+					<div
+						class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_80%_at_80%_50%,var(--accent-soft),transparent_70%)]"
+					>
+					</div>
+					<div
+						class="relative flex flex-col items-center gap-6 text-center md:flex-row md:justify-between md:text-left"
+					>
+						<div>
+							<h3 class="text-2xl font-bold text-ink">
+								{company.name}
+								<span
+									class="ml-2 rounded-full bg-accent-soft px-3 py-1 align-middle text-xs font-medium text-accent-2"
+									>My company</span
+								>
+							</h3>
+							<p class="mt-2 max-w-xl text-ink-mid">
+								{company.tagline}. From product teams that need senior engineering capacity to
+								complete builds delivered end-to-end — with the standards of quality and
+								transparency your business depends on.
+							</p>
+						</div>
+						<div class="flex flex-wrap items-center justify-center gap-4">
+							<a
+								href={company.url}
+								target="_blank"
+								rel="noopener"
+								class="inline-flex items-center gap-2 rounded-lg bg-accent-2 px-6 py-3 font-medium text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+							>
+								Visit ambystech.com
+								<Icon name="heroicons:arrow-top-right-on-square" class="h-4 w-4" />
+							</a>
+							<a
+								href="#contact"
+								class="inline-flex items-center rounded-lg border border-line bg-raised px-6 py-3 font-medium text-ink transition-all duration-300 hover:-translate-y-1 hover:border-accent/50"
+							>
+								Start a conversation
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Contact Form Section -->
+		<section class="reveal scroll-mt-24 py-16" id="contact">
+			<div class="mx-auto max-w-2xl">
+				<div class="mb-12 text-center">
+					<p class="text-xs font-semibold uppercase tracking-[0.25em] text-accent-2">Contact</p>
+					<h2 class="mt-3 text-3xl font-bold text-ink md:text-4xl">Let's Work Together</h2>
+					<p class="mt-4 text-lg text-ink-mid">
+						Whether you're planning a new product, integrating AI into an existing platform, or
+						looking for senior engineering capacity — tell me about it. I typically respond within
+						one business day.
+					</p>
+				</div>
+
+				<form
+					action="https://api.web3forms.com/submit"
+					method="POST"
+					class="space-y-6 bg-surface rounded-xl p-8 border border-line shadow-lg"
+				>
+					<input type="hidden" name="access_key" value="3605798a-7225-4eab-9e19-d255812085d7" />
+					<input type="hidden" name="subject" value="New Contact Form Submission from Portfolio" />
+					<input type="hidden" name="from_name" value="Portfolio Contact Form" />
+
+					<div class="grid md:grid-cols-2 gap-6">
+						<div>
+							<label for="name" class="block text-sm font-medium text-ink-mid mb-2">Name *</label>
+							<input
+								type="text"
+								id="name"
+								name="name"
+								required
+								class="w-full px-4 py-3 bg-raised border border-line text-ink rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 placeholder:text-ink-lo"
+								placeholder="Your full name"
+							/>
+						</div>
+						<div>
+							<label for="email" class="block text-sm font-medium text-ink-mid mb-2">Email *</label>
+							<input
+								type="email"
+								id="email"
+								name="email"
+								required
+								class="w-full px-4 py-3 bg-raised border border-line text-ink rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 placeholder:text-ink-lo"
+								placeholder="your.email@example.com"
+							/>
+						</div>
+					</div>
+
+					<div>
+						<label for="company" class="block text-sm font-medium text-ink-mid mb-2">Company</label>
+						<input
+							type="text"
+							id="company"
+							name="company"
+							class="w-full px-4 py-3 bg-raised border border-line text-ink rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 placeholder:text-ink-lo"
+							placeholder="Your company name (optional)"
+						/>
+					</div>
+
+					<div>
+						<label for="project-type" class="block text-sm font-medium text-ink-mid mb-2">Project Type</label>
+						<select
+							id="project-type"
+							name="project_type"
+							class="w-full px-4 py-3 bg-raised border border-line text-ink rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200"
+						>
+							<option value="">Select project type</option>
+							<option value="web-development">Web Development</option>
+							<option value="ai-integration">AI Integration</option>
+							<option value="cloud-architecture">Cloud Architecture</option>
+							<option value="consulting">Technical Consulting</option>
+							<option value="other">Other</option>
+						</select>
+					</div>
+
+					<div>
+						<label for="message" class="block text-sm font-medium text-ink-mid mb-2">Message *</label>
+						<textarea
+							id="message"
+							name="message"
+							rows="5"
+							required
+							class="w-full px-4 py-3 bg-raised border border-line text-ink rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 placeholder:text-ink-lo"
+							placeholder="Tell me about your project, goals, and how I can help..."></textarea>
+					</div>
+
+					<!-- reCAPTCHA -->
+					<div class="flex justify-center">
+						<div class="g-recaptcha" data-sitekey="6LfOMYwrAAAAAEOw96zDGnyjuJPqzxr3J6fYMnDY"></div>
+					</div>
+
+					<div class="flex items-center">
+						<input
+							type="checkbox"
+							id="privacy"
+							name="privacy_accepted"
+							required
+							class="w-4 h-4 text-accent border-line rounded focus:ring-accent"
+						/>
+						<label for="privacy" class="ml-2 text-sm text-ink-mid">
+							I agree to the privacy policy and consent to data processing *
+						</label>
+					</div>
+
+					<button
+						type="submit"
+						class="w-full px-8 py-4 bg-accent text-white font-medium rounded-lg hover:bg-accent-strong transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 glow-accent flex items-center justify-center"
+					>
+						<Icon name="heroicons:paper-airplane" class="w-5 h-5 mr-2" />
+						Send Message
+					</button>
+				</form>
+			</div>
+		</section>
+	</div>
 </Layout>
 
 <style>
-	.skill-bar {
-		width: 0%;
-		animation: fillSkillBar 1.5s ease-out forwards;
-	}
-
-	@keyframes fillSkillBar {
-		from {
-			width: 0%;
-		}
-		to {
-			width: var(--target-width);
-		}
-	}
-
 	/* Enhanced form styles */
-	input:focus, textarea:focus, select:focus {
+	input:focus,
+	textarea:focus,
+	select:focus {
 		outline: none;
-		box-shadow: 0 0 0 3px rgba(60, 105, 231, 0.1);
-	}
-
-	input::placeholder, textarea::placeholder {
-		color: #9ca3af;
+		box-shadow: 0 0 0 3px var(--accent-soft);
 	}
 
 	/* Success message styles */
@@ -275,7 +458,6 @@ const profile = profileData;
 		display: inline-block;
 	}
 
-	/* Dark mode friendly reCAPTCHA styling */
 	.g-recaptcha > div {
 		border-radius: 0.5rem;
 		overflow: hidden;
@@ -284,21 +466,88 @@ const profile = profileData;
 </style>
 
 <script>
-	// Animate skill bars on scroll
+	// Skill bars: fill the bar and count the percentage from a single rAF
+	// clock so they stay perfectly in sync. Markup ships with final values,
+	// so no-JS and reduced-motion users see the real numbers.
 	const observeSkillBars = () => {
-		const skillBars = document.querySelectorAll('.skill-bar');
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+		const skills = document.querySelectorAll<HTMLElement>('[data-skill]');
+
+		// Rewind everything to 0 up front, before the section is visible
+		skills.forEach((skill) => {
+			const bar = skill.querySelector<HTMLElement>('.skill-bar');
+			const percent = skill.querySelector<HTMLElement>('.skill-percent');
+			if (bar) bar.style.width = '0%';
+			if (percent) percent.textContent = '0%';
+		});
+
+		const animate = (skill: HTMLElement) => {
+			const bar = skill.querySelector<HTMLElement>('.skill-bar');
+			const percent = skill.querySelector<HTMLElement>('.skill-percent');
+			const level = Number(skill.dataset.level ?? 0);
+			const delay = Number(skill.dataset.delay ?? 0);
+			const duration = 1500;
+
+			window.setTimeout(() => {
+				const start = performance.now();
+				const tick = (now: number) => {
+					const progress = Math.min((now - start) / duration, 1);
+					const eased = 1 - Math.pow(1 - progress, 4); // ease-out-quart
+					const value = eased * level;
+					if (bar) bar.style.width = `${value}%`;
+					if (percent) percent.textContent = `${Math.round(value)}%`;
+					if (progress < 1) requestAnimationFrame(tick);
+				};
+				requestAnimationFrame(tick);
+			}, delay);
+		};
+
 		const observer = new IntersectionObserver((entries) => {
 			entries.forEach((entry) => {
 				if (entry.isIntersecting) {
-					const bar = entry.target as HTMLElement;
-					const level = bar.style.width;
-					bar.style.setProperty('--target-width', level);
-					bar.classList.add('animate');
+					animate(entry.target as HTMLElement);
+					observer.unobserve(entry.target);
 				}
 			});
 		}, { threshold: 0.5 });
 
-		skillBars.forEach(bar => observer.observe(bar));
+		skills.forEach((skill) => observer.observe(skill));
+	};
+
+	// Count-up animation for the credentials strip (0 -> target on first view).
+	// Markup ships with the final value, so no-JS and reduced-motion users
+	// always see the real numbers.
+	const observeCountUps = () => {
+		const counters = document.querySelectorAll<HTMLElement>('[data-count-to]');
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+		const animate = (el: HTMLElement) => {
+			const target = Number(el.dataset.countTo ?? 0);
+			const suffix = el.dataset.countSuffix ?? '';
+			const duration = 1500;
+			const start = performance.now();
+
+			const tick = (now: number) => {
+				const progress = Math.min((now - start) / duration, 1);
+				const eased = 1 - Math.pow(1 - progress, 4); // ease-out-quart
+				el.textContent = `${Math.round(eased * target)}${suffix}`;
+				if (progress < 1) requestAnimationFrame(tick);
+			};
+			el.textContent = `0${suffix}`;
+			requestAnimationFrame(tick);
+		};
+
+		const observer = new IntersectionObserver((entries) => {
+			entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+					animate(entry.target as HTMLElement);
+					observer.unobserve(entry.target);
+				}
+			});
+		}, { threshold: 0.6 });
+
+		counters.forEach((el) => observer.observe(el));
 	};
 
 	// Form submission handling
@@ -308,29 +557,29 @@ const profile = profileData;
 
 		form.addEventListener('submit', async (e) => {
 			e.preventDefault();
-			
+
 			// Validate reCAPTCHA
 			const recaptchaResponse = (window as any).grecaptcha?.getResponse();
 			if (!recaptchaResponse) {
 				alert('Please complete the reCAPTCHA verification.');
 				return;
 			}
-			
+
 			const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
 			const originalText = submitButton.innerHTML;
-			
+
 			// Show loading state
 			submitButton.innerHTML = '<svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Sending...';
 			submitButton.disabled = true;
 
 			try {
 				const formData = new FormData(form);
-				
+
 				// Add reCAPTCHA response to form data
 				if (recaptchaResponse) {
 					formData.delete('g-recaptcha-response');
 				}
-				
+
 				const response = await fetch(form.action, {
 					method: 'POST',
 					body: formData
@@ -346,12 +595,12 @@ const profile = profileData;
 				// Error
 				submitButton.innerHTML = originalText;
 				submitButton.disabled = false;
-				
+
 				// Reset reCAPTCHA
 				if ((window as any).grecaptcha) {
 					(window as any).grecaptcha.reset();
 				}
-				
+
 				alert('Sorry, there was an error sending your message. Please try again or contact me directly.');
 			}
 		});
@@ -360,6 +609,7 @@ const profile = profileData;
 	// Initialize when DOM is loaded
 	document.addEventListener('DOMContentLoaded', () => {
 		observeSkillBars();
+		observeCountUps();
 		handleFormSubmission();
 	});
 </script>

@@ -1,0 +1,111 @@
+---
+interface Props {
+	lat: number;
+	lon: number;
+	city: string;
+	/**
+	 * 'panel'  — square, self-contained card (default)
+	 * 'hero'   — fills its positioned parent; use as a full-bleed backdrop
+	 */
+	variant?: 'panel' | 'hero';
+}
+
+const { lat, lon, city, variant = 'panel' } = Astro.props;
+const isHero = variant === 'hero';
+
+// Hero: frame the globe so the full sphere fits the viewport height
+// (fov 40°, radius 10 → needs distance ≥ ~29.3 to avoid clipping)
+const distance = isHero ? 30 : 30;
+---
+
+<div
+	data-globe
+	class:list={[
+		isHero
+			? 'absolute inset-0 h-full w-full'
+			: 'relative mx-auto aspect-square w-full max-w-[480px]',
+	]}
+>
+	<canvas
+		id="globe-canvas"
+		class:list={[
+			'absolute inset-0 h-full w-full touch-pan-y',
+			isHero && 'globe-hero-canvas',
+		]}
+		data-lat={lat}
+		data-lon={lon}
+		data-distance={distance}
+		aria-hidden="true"
+		tabindex="-1"></canvas>
+
+	<!-- Static fallback until (unless) the 3D globe boots -->
+	<div class="globe-fallback absolute inset-0 flex items-center justify-center" aria-hidden="true">
+		{
+			isHero ? (
+				<div class="globe-fallback-hero absolute inset-0" />
+			) : (
+				<div class="relative flex h-3/4 w-3/4 items-center justify-center rounded-full border border-line bg-accent-soft">
+					<div class="flex flex-col items-center gap-2 text-ink-mid">
+						<svg
+							class="h-8 w-8 text-accent-2"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							aria-hidden="true"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="1.8"
+								d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+							/>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="1.8"
+								d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+							/>
+						</svg>
+						<span class="text-sm font-medium">{city}</span>
+					</div>
+				</div>
+			)
+		}
+	</div>
+
+	<span class="sr-only">Interactive globe showing my location: {city}</span>
+</div>
+
+<style>
+	[data-globe][data-3d='on'] .globe-fallback {
+		display: none;
+	}
+
+	/* Hero mode: bias the globe slightly toward the lower half of the frame.
+	   The small bottom crop this causes is hidden by the page-transition fade. */
+	.globe-hero-canvas {
+		transform: translateY(6%);
+	}
+
+	.globe-fallback-hero {
+		background:
+			radial-gradient(circle 40vmin at 50% 72%, var(--accent-soft), transparent 70%),
+			radial-gradient(circle 28vmin at 50% 72%, var(--glow), transparent 75%);
+		opacity: 0.9;
+	}
+</style>
+
+<script>
+	const canvas = document.getElementById('globe-canvas') as HTMLCanvasElement | null;
+	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	if (canvas && !reduceMotion) {
+		const lat = Number(canvas.dataset.lat ?? 0);
+		const lon = Number(canvas.dataset.lon ?? 0);
+		const distance = Number(canvas.dataset.distance ?? 30);
+		import('../../scripts/three/globe').then(({ initGlobe }) => {
+			initGlobe(canvas, { lat, lon, distance });
+			canvas.closest('[data-globe]')?.setAttribute('data-3d', 'on');
+		});
+	}
+</script>
