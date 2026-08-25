@@ -2,9 +2,9 @@
 import NavBar from './NavBar.astro';
 ---
 
-<!-- Positioning shell only: the nav itself lives in NavBar.astro. The wrapper
-     carries the drop-in entrance so it never fights the physics transforms
-     applied to the capsule inside. -->
-<header class="animate-nav-drop pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4">
+<!-- Full-width HUD bar. transition:persist keeps this exact DOM (and the
+     spring physics attached to it) alive across client-side navigations;
+     nav-physics.ts re-syncs the active link on astro:page-load. -->
+<header transition:persist="hud" class="animate-nav-drop fixed inset-x-0 top-0 z-50">
 	<NavBar />
 </header>

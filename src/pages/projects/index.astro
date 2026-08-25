@@ -23,10 +23,11 @@ const pageDescription = "Explore my portfolio of software development projects, 
 	</Fragment>
 
 	<!-- Projects Header -->
-	<section class="mb-16 text-center">
-		<div class="mx-auto max-w-4xl">
-			<h1 class="mb-6 text-4xl font-bold text-ink lg:text-5xl">My Projects</h1>
-			<p class="mx-auto max-w-3xl text-xl leading-relaxed text-ink-mid">
+	<section class="mb-16">
+		<div class="max-w-3xl">
+			<p class="eyebrow">projects</p>
+			<h1 class="mb-6 mt-3 text-4xl font-semibold text-ink lg:text-5xl">Things I've shipped</h1>
+			<p class="text-xl leading-relaxed text-ink-mid">
 				A collection of software projects I've built, ranging from web applications to developer
 				tools and open-source contributions.
 			</p>
@@ -35,7 +36,7 @@ const pageDescription = "Explore my portfolio of software development projects, 
 
 	{
 		allProjects.length > 0 ? (
-			<div class="grid gap-8 md:grid-cols-2">
+			<div class="grid gap-8">
 				{allProjects.map((project) => (
 					<ProjectPreview project={project} />
 				))}

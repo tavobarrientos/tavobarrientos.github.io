@@ -10,7 +10,7 @@ import SchemaOrg from '../components/SchemaOrg.astro';
 import SocialShare from '../components/SocialShare.astro';
 import { getReadingTime } from '../utils/readingTime';
 
-type Props = CollectionEntry<'blog'>['data'] & { body?: string };
+type Props = CollectionEntry<'blog'>['data'] & { body?: string; slug?: string };
 
 const {
 	title,
@@ -22,6 +22,7 @@ const {
 	relatedPosts,
 	showAuthor = true,
 	body,
+	slug,
 } = Astro.props;
 
 // Generate keyword string from title and description
@@ -50,10 +51,52 @@ const readingTime = getReadingTime(body || title + ' ' + description);
 		/>
 	</Fragment>
 
+	<!-- Reading progress: fills as the article scrolls (see script below) -->
+	<div
+		data-progress
+		aria-hidden="true"
+		class="fixed left-0 top-0 z-[60] h-0.5 w-0 bg-gradient-to-r from-accent to-accent-2"
+	>
+	</div>
+
 	<article class="mx-auto w-full max-w-3xl">
+		<header class="mb-10">
+			<a
+				href="/blog"
+				class="inline-flex items-center gap-2 font-mono text-xs text-ink-lo transition-colors hover:text-accent"
+			>
+				<span aria-hidden="true">←</span> ~/writing
+			</a>
+
+			<h1
+				class="mt-6 font-display text-3xl font-semibold leading-tight text-ink md:text-4xl lg:text-5xl"
+				transition:name={slug ? `post-title-${slug}` : undefined}
+			>
+				{title}
+			</h1>
+
+			<p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-mid">{description}</p>
+
+			<div class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-ink-lo sm:text-sm">
+				<FormattedDate date={pubDate} />
+				<span aria-hidden="true">·</span>
+				<ReadingTime readingTime={readingTime} />
+				{
+					updatedDate && (
+						<>
+							<span aria-hidden="true">·</span>
+							<span>
+								updated <FormattedDate date={updatedDate} />
+							</span>
+						</>
+					)
+				}
+			</div>
+		</header>
+
 		{
 			heroImage && (
-				<div class="mb-10 overflow-hidden rounded-xl border border-line">
+				<div class="mb-10 overflow-hidden rounded-2xl border border-line">
 					<Image
 						width={1020}
 						height={510}
@@ -65,25 +108,11 @@ const readingTime = getReadingTime(body || title + ' ' + description);
 			)
 		}
 
-		<header class="mb-10 text-center">
-			<div class="mb-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-ink-lo">
-				<FormattedDate date={pubDate} />
-				{
-					updatedDate && (
-						<span class="italic">
-							Last updated on <FormattedDate date={updatedDate} />
-						</span>
-					)
-				}
-				<span aria-hidden="true">·</span>
-				<ReadingTime readingTime={readingTime} />
+		<!-- Opaque reading surface: the article never competes with the lattice -->
+		<div class="reading-panel px-6 py-8 sm:px-10 sm:py-12 md:px-14">
+			<div class="prose prose-lg max-w-none">
+				<slot />
 			</div>
-			<h1 class="text-3xl font-bold leading-tight text-ink md:text-4xl lg:text-5xl">{title}</h1>
-			<hr class="mx-auto mt-8 w-24 border-line" />
-		</header>
-
-		<div class="prose prose-lg max-w-none">
-			<slot />
 		</div>
 
 		<div class="mt-12 border-t border-line pt-8">
@@ -93,3 +122,27 @@ const readingTime = getReadingTime(body || title + ' ' + description);
 		</div>
 	</article>
 </Layout>
+
+<script>
+	// Reading progress bar. One global scroll listener (module loads once per
+	// session); the bar element is re-queried after every client-side
+	// navigation, so it's inert on pages without one.
+	let bar: HTMLElement | null = null;
+
+	const update = () => {
+		if (!bar) return;
+		const doc = document.documentElement;
+		const max = doc.scrollHeight - doc.clientHeight;
+		bar.style.width = max > 0 ? `${((window.scrollY / max) * 100).toFixed(2)}%` : '0%';
+	};
+
+	const rewire = () => {
+		bar = document.querySelector<HTMLElement>('[data-progress]');
+		update();
+	};
+
+	rewire();
+	document.addEventListener('astro:page-load', rewire);
+	window.addEventListener('scroll', update, { passive: true });
+	window.addEventListener('resize', update, { passive: true });
+</script>

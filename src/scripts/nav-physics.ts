@@ -35,28 +35,57 @@ function initNav(root: HTMLElement): void {
 	// --- Mobile menu (independent of motion preferences) ---------------------
 	const button = root.querySelector<HTMLButtonElement>('#mobile-menu-button');
 	const menu = root.querySelector<HTMLElement>('#mobile-menu');
+	const setMenuOpen = (open: boolean) => {
+		if (!button || !menu) return;
+		menu.classList.toggle('hidden', !open);
+		button.setAttribute('aria-expanded', String(open));
+	};
 	if (button && menu) {
-		const setOpen = (open: boolean) => {
-			menu.classList.toggle('hidden', !open);
-			button.setAttribute('aria-expanded', String(open));
-		};
-		button.addEventListener('click', () => setOpen(menu.classList.contains('hidden')));
+		button.addEventListener('click', () => setMenuOpen(menu.classList.contains('hidden')));
 		document.addEventListener('click', (event) => {
 			if (!menu.classList.contains('hidden') && !root.contains(event.target as Node)) {
-				setOpen(false);
+				setMenuOpen(false);
 			}
 		});
 		document.addEventListener('keydown', (event) => {
-			if (event.key === 'Escape') setOpen(false);
+			if (event.key === 'Escape') setMenuOpen(false);
 		});
 	}
 
-	if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+	// --- Active-link sync ------------------------------------------------------
+	// The HUD bar persists across client-side navigations, so the server never
+	// re-renders its active state: recompute it from the URL on every page load.
+	const allNavLinks = () =>
+		Array.from(root.querySelectorAll<HTMLAnchorElement>('[data-nav-link], [data-nav-mlink]'));
+
+	const matchesPath = (href: string, path: string) =>
+		href === path || (href !== '/' && path.startsWith(href));
+
+	function syncActive(): void {
+		const path = window.location.pathname;
+		for (const link of allNavLinks()) {
+			const active = matchesPath(link.getAttribute('href') ?? '', path);
+			link.classList.toggle('nav-active', active);
+			if (active) link.setAttribute('aria-current', 'page');
+			else link.removeAttribute('aria-current');
+		}
+		setMenuOpen(false);
+	}
+
+	if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		document.addEventListener('astro:page-load', syncActive);
+		return;
+	}
 
 	const capsule = root.querySelector<HTMLElement>('[data-nav-capsule]');
 	const linksWrap = root.querySelector<HTMLElement>('[data-nav-links]');
 	const indicator = root.querySelector<HTMLElement>('[data-nav-indicator]');
 	const links = Array.from(root.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'));
+
+	// Integrator state — declared before the first wake() call below (aiming the
+	// indicator at the active link wakes the loop during init)
+	let running = false;
+	let lastTime = 0;
 
 	// --- Indicator: chases hover, returns to the active link -----------------
 	// Underdamped (ζ ≈ 0.67) so it overshoots a touch and snaps back
@@ -64,7 +93,7 @@ function initNav(root: HTMLElement): void {
 	const IND_C = 26;
 	const indX = spring();
 	const indW = spring();
-	const activeLink = links.find((l) => l.hasAttribute('aria-current')) ?? null;
+	let activeLink = links.find((l) => l.hasAttribute('aria-current')) ?? null;
 	let indicatorTarget: HTMLElement | null = null;
 
 	function aimIndicator(link: HTMLElement, immediate = false): void {
@@ -102,6 +131,14 @@ function initNav(root: HTMLElement): void {
 			if (indicatorTarget) aimIndicator(indicatorTarget, true);
 		});
 	}
+
+	// After each client-side navigation: recompute the active link and glide
+	// the indicator over to it
+	document.addEventListener('astro:page-load', () => {
+		syncActive();
+		activeLink = links.find((l) => l.hasAttribute('aria-current')) ?? null;
+		restIndicator();
+	});
 
 	// --- Inertial hang: scroll velocity kicks the capsule ---------------------
 	// Loose spring (ζ ≈ 0.64) so a hard scroll makes it bob twice, not once
@@ -147,9 +184,6 @@ function initNav(root: HTMLElement): void {
 	});
 
 	// --- Shared integrator: runs while anything moves, then sleeps -----------
-	let running = false;
-	let lastTime = 0;
-
 	function frame(time: number): void {
 		const dt = Math.min((time - lastTime) / 1000, 0.033);
 		lastTime = time;

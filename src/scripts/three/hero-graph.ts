@@ -10,12 +10,17 @@ import {
 	stripUnusedAttributes,
 } from './common';
 
-// Neural-lattice hero: a shallow field of glow nodes joined by faint edges
+// Orchestrator hero: a shallow field of glow nodes joined by faint edges
 // wherever neighbors drift within reach, so the topology rewires live as the
-// physics moves the field. The soft-body feel is kept — sine drift around
+// physics moves the field. At the heart of it sits the orchestrator core — a
+// breathing wireframe icosahedron with an orbiting particle halo — the "model"
+// the lattice reports to. The soft-body feel is kept — sine drift around
 // anchors, spring-back, cursor repulsion, click ripple — and edges stretch,
-// brighten near the cursor, and snap as nodes move. Rare fuchsia signal
-// pulses hop node-to-node along live edges: the one loud element.
+// brighten near the cursor, and snap as nodes move. Fuchsia signal pulses hop
+// node-to-node along live edges: the live-traffic element.
+//
+// Everything renders additive over the dark ground, so overlapping glows sum
+// to light the way real emission does.
 //
 // The hero copy counter-drifts a few px toward the cursor (the cloud moves
 // away), separating the text plane from the background.
@@ -38,12 +43,16 @@ const PARALLAX = 1.6; // world units the cloud shifts opposite the cursor
 const TEXT_PARALLAX_PX = 7; // px the hero copy drifts toward the cursor
 
 const LINK_RADIUS = 8.5; // world distance within which two nodes connect
-const LINK_ALPHA = 0.3; // edge opacity at zero distance ("almost visible")
+const LINK_ALPHA = 0.34; // edge opacity at zero distance ("almost visible")
 const LINK_CURSOR_RADIUS = 14; // edges this close to the cursor brighten
 const LINK_CURSOR_BOOST = 1.6;
 
 const PULSE_SPEED = 17; // world units/s a signal travels along an edge
-const PULSE_SIZE = 2.6;
+const PULSE_SIZE = 3;
+
+const CORE_RADIUS = 7.5; // outer wireframe shell of the orchestrator core
+const CORE_BREATHE = 0.045; // ± scale of the breathing cycle
+const HALO_RADIUS = 11; // orbit band of the halo particles
 
 const HERO_FADE_SPAN = 0.55; // hero copy fades over this fraction of a viewport
 const HERO_SCROLL_LAG = 0.12; // px of downward drift per px scrolled while fading
@@ -123,7 +132,7 @@ export function initHeroGraph(canvas: HTMLCanvasElement): () => void {
 		attribute.setUsage(THREE.DynamicDrawUsage);
 		geometry.setAttribute('position', attribute);
 
-		// Normal blending: additive would wash out against the light background
+		// Additive blending: overlapping glows sum to light on the dark ground
 		const material = new THREE.PointsMaterial({
 			map: glowTexture,
 			color,
@@ -132,6 +141,7 @@ export function initHeroGraph(canvas: HTMLCanvasElement): () => void {
 			opacity,
 			sizeAttenuation: true,
 			depthWrite: false,
+			blending: THREE.AdditiveBlending,
 		});
 
 		const points = new THREE.Points(geometry, material);
@@ -142,8 +152,8 @@ export function initHeroGraph(canvas: HTMLCanvasElement): () => void {
 	}
 
 	// The network layer carries the edges; a dim far field adds depth behind it
-	const net = makeLayer(small ? 60 : 130, 1.7, 0.5, colors.accent, 6);
-	const far = makeLayer(small ? 70 : 160, 1.0, 0.2, colors.inkLo, bounds.z);
+	const net = makeLayer(small ? 70 : 150, 1.8, 0.8, colors.accent, 6);
+	const far = makeLayer(small ? 90 : 200, 1.0, 0.3, colors.inkLo, bounds.z);
 	const layers: DotLayer[] = [net, far];
 
 	// --- Edges: rebuilt every frame from node proximity ------------------------
@@ -183,6 +193,7 @@ export function initHeroGraph(canvas: HTMLCanvasElement): () => void {
 		`,
 		transparent: true,
 		depthWrite: false,
+		blending: THREE.AdditiveBlending,
 	});
 
 	const links = new THREE.LineSegments(linkGeometry, linkMaterial);
@@ -210,14 +221,104 @@ export function initHeroGraph(canvas: HTMLCanvasElement): () => void {
 		color: colors.accent2,
 		size: PULSE_SIZE,
 		transparent: true,
-		opacity: 0.85,
+		opacity: 1,
 		sizeAttenuation: true,
 		depthWrite: false,
+		blending: THREE.AdditiveBlending,
 	});
 
 	const pulsePoints = new THREE.Points(pulseGeometry, pulseMaterial);
 	pulsePoints.frustumCulled = false;
 	cloud.add(pulsePoints);
+
+	// --- Orchestrator core: breathing wireframe icosahedron + orbiting halo ----
+	// The signature object of the page — the "model" the lattice reports to.
+	// Desktop: offset right so it shares the frame with the left-aligned copy.
+	// Mobile: smaller, higher, and further back, behind the scrim.
+	const core = new THREE.Group();
+	core.position.set(small ? 0 : bounds.x * 0.45, small ? bounds.y * 0.22 : 0, small ? -10 : -2);
+	if (small) core.scale.setScalar(0.7);
+	cloud.add(core);
+
+	const shellMaterial = new THREE.LineBasicMaterial({
+		color: colors.accent,
+		transparent: true,
+		opacity: 0.38,
+		depthWrite: false,
+		blending: THREE.AdditiveBlending,
+	});
+	const shell = new THREE.LineSegments(
+		new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(CORE_RADIUS, 1)),
+		shellMaterial
+	);
+	core.add(shell);
+
+	const innerMaterial = new THREE.LineBasicMaterial({
+		color: colors.accent,
+		transparent: true,
+		opacity: 0.22,
+		depthWrite: false,
+		blending: THREE.AdditiveBlending,
+	});
+	const inner = new THREE.LineSegments(
+		new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(CORE_RADIUS * 0.55, 0)),
+		innerMaterial
+	);
+	core.add(inner);
+
+	// Ambient blue aura + a small fuchsia heart (the live element, kept loud)
+	const auraMaterial = new THREE.SpriteMaterial({
+		map: glowTexture,
+		color: colors.accent,
+		transparent: true,
+		opacity: 0.3,
+		depthWrite: false,
+		blending: THREE.AdditiveBlending,
+	});
+	const aura = new THREE.Sprite(auraMaterial);
+	aura.scale.setScalar(CORE_RADIUS * 3.4);
+	core.add(aura);
+
+	const heartMaterial = new THREE.SpriteMaterial({
+		map: glowTexture,
+		color: colors.accent2,
+		transparent: true,
+		opacity: 0.85,
+		depthWrite: false,
+		blending: THREE.AdditiveBlending,
+	});
+	const heart = new THREE.Sprite(heartMaterial);
+	heart.scale.setScalar(CORE_RADIUS * 0.8);
+	core.add(heart);
+
+	// Halo: a tilted particle ring orbiting the shell
+	const haloCount = small ? 90 : 160;
+	const haloPos = new Float32Array(haloCount * 3);
+	for (let i = 0; i < haloCount; i++) {
+		const angle = Math.random() * Math.PI * 2;
+		const radius = HALO_RADIUS * (0.92 + Math.random() * 0.28);
+		haloPos[i * 3] = Math.cos(angle) * radius;
+		haloPos[i * 3 + 1] = (Math.random() * 2 - 1) * 0.7;
+		haloPos[i * 3 + 2] = Math.sin(angle) * radius;
+	}
+	const haloGeometry = new THREE.BufferGeometry();
+	haloGeometry.setAttribute('position', new THREE.BufferAttribute(haloPos, 3));
+	const haloMaterial = new THREE.PointsMaterial({
+		map: glowTexture,
+		color: colors.accent,
+		size: 0.9,
+		transparent: true,
+		opacity: 0.75,
+		sizeAttenuation: true,
+		depthWrite: false,
+		blending: THREE.AdditiveBlending,
+	});
+	const halo = new THREE.Points(haloGeometry, haloMaterial);
+	halo.frustumCulled = false;
+	const haloTilt = new THREE.Group();
+	haloTilt.rotation.set(1.05, 0, 0.4);
+	haloTilt.add(halo);
+	core.add(haloTilt);
 
 	/** Random edge out of `node`, avoiding an immediate backtrack to `exclude`. */
 	function pickNextNode(node: number, exclude: number): number {
@@ -256,10 +357,17 @@ export function initHeroGraph(canvas: HTMLCanvasElement): () => void {
 	const parallaxTarget = new THREE.Vector2();
 
 	// Hero copy counter-parallax: the overlay eases toward the cursor while the
-	// cloud eases away, so the text reads as the front plane
-	const heroContent = canvas
-		.closest('[data-hero]')
-		?.querySelector<HTMLElement>('[data-hero-content]');
+	// cloud eases away, so the text reads as the front plane.
+	// The scene persists across client-side navigations while page content is
+	// swapped, so the hero elements are re-queried on every astro:page-load —
+	// pages without a hero leave heroContent null and settle at the dim level.
+	let heroContent = document.querySelector<HTMLElement>('[data-hero-content]');
+	let hasHero = heroContent !== null;
+	const requeryHero = () => {
+		heroContent = document.querySelector<HTMLElement>('[data-hero-content]');
+		hasHero = heroContent !== null;
+	};
+	document.addEventListener('astro:page-load', requeryHero);
 	const textTarget = new THREE.Vector2();
 	const textOffset = new THREE.Vector2();
 
@@ -332,13 +440,26 @@ export function initHeroGraph(canvas: HTMLCanvasElement): () => void {
 		// Near-imperceptible sway
 		cloud.rotation.z = Math.sin(elapsed * 0.03) * 0.02;
 
+		// Orchestrator core: shells counter-rotate, the whole body breathes, and
+		// the fuchsia heart flickers faintly like activity under load
+		shell.rotation.y += dt * 0.12;
+		shell.rotation.x = Math.sin(elapsed * 0.11) * 0.35;
+		inner.rotation.y -= dt * 0.2;
+		inner.rotation.z += dt * 0.07;
+		const breathe =
+			(small ? 0.7 : 1) * (1 + Math.sin(elapsed * 0.8) * CORE_BREATHE);
+		core.scale.setScalar(breathe);
+		halo.rotation.y += dt * 0.22;
+		heartMaterial.opacity = 0.7 + Math.sin(elapsed * 2.3) * 0.12 + Math.sin(elapsed * 5.1) * 0.06;
+
 		// Scroll choreography: the lattice stays pinned; the hero copy fades and
 		// lags slightly downward as it scrolls out, and the whole canvas settles
-		// to a dimmer resting opacity so content sections read over it
+		// to a dimmer resting opacity so content sections read over it.
+		// Pages without a hero rest at the dim level from the start.
 		const scrollY = window.scrollY;
 		const viewportH = Math.max(1, window.innerHeight);
 
-		const dimT = Math.min(1, scrollY / (viewportH * CANVAS_DIM_SPAN));
+		const dimT = hasHero ? Math.min(1, scrollY / (viewportH * CANVAS_DIM_SPAN)) : 1;
 		canvas.style.opacity = (1 - (1 - CANVAS_DIM_TO) * dimT).toFixed(3);
 
 		if (heroContent) {
@@ -501,6 +622,7 @@ export function initHeroGraph(canvas: HTMLCanvasElement): () => void {
 	return () => {
 		loop.dispose();
 		stopResize();
+		document.removeEventListener('astro:page-load', requeryHero);
 		window.removeEventListener('pointermove', onPointerMove);
 		document.documentElement.removeEventListener('pointerleave', onPointerLeave);
 		window.removeEventListener('pointerdown', onPointerDown);

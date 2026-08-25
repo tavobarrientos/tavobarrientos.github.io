@@ -1,7 +1,9 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import SceneBackdrop from '../components/SceneBackdrop.astro';
 
 export interface Props {
 	title: string;
@@ -29,7 +31,7 @@ const {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 	<head>
 		<BaseHead
 			title={title}
@@ -40,6 +42,7 @@ const {
 			modifiedDate={modifiedDate}
 			keywords={keywords}
 		/>
+		<ClientRouter />
 		<slot name="head" />
 	</head>
 	<body>
@@ -47,11 +50,13 @@ const {
 		<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-59NK9D2X"
 		height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 		<!-- End Google Tag Manager (noscript) -->
+		<SceneBackdrop />
 		<Header />
 		<main
+			transition:name="content"
 			class:list={[
 				'w-full flex-1',
-				// pt clears the floating nav capsule, which takes no layout space
+				// pt clears the fixed HUD bar, which takes no layout space
 				!fullBleed && 'max-w-6xl mx-auto px-6 lg:px-8 pt-28 pb-12',
 				className,
 			]}
@@ -61,6 +66,7 @@ const {
 		<Footer />
 		<script>
 			import '../scripts/scroll-reveal';
+			import '../scripts/spotlight';
 		</script>
 	</body>
 </html>

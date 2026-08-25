@@ -1,0 +1,57 @@
+---
+import { getReadingTime } from '../utils/readingTime';
+
+interface Props {
+	post: {
+		slug: string;
+		body?: string;
+		data: {
+			title: string;
+			description: string;
+			pubDate: Date;
+		};
+	};
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate } = post.data;
+const readingTime = getReadingTime(post.body ?? '');
+
+const date = pubDate.toLocaleDateString('en-US', {
+	month: 'short',
+	day: '2-digit',
+	year: 'numeric',
+});
+---
+
+<!-- Ledger row: date | title + summary | reading time. The title carries a
+     per-slug view-transition name, so opening an article morphs this line
+     into the post header. -->
+<li>
+	<a
+		href={`/blog/${post.slug}/`}
+		class="group -mx-3 grid grid-cols-1 items-baseline gap-x-6 gap-y-1 rounded-xl px-3 py-5 transition-colors duration-200 hover:bg-surface/70 sm:grid-cols-[7.5rem_minmax(0,1fr)_auto]"
+	>
+		<time datetime={pubDate.toISOString()} class="font-mono text-xs text-ink-lo">
+			{date}
+		</time>
+		<div class="min-w-0">
+			<h3
+				class="font-display text-lg font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-accent md:text-xl"
+				transition:name={`post-title-${post.slug}`}
+			>
+				{title}
+			</h3>
+			<p class="mt-1.5 text-sm leading-relaxed text-ink-mid line-clamp-2">{description}</p>
+		</div>
+		<span
+			class="hidden items-baseline gap-2 whitespace-nowrap font-mono text-xs text-ink-lo sm:flex"
+		>
+			{readingTime}
+			<span
+				aria-hidden="true"
+				class="inline-block text-accent transition-transform duration-300 group-hover:translate-x-1">→</span
+			>
+		</span>
+	</a>
+</li>

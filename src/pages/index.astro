@@ -1,33 +1,120 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import HeroGraph from '../components/three/HeroGraph.astro';
-import BlogPostPreview from '../components/BlogPostPreview.astro';
+import PostRow from '../components/PostRow.astro';
 import ProjectPreview from '../components/ProjectPreview.astro';
+import { Icon } from 'astro-icon/components';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import profileData from '../data/profile.json';
 import { getCollection } from 'astro:content';
 
 const profile = profileData;
+const company = profile.company;
+// Tagline mid-sentence: lowercase only the leading word, keep acronyms intact
+const taglineInline = company.tagline.charAt(0).toLowerCase() + company.tagline.slice(1);
 
 const posts = (await getCollection('blog'))
 	.filter((post) => !post.data.hidden)
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 3);
+	.slice(0, 4);
 
 const projects = (await getCollection('projects')).filter((project) => !project.data.hidden);
+
+const stack = [
+	'C# / .NET',
+	'TypeScript',
+	'Python',
+	'Azure AI',
+	'Microsoft Agent Framework',
+	'Microsoft Copilot Studio',
+	'Semantic Kernel',
+	'LangChain',
+	'LLM Agents',
+	'MCP',
+	'React',
+	'Node.js',
+	'Docker',
+	'CI/CD',
+	'Microservices',
+];
 ---
 
 <Layout title={SITE_TITLE} description={SITE_DESCRIPTION} fullBleed>
 	<HeroGraph />
 
+	<!-- Stack ticker: the toolbox, scrolling like a status line -->
+	<div class="reveal border-y border-line/70 bg-surface/40 py-4 backdrop-blur-sm">
+		<div class="marquee-mask overflow-hidden">
+			<div class="animate-marquee flex w-max items-center hover:[animation-play-state:paused]">
+				{
+					[false, true].map((duplicate) => (
+						<ul
+							class="flex items-center font-mono text-sm text-ink-lo"
+							aria-hidden={duplicate || undefined}
+						>
+							{/* Each half is the stack twice, so a half always exceeds the
+							    viewport width and the -50% loop never shows empty track */}
+							{[...stack, ...stack].map((tech) => (
+								<li class="flex items-center whitespace-nowrap px-5">
+									<span aria-hidden="true" class="mr-5 h-1 w-1 rounded-full bg-accent/60" />
+									{tech}
+								</li>
+							))}
+						</ul>
+					))
+				}
+			</div>
+		</div>
+	</div>
+
 	<div class="mx-auto w-full max-w-6xl px-6 lg:px-8">
+		<!-- Services -->
+		<section id="services" class="reveal scroll-mt-24 py-16 lg:py-24">
+			<div class="mb-12 max-w-2xl">
+				<p class="eyebrow">services</p>
+				<h2 class="mt-3 font-display text-3xl font-semibold text-ink md:text-4xl">
+					What I build
+				</h2>
+				<p class="mt-4 text-lg text-ink-mid">
+					I work with product teams directly and through
+					<a
+						href={company.url}
+						target="_blank"
+						rel="noopener"
+						class="font-medium text-accent-2 hover:underline">{company.name}</a
+					>, my software company — {taglineInline}.
+				</p>
+			</div>
+			<!-- Ledger rows: hairlines carry the structure, no cards -->
+			<div class="divide-y divide-line/60 border-y border-line/60">
+				{
+					company.services.map((service) => (
+						<article class="grid gap-4 py-8 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-12">
+							<div class="flex items-start gap-4">
+								<div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-accent-soft">
+									<Icon name={service.icon} class="h-5 w-5 text-accent" />
+								</div>
+								<h3 class="font-display text-xl font-semibold leading-snug text-ink md:text-2xl">
+									{service.title}
+								</h3>
+							</div>
+							<p class="leading-relaxed text-ink-mid md:pt-1.5">{service.description}</p>
+						</article>
+					))
+				}
+			</div>
+		</section>
+
 		<!-- Latest Articles -->
-		<section id="featured" class="reveal scroll-mt-24 py-16 lg:py-20">
+		<section id="featured" class="reveal scroll-mt-24 py-16 lg:py-24">
 			<div class="mb-10 flex items-end justify-between">
 				<div>
-					<h2 class="text-3xl font-bold text-ink md:text-4xl">Latest Articles</h2>
-					<p class="mt-2 text-ink-mid">
-						Technical insights on AI, Azure, and software engineering.
+					<p class="eyebrow">writing</p>
+					<h2 class="mt-3 font-display text-3xl font-semibold text-ink md:text-4xl">
+						Latest articles
+					</h2>
+					<p class="mt-3 text-ink-mid">
+						Field notes on AI engineering, Azure, and the craft of shipping software.
 					</p>
 				</div>
 				<a
@@ -41,9 +128,9 @@ const projects = (await getCollection('projects')).filter((project) => !project.
 					</svg>
 				</a>
 			</div>
-			<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-				{posts.map((post) => <BlogPostPreview post={post} />)}
-			</div>
+			<ul class="divide-y divide-line/60 border-y border-line/60">
+				{posts.map((post) => <PostRow post={post} />)}
+			</ul>
 			<a
 				href="/blog"
 				class="mt-8 inline-flex items-center gap-1 font-medium text-accent sm:hidden"
@@ -53,12 +140,15 @@ const projects = (await getCollection('projects')).filter((project) => !project.
 		</section>
 
 		<!-- Projects -->
-		<section class="reveal py-16 lg:py-20">
+		<section class="reveal py-16 lg:py-24">
 			<div class="mb-10 flex items-end justify-between">
 				<div>
-					<h2 class="text-3xl font-bold text-ink md:text-4xl">Projects</h2>
-					<p class="mt-2 text-ink-mid">
-						Open source tools and things I've built to solve real problems.
+					<p class="eyebrow">projects</p>
+					<h2 class="mt-3 font-display text-3xl font-semibold text-ink md:text-4xl">
+						Things I've shipped
+					</h2>
+					<p class="mt-3 text-ink-mid">
+						Open source tools and builds that solve real problems.
 					</p>
 				</div>
 				<a
@@ -72,38 +162,39 @@ const projects = (await getCollection('projects')).filter((project) => !project.
 					</svg>
 				</a>
 			</div>
-			<div class="grid gap-8 md:grid-cols-2">
+			<div class="grid gap-8">
 				{projects.map((project) => <ProjectPreview project={project} />)}
 			</div>
 		</section>
 
-		<!-- Let's Connect -->
+		<!-- Contact -->
 		<section class="reveal py-16 lg:py-24">
-			<div
-				class="relative overflow-hidden rounded-2xl border border-line bg-surface p-10 text-center md:p-16"
-			>
+			<div class="spotlight card-panel relative overflow-hidden rounded-3xl p-10 text-center md:p-16">
 				<div
 					class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,var(--accent-soft),transparent_70%)]"
 				>
 				</div>
 				<div class="relative">
-					<h2 class="text-3xl font-bold text-ink md:text-4xl">Let's Connect</h2>
+					<p class="eyebrow">contact</p>
+					<h2 class="mt-3 font-display text-3xl font-semibold text-ink md:text-4xl">
+						Have an AI project in mind?
+					</h2>
 					<p class="mx-auto mt-4 max-w-xl text-ink-mid">
-						Have a project in mind, or want to talk about AI, Azure, or software engineering?
-						I'm always open to interesting conversations — personally or through my company,
+						Whether you need a production LLM system or a complete intelligent product built
+						end-to-end — tell me about it. I respond within one business day, personally or through
 						<a
-							href="https://www.ambystech.com"
+							href={company.url}
 							target="_blank"
 							rel="noopener"
-							class="font-medium text-accent-2 hover:underline">Ambystech</a
+							class="font-medium text-accent-2 hover:underline">{company.name}</a
 						>.
 					</p>
 					<div class="mt-8 flex flex-wrap items-center justify-center gap-4">
 						<a
 							href="/about#contact"
-							class="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-all duration-300 hover:-translate-y-1 hover:bg-accent-strong glow-accent"
+							class="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-semibold text-abyss transition-all duration-300 hover:-translate-y-1 hover:bg-accent-strong glow-accent"
 						>
-							Work with me
+							Start a conversation
 						</a>
 						<a
 							href={profile.social.github}

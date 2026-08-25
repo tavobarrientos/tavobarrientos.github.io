@@ -10,22 +10,17 @@
   "company": {
     "name": "Ambystech",
     "url": "https://www.ambystech.com",
-    "tagline": "Custom software, AI systems, and specialized talent",
+    "tagline": "Intelligent software and AI systems, built for production",
     "services": [
       {
-        "title": "Custom Software Development",
-        "description": "End-to-end web and mobile applications built with .NET, modern JavaScript, and cloud-native architecture — from MVP to enterprise scale.",
-        "icon": "heroicons:code-bracket"
+        "title": "Intelligent Software",
+        "description": "Custom web and mobile products with AI built in from day one — .NET, TypeScript, and Python on cloud-native architecture, from MVP to enterprise scale.",
+        "icon": "heroicons:sparkles"
       },
       {
         "title": "AI Systems & LLM Integration",
         "description": "Production-ready AI solutions: LLM-powered products, Azure AI services, agents, and intelligent automation tailored to your business.",
         "icon": "heroicons:cpu-chip"
-      },
-      {
-        "title": "Staff Augmentation",
-        "description": "Specialized engineering talent to extend your team — vetted developers with deep experience in cloud, AI, and full-stack development.",
-        "icon": "heroicons:user-group"
       }
     ]
   },
@@ -62,9 +57,10 @@
       "category": "AI & Machine Learning",
       "items": [
         { "name": "Large Language Models", "level": 87, "icon": "heroicons:cpu-chip" },
-        { "name": "Azure Cognitive Services", "level": 90, "icon": "heroicons:light-bulb" },
-        { "name": "Semantic Kernel", "level": 85, "icon": "heroicons:cog-6-tooth" },
-        { "name": "Prompt Engineering", "level": 88, "icon": "heroicons:chat-bubble-left-right" }
+        { "name": "Microsoft Foundry", "level": 90, "icon": "heroicons:beaker" },
+        { "name": "Microsoft Agent Framework", "level": 85, "icon": "heroicons:cog-6-tooth" },
+        { "name": "LangChain", "level": 80, "icon": "heroicons:link" },
+        { "name": "Neo4j", "level": 80, "icon": "heroicons:share" }
       ]
     },
     {

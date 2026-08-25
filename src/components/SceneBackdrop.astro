@@ -1,0 +1,27 @@
+---
+// The persistent WebGL backdrop — one runtime behind every page.
+// transition:persist keeps this exact DOM node (and its WebGL context) alive
+// across client-side navigations, so the lattice never reboots: pages
+// materialize inside the scene instead of reloading it.
+---
+
+<div
+	class="pointer-events-none fixed inset-0 -z-10"
+	aria-hidden="true"
+	transition:persist="scene-backdrop"
+>
+	<canvas id="scene-canvas" class="h-full w-full" tabindex="-1"></canvas>
+</div>
+
+<script>
+	const canvas = document.getElementById('scene-canvas') as HTMLCanvasElement | null;
+	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	if (canvas && !reduceMotion && !canvas.dataset.booted) {
+		canvas.dataset.booted = '1';
+		import('../scripts/three/hero-graph').then(({ initHeroGraph }) => {
+			initHeroGraph(canvas);
+			document.documentElement.setAttribute('data-scene', 'on');
+		});
+	}
+</script>

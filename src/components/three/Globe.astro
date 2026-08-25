@@ -96,16 +96,31 @@ const distance = isHero ? 30 : 30;
 </style>
 
 <script>
-	const canvas = document.getElementById('globe-canvas') as HTMLCanvasElement | null;
+	// The globe canvas is page-specific (unlike the persistent lattice), so it
+	// boots on every arrival at a page that has one and disposes its WebGL
+	// context before the page is swapped away — revisits get a fresh globe
+	// instead of leaking a context per visit.
 	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	let disposeGlobe: (() => void) | null = null;
 
-	if (canvas && !reduceMotion) {
+	function bootGlobe() {
+		const canvas = document.getElementById('globe-canvas') as HTMLCanvasElement | null;
+		if (!canvas || reduceMotion || canvas.dataset.booted) return;
+		canvas.dataset.booted = '1';
 		const lat = Number(canvas.dataset.lat ?? 0);
 		const lon = Number(canvas.dataset.lon ?? 0);
 		const distance = Number(canvas.dataset.distance ?? 30);
 		import('../../scripts/three/globe').then(({ initGlobe }) => {
-			initGlobe(canvas, { lat, lon, distance });
+			if (!canvas.isConnected) return; // navigated away while loading
+			disposeGlobe = initGlobe(canvas, { lat, lon, distance });
 			canvas.closest('[data-globe]')?.setAttribute('data-3d', 'on');
 		});
 	}
+
+	bootGlobe();
+	document.addEventListener('astro:page-load', bootGlobe);
+	document.addEventListener('astro:before-swap', () => {
+		disposeGlobe?.();
+		disposeGlobe = null;
+	});
 </script>

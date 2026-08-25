@@ -2,15 +2,12 @@
 import profileData from '../../data/profile.json';
 
 const profile = profileData;
-const firstName = profile.name.split(' ')[0];
+const typedLine = 'gustavo@barrientos.io ~ % ship agents --to production';
 ---
 
-<section data-hero class="relative h-[100svh] min-h-[560px] overflow-hidden">
-	<!-- Interactive lattice canvas: fixed to the viewport so it backs the whole
-	     page while content scrolls over it (decorative) -->
-	<div class="pointer-events-none fixed inset-0 -z-10" aria-hidden="true">
-		<canvas id="hero-canvas" class="h-full w-full" tabindex="-1"></canvas>
-	</div>
+<section data-hero class="relative h-[100svh] min-h-[600px] overflow-hidden">
+	<!-- The lattice canvas itself lives in SceneBackdrop (Layout) and persists
+	     across page navigations; this section only carries the hero overlay. -->
 
 	<!-- Static fallback: shown until (unless) the 3D scene boots -->
 	<div class="hero-fallback absolute inset-0" aria-hidden="true">
@@ -24,55 +21,75 @@ const firstName = profile.name.split(' ')[0];
 	<!-- Overlay content (counter-parallaxes toward the cursor; see hero-graph.ts) -->
 	<div
 		data-hero-content
-		class="pointer-events-none relative z-10 flex h-full w-full flex-col items-center justify-center px-6 text-center will-change-transform"
+		class="pointer-events-none relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col justify-center px-6 lg:px-8 will-change-transform"
 	>
-		{
-			profile.availableForProjects && (
-				<div class="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-4 py-2 text-sm font-medium text-ink-mid backdrop-blur-sm animate-hero-in stagger-1">
-					<span class="h-2 w-2 rounded-full bg-green-500 animate-pulse-gentle" />
-					Available for projects
-				</div>
-			)
-		}
+		<div class="max-w-2xl">
+			{
+				profile.availableForProjects && (
+					<div class="pointer-events-auto inline-flex items-center gap-2.5 rounded-full border border-line bg-surface/60 px-4 py-2 text-sm font-medium text-ink-mid backdrop-blur-sm animate-hero-in stagger-1">
+						<span class="h-2 w-2 rounded-full bg-green-400 animate-led" />
+						Open to new projects
+					</div>
+				)
+			}
 
-		<h1
-			class="mt-8 max-w-5xl text-6xl font-bold leading-[1.05] text-ink md:text-7xl lg:text-8xl animate-hero-in stagger-2"
-		>
-			Hello, I'm
-			<span class="bg-gradient-to-r from-brand-400 to-fuchsia-400 bg-clip-text text-transparent">
-				{firstName}</span
+			<p
+				class="caret mt-8 font-mono text-xs text-ink-lo sm:text-sm animate-hero-in stagger-2"
+				data-typed={typedLine}
 			>
-		</h1>
+				{typedLine}
+			</p>
 
-		<p
-			class="mt-8 max-w-3xl text-xl leading-relaxed text-ink-mid md:text-2xl animate-hero-in stagger-3"
-		>
-			{profile.bio}
-		</p>
+			<h1
+				class="mt-5 font-display text-5xl font-semibold leading-[1.05] text-ink sm:text-6xl lg:text-7xl animate-hero-in stagger-2"
+			>
+				AI agents, shipped to
+				<span class="text-gradient-brand">production</span>
+			</h1>
 
-		<div class="mt-12 flex flex-wrap items-center justify-center gap-5 animate-hero-in stagger-4">
-			<a
-				href="/blog"
-				class="pointer-events-auto inline-flex items-center gap-2 rounded-lg bg-accent px-8 py-4 text-lg font-medium text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-accent-strong glow-accent"
-			>
-				Read my blog
-				<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"
-					></path>
-				</svg>
-			</a>
-			<a
-				href="/projects"
-				class="pointer-events-auto inline-flex items-center rounded-lg border border-line bg-surface/70 px-8 py-4 text-lg font-medium text-ink backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent/50"
-			>
-				View projects
-			</a>
+			<p class="mt-7 max-w-xl text-lg leading-relaxed text-ink-mid md:text-xl animate-hero-in stagger-3">
+				I'm Gustavo Barrientos — AI engineer and founder of
+				<a
+					href="https://www.ambystech.com"
+					target="_blank"
+					rel="noopener"
+					class="pointer-events-auto font-medium text-accent-2 hover:underline">Ambystech</a
+				>. Fifteen years of full-stack and cloud engineering, now building LLM systems and
+				agents in C#, TypeScript, and Python.
+			</p>
+
+			<div class="mt-10 flex flex-wrap items-center gap-4 animate-hero-in stagger-4">
+				<a
+					href="/about#contact"
+					class="pointer-events-auto inline-flex items-center gap-2 rounded-lg bg-accent px-7 py-3.5 text-lg font-semibold text-abyss transition-all duration-300 hover:-translate-y-1 hover:bg-accent-strong glow-accent"
+				>
+					Start a project
+					<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"
+						></path>
+					</svg>
+				</a>
+				<a
+					href="/blog"
+					class="pointer-events-auto inline-flex items-center rounded-lg border border-line bg-surface/60 px-7 py-3.5 text-lg font-medium text-ink backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent/50"
+				>
+					Read the blog
+				</a>
+			</div>
+
+			<p class="mt-10 font-mono text-xs text-ink-lo sm:text-sm animate-hero-in stagger-5">
+				15+ yrs engineering
+				<span class="mx-2 text-line" aria-hidden="true">/</span>
+				Azure AI certified
+				<span class="mx-2 text-line" aria-hidden="true">/</span>
+				Monterrey, MX
+			</p>
 		</div>
 
 		<a
-			href="#featured"
-			class="pointer-events-auto absolute bottom-8 inline-flex flex-col items-center gap-1 text-ink-lo transition-colors hover:text-accent animate-hero-in stagger-6"
-			aria-label="Scroll to featured content"
+			href="#services"
+			class="pointer-events-auto absolute bottom-8 left-1/2 inline-flex -translate-x-1/2 flex-col items-center gap-1 text-ink-lo transition-colors hover:text-accent animate-hero-in stagger-6"
+			aria-label="Scroll to services"
 		>
 			<svg class="h-6 w-6 animate-float" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"
@@ -86,42 +103,70 @@ const firstName = profile.name.split(' ')[0];
 	.hero-dots {
 		background-image: radial-gradient(var(--line) 1px, transparent 1px);
 		background-size: 28px 28px;
-		opacity: 0.7;
+		opacity: 0.5;
 	}
 
 	.hero-glow {
 		background:
-			radial-gradient(ellipse 60% 45% at 50% 42%, var(--accent-soft), transparent 70%),
-			radial-gradient(ellipse 40% 30% at 68% 62%, var(--glow), transparent 75%);
+			radial-gradient(ellipse 60% 45% at 68% 45%, var(--accent-soft), transparent 70%),
+			radial-gradient(ellipse 40% 30% at 30% 60%, var(--glow), transparent 75%);
 		opacity: 0.8;
 	}
 
 	/* A soft pool of page background behind the copy, so headline and buttons
-	   keep contrast without muting the lattice at the edges of the frame */
+	   keep contrast without muting the lattice at the edges of the frame.
+	   Biased left on wide screens, where the copy lives. */
 	.hero-scrim {
 		background: radial-gradient(
-			ellipse 58% 48% at 50% 44%,
-			color-mix(in srgb, var(--bg-base) 82%, transparent),
-			color-mix(in srgb, var(--bg-base) 38%, transparent) 58%,
-			transparent 78%
+			ellipse 62% 55% at 50% 48%,
+			color-mix(in srgb, var(--bg-base) 84%, transparent),
+			color-mix(in srgb, var(--bg-base) 40%, transparent) 58%,
+			transparent 80%
 		);
 	}
 
-	/* Once the 3D scene is live, drop the static dot grid but keep the ambient
-	   glow — it reads as depth haze behind the lattice */
-	section[data-3d='on'] .hero-dots {
+	@media (min-width: 1024px) {
+		.hero-scrim {
+			background: radial-gradient(
+				ellipse 52% 62% at 30% 50%,
+				color-mix(in srgb, var(--bg-base) 86%, transparent),
+				color-mix(in srgb, var(--bg-base) 40%, transparent) 58%,
+				transparent 78%
+			);
+		}
+	}
+
+	/* Once the 3D scene is live (SceneBackdrop sets data-scene on <html>), drop
+	   the static dot grid but keep the ambient glow — it reads as depth haze
+	   behind the lattice */
+	:global(html[data-scene='on']) .hero-dots {
 		display: none;
 	}
 </style>
 
 <script>
-	const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement | null;
+	// Typed eyebrow: markup ships the full line (no-JS and reduced-motion users
+	// see it immediately); with motion allowed, clear it and retype. Re-runs on
+	// every client-side navigation back to a page with a [data-typed] element.
 	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-	if (canvas && !reduceMotion) {
-		import('../../scripts/three/hero-graph').then(({ initHeroGraph }) => {
-			initHeroGraph(canvas);
-			canvas.closest('[data-hero]')?.setAttribute('data-3d', 'on');
-		});
+	function initTyped() {
+		const typed = document.querySelector<HTMLElement>('[data-typed]');
+		if (!typed || reduceMotion || typed.dataset.typedRunning) return;
+		typed.dataset.typedRunning = '1';
+		const line = typed.dataset.typed ?? '';
+		typed.textContent = '';
+		let i = 0;
+		const tick = () => {
+			// The element is discarded on navigation; stop if it left the document
+			if (!typed.isConnected || i > line.length) return;
+			typed.textContent = line.slice(0, i);
+			i++;
+			window.setTimeout(tick, 26 + Math.random() * 34);
+		};
+		window.setTimeout(tick, 500);
 	}
+
+	initTyped();
+	document.addEventListener('astro:page-load', initTyped);
 </script>

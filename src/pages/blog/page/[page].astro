@@ -1,7 +1,7 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import BlogPostPreview from '../../../components/BlogPostPreview.astro';
+import PostRow from '../../../components/PostRow.astro';
 import SchemaOrg from '../../../components/SchemaOrg.astro';
 import Pagination from '../../../components/Pagination.astro';
 
@@ -53,32 +53,21 @@ const nextPage = currentPage < totalPages ? `/blog/page/${currentPage + 1}` : nu
 	</Fragment>
 
 	<!-- Blog Header -->
-	<section class="mb-16 text-center">
-		<div class="mx-auto max-w-4xl">
-			<h1 class="mb-6 text-4xl font-bold text-ink lg:text-5xl">Latest Articles</h1>
-			<p class="mx-auto max-w-3xl text-xl leading-relaxed text-ink-mid">
-				Tutorials, guides, and insights on software development, Azure, AI, and more.
+	<section class="mb-16">
+		<div class="max-w-3xl">
+			<p class="eyebrow">writing</p>
+			<h1 class="mb-6 mt-3 text-4xl font-semibold text-ink lg:text-5xl">Field notes</h1>
+			<p class="text-xl leading-relaxed text-ink-mid">
+				Tutorials, guides, and insights on AI engineering, Azure, and software development.
 			</p>
 		</div>
 	</section>
 
-	<!-- Blog Posts Grid -->
-	<section class="mb-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-		{
-			posts.length > 0 && (
-				<div class="md:col-span-2 lg:col-span-3">
-					<BlogPostPreview post={posts[0]} />
-				</div>
-			)
-		}
-
-		{
-			posts.slice(1).map((post) => (
-				<div>
-					<BlogPostPreview post={post} />
-				</div>
-			))
-		}
+	<!-- Article ledger -->
+	<section class="mb-12">
+		<ul class="divide-y divide-line/60 border-y border-line/60">
+			{posts.map((post) => <PostRow post={post} />)}
+		</ul>
 	</section>
 
 	<Pagination currentPage={currentPage} totalPages={totalPages} />

@@ -16,6 +16,6 @@ const { Content } = await post.render();
 
 ---
 
-<BlogPost {...post.data} body={post.body}>
+<BlogPost {...post.data} body={post.body} slug={post.slug}>
 	<Content />
 </BlogPost>

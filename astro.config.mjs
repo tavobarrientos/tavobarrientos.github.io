@@ -22,7 +22,7 @@ export default defineConfig({
 
   markdown: {
       shikiConfig: {
-          theme: 'github-light',
+          theme: 'github-dark',
           // Add custom languages
           langs: [],
           // Enable word wrap to prevent horizontal scrolling
