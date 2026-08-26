@@ -8,7 +8,7 @@ import icon from 'astro-icon';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://tavobarrientos.github.io',
+  site: 'https://barrientos.io',
 
   // KEPT at the Astro 6 behaviour. Astro 7 defaults this to 'jsx', which
   // strips whitespace between inline elements using JSX rules. That was

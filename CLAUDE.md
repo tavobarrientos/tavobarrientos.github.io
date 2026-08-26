@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a personal portfolio and blog website built with Astro, deployed to GitHub Pages at https://tavobarrientos.github.io. The site features technical blog posts, project showcases, and is built using modern web technologies.
+This is a personal portfolio and blog website built with Astro, deployed to GitHub Pages and served from the custom domain https://barrientos.io (set via `public/CNAME`; the github.io host 301-redirects there). The site features technical blog posts, project showcases, and is built using modern web technologies.
 
 ## Development Commands
 
