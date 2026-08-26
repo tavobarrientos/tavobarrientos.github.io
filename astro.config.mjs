@@ -5,10 +5,15 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 import icon from 'astro-icon';
+import { unified } from '@astrojs/markdown-remark';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://tavobarrientos.github.io',
+
+  // PINNED to the Astro 6 default. Astro 7 changes this to 'jsx', which strips
+  // whitespace between inline elements using JSX rules. Flipped separately.
+  compressHTML: true,
 
   integrations: [
     mdx(),
@@ -21,6 +26,9 @@ export default defineConfig({
   ],
 
   markdown: {
+      // PINNED to the Astro 6 default. Astro 7 makes Satteri the default
+      // markdown processor. Flipped separately so its diff is reviewable.
+      processor: unified(),
       shikiConfig: {
           theme: 'github-dark',
           // Add custom languages
