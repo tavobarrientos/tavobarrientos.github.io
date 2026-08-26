@@ -11,8 +11,12 @@ import { unified } from '@astrojs/markdown-remark';
 export default defineConfig({
   site: 'https://tavobarrientos.github.io',
 
-  // PINNED to the Astro 6 default. Astro 7 changes this to 'jsx', which strips
-  // whitespace between inline elements using JSX rules. Flipped separately.
+  // KEPT at the Astro 6 behaviour. Astro 7 defaults this to 'jsx', which
+  // strips whitespace between inline elements using JSX rules. That was
+  // tried and reverted: it silently dropped the space in the footer's
+  // "personally and through Ambystech" and before several inline <span>s.
+  // Markdown prose is unaffected, but component templates are not, and
+  // there is no advisory or security reason to accept the regression.
   compressHTML: true,
 
   integrations: [
