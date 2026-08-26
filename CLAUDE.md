@@ -43,13 +43,17 @@ npm run dev -- --host
 ### Page Routing
 - **`src/pages/`**: File-based routing
   - `index.astro`: Homepage
-  - `blog/[...page].astro`: Blog listing with pagination
-  - `blog/[slug].astro`: Individual blog posts
-  - `projects/[...page].astro`: Projects listing
+  - `about.astro`: About page
+  - `blog/index.astro`: Blog listing (page 1)
+  - `blog/page/[page].astro`: Blog listing pages 2+ (hand-rolled pagination)
+  - `blog/[...slug].astro`: Individual blog posts
+  - `projects/index.astro`: Projects listing
+  - `projects/[...slug].astro`: Individual project pages
+  - `404.astro`: Not-found page
   - `rss.xml.js`: RSS feed generation
 
 ### Styling
-- **`src/styles/global.css`**: Global styles and CSS variables
+- **`src/styles/main.css`**: Global styles, Tailwind v4 `@theme` tokens, and the `.prose` overrides
 - Uses Atkinson Hyperlegible font for improved readability
 
 ## Content Collections Schema
@@ -59,10 +63,13 @@ Blog posts require:
 {
   title: string
   description: string
-  publishDate: Date
+  pubDate: Date
   updatedDate?: Date
-  tags?: string[]
-  draft?: boolean
+  heroImage?: string           // public-root path, e.g. '/blog/foo.png'
+  author: reference<'authors'>  // defaults to 'tavobarrientos'
+  relatedPosts?: reference<'blog'>[]
+  hidden?: boolean
+  showAuthor?: boolean          // defaults to true
 }
 ```
 
@@ -71,9 +78,11 @@ Projects require:
 {
   title: string
   description: string
-  link?: string
-  github?: string
-  updatedDate: Date
+  heroImage?: string
+  images?: string[]
+  links?: { github?: string; website?: string; demo?: string }
+  tags?: string[]
+  hidden?: boolean
 }
 ```
 
@@ -91,8 +100,9 @@ The site automatically deploys to GitHub Pages via GitHub Actions when pushing t
 - **TypeScript**: Strict mode enabled via Astro's preset
 - **Image Optimization**: Uses Astro's Image component for automatic optimization
 - **SEO**: Automatic sitemap, RSS feed, and schema.org structured data
-- **Custom Design System**: 
-  - Colors: Custom accent (#2337ff), gray palette, Atkinson font family
-  - Responsive breakpoints: 720px, 480px, 360px
-  - Typography scale with custom heading sizes
+- **Custom Design System**: dark-only, defined entirely in `src/styles/main.css`
+  - Tailwind v4 is CSS-first: tokens live in `@theme` / `@theme inline`, not a JS config
+  - Brand ramp `--color-brand-*`, `--color-fuchsia-*`, plus semantic tokens (`--color-base`, `--color-ink`, `--color-accent`, ...)
+  - Typography plugin is loaded via `@plugin "@tailwindcss/typography"` in CSS
+  - The `.prose` overrides are deliberately UNLAYERED so they win over the plugin's layered light-theme rules; do not wrap them in `@layer`
 - **No testing framework or linter**: Currently no automated tests or linting setup
