@@ -1,7 +1,7 @@
 ---
 interface Props {
 	project: {
-		slug: string;
+		id: string;
 		data: {
 			title: string;
 			description: string;
@@ -21,7 +21,7 @@ interface Props {
 const { project } = Astro.props;
 const { title, description, heroImage, links, tags } = project.data;
 
-const href = `/projects/${project.slug}/`;
+const href = `/projects/${project.id}/`;
 ---
 
 <!-- Build record: a wide panel with the artwork shown whole (contained on a
@@ -36,7 +36,7 @@ const href = `/projects/${project.slug}/`;
 		<div class="flex flex-col justify-center p-8 md:p-10">
 			<h2
 				class="font-display text-2xl font-semibold text-ink transition-colors duration-200 group-hover:text-accent md:text-3xl"
-				transition:name={`project-title-${project.slug}`}
+				transition:name={`project-title-${project.id}`}
 			>
 				{title}
 			</h2>
