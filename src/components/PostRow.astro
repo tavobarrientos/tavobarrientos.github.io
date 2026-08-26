@@ -3,7 +3,7 @@ import { getReadingTime } from '../utils/readingTime';
 
 interface Props {
 	post: {
-		slug: string;
+		id: string;
 		body?: string;
 		data: {
 			title: string;
@@ -29,7 +29,7 @@ const date = pubDate.toLocaleDateString('en-US', {
      into the post header. -->
 <li>
 	<a
-		href={`/blog/${post.slug}/`}
+		href={`/blog/${post.id}/`}
 		class="group -mx-3 grid grid-cols-1 items-baseline gap-x-6 gap-y-1 rounded-xl px-3 py-5 transition-colors duration-200 hover:bg-surface/70 sm:grid-cols-[7.5rem_minmax(0,1fr)_auto]"
 	>
 		<time datetime={pubDate.toISOString()} class="font-mono text-xs text-ink-lo">
@@ -38,7 +38,7 @@ const date = pubDate.toLocaleDateString('en-US', {
 		<div class="min-w-0">
 			<h3
 				class="font-display text-lg font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-accent md:text-xl"
-				transition:name={`post-title-${post.slug}`}
+				transition:name={`post-title-${post.id}`}
 			>
 				{title}
 			</h3>

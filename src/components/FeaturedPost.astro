@@ -3,7 +3,7 @@ import { getReadingTime } from '../utils/readingTime';
 
 interface Props {
 	post: {
-		slug: string;
+		id: string;
 		body?: string;
 		data: {
 			title: string;
@@ -29,7 +29,7 @@ const date = pubDate.toLocaleDateString('en-US', {
      fuchsia marks editorial content. Its title carries the same per-slug
      view-transition name as a ledger row, so opening it morphs identically. -->
 <a
-	href={`/blog/${post.slug}/`}
+	href={`/blog/${post.id}/`}
 	class="group spotlight card-panel hover-lift mb-12 grid overflow-hidden rounded-3xl md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
 >
 	<div class="flex flex-col justify-center p-8 md:p-10">
@@ -44,7 +44,7 @@ const date = pubDate.toLocaleDateString('en-US', {
 		</p>
 		<h2
 			class="mt-4 font-display text-2xl font-semibold leading-tight text-ink transition-colors duration-200 group-hover:text-accent md:text-4xl"
-			transition:name={`post-title-${post.slug}`}
+			transition:name={`post-title-${post.id}`}
 		>
 			{title}
 		</h2>

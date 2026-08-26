@@ -25,7 +25,7 @@ const relatedPosts = await getEntries(related) as CollectionEntry<'blog'>[];
     <!-- Posts Container -->
     <div id="posts-container" class="flex gap-4 overflow-x-auto scrollbar-hide">
       {relatedPosts && relatedPosts.map((post) => (
-        <a href={`/blog/${post.slug}/`} class="flex flex-col items-center flex-shrink-0 w-[150px] no-underline text-inherit hover:opacity-80 transition-opacity">
+        <a href={`/blog/${post.id}/`} class="flex flex-col items-center flex-shrink-0 w-[150px] no-underline text-inherit hover:opacity-80 transition-opacity">
           { post.data.heroImage && <Image src={post.data.heroImage ?? '/blog-placeholder-about.jpg'} alt={post.data.title} width={150} height={145} class="rounded-lg mb-2 object-cover w-full aspect-[150/145]" /> }
           <div>
             <h4 class="m-0 text-center font-light text-sm line-clamp-2">{post.data.title}</h4>
