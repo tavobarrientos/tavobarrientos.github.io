@@ -1,48 +1,35 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
+import type { GetStaticPathsOptions, Page } from 'astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { BLOG_PAGE_SIZE } from '../../../consts';
 import PostRow from '../../../components/PostRow.astro';
 import SchemaOrg from '../../../components/SchemaOrg.astro';
 import Pagination from '../../../components/Pagination.astro';
+import PageHero from '../../../components/PageHero.astro';
+import TopicFilter from '../../../components/TopicFilter.astro';
 
-// This is a dynamic route that generates pages for each page of blog posts
-export async function getStaticPaths() {
-  const postsPerPage = 10;
-
-  // Get all posts, filter out hidden ones, and sort by date in descending order (newest first)
-  const allPosts = (await getCollection('blog'))
-    .filter(post => !post.data.hidden)
+// Pages 2 and up of the blog list, built with Astro's paginate().
+// Page 1 lives at /blog (blog/index.astro), so it is not generated here.
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const posts = (await getCollection('blog'))
+    .filter((post) => !post.data.hidden)
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-  // Calculate total number of pages
-  const totalPages = Math.ceil(allPosts.length / postsPerPage);
-
-  // Generate paths for all pages except the first one (which is handled by /blog/index.astro)
-  const pagesToGenerate = [];
-  for (let i = 2; i <= totalPages; i++) {
-    pagesToGenerate.push(i);
-  }
-
-  return pagesToGenerate.map((pageNum) => {
-    const startIndex = (pageNum - 1) * postsPerPage;
-    const endIndex = startIndex + postsPerPage;
-    const pagePosts = allPosts.slice(startIndex, endIndex);
-
-    return {
-      params: { page: String(pageNum) },
-      props: { page: pageNum, posts: pagePosts, totalPages }
-    };
-  });
+  return paginate(posts, { pageSize: BLOG_PAGE_SIZE }).filter((p) => String(p.params.page) !== '1');
 }
 
-const { page, posts, totalPages } = Astro.props;
-const currentPage = page;
+type Props = { page: Page<CollectionEntry<'blog'>> };
+const { page } = Astro.props;
+const posts = page.data;
+const currentPage = page.currentPage;
+const totalPages = page.lastPage;
 const pageTitle = `Blog | Page ${currentPage} | Gustavo Barrientos`;
 const pageDescription = `Page ${currentPage} of articles and tutorials about software development, Azure, AI and more`;
 
-// Generate prev/next page URLs for metadata
-const prevPage = currentPage > 1 ? (currentPage === 2 ? '/blog' : `/blog/page/${currentPage - 1}`) : null;
-const nextPage = currentPage < totalPages ? `/blog/page/${currentPage + 1}` : null;
+// paginate() points page 2 back at /blog/page/1, which is served as /blog
+const prevPage = currentPage === 2 ? '/blog' : page.url.prev;
+const nextPage = page.url.next;
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
@@ -52,20 +39,18 @@ const nextPage = currentPage < totalPages ? `/blog/page/${currentPage + 1}` : nu
 		{nextPage && <link rel="next" href={nextPage} />}
 	</Fragment>
 
-	<!-- Blog Header -->
-	<section class="mb-16">
-		<div class="max-w-3xl">
-			<p class="eyebrow">writing</p>
-			<h1 class="mb-6 mt-3 text-4xl font-semibold text-ink lg:text-5xl">Field notes</h1>
-			<p class="text-xl leading-relaxed text-ink-mid">
-				Tutorials, guides, and insights on AI engineering, Azure, and software development.
-			</p>
-		</div>
-	</section>
+	<PageHero
+		slot="hero"
+		photo="circuit"
+		title="Field notes"
+		lead="Tutorials, guides, and insights on AI engineering, Azure, and software development."
+	/>
+
+	<TopicFilter />
 
 	<!-- Article ledger -->
 	<section class="mb-12">
-		<ul class="divide-y divide-line/60 border-y border-line/60">
+		<ul class="divide-y divide-line border-y border-line" data-stagger>
 			{posts.map((post) => <PostRow post={post} />)}
 		</ul>
 	</section>

@@ -1,5 +1,6 @@
 ---
 title: 'Using a Phi3 Model with Semantic Kernel in C#'
+line: 'ai'
 description: 'In this post we will cover the usage of a SLM like Phi3 with Semantic Kernel in C#'
 pubDate: 'Oct 8 2024'
 heroImage: '/blog/ai_developer.jpg'

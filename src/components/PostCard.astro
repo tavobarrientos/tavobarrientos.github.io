@@ -1,0 +1,43 @@
+---
+// Compact article card with artwork, used for related posts and the
+// previous/next pair at the end of an article.
+import { lineById, type LineId } from '../data/lines';
+
+interface Props {
+	post: {
+		id: string;
+		data: { title: string; pubDate: Date; heroImage?: string; line?: LineId };
+	};
+	label?: string;
+}
+
+const { post, label } = Astro.props;
+const line = lineById(post.data.line);
+const date = post.data.pubDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+---
+
+<a href={`/blog/${post.id}/`} class={`line-${line.id} block`}>
+	<div class="zoom-frame aspect-[16/10] rounded-md bg-surface">
+		{
+			post.data.heroImage && (
+				<img
+					src={post.data.heroImage}
+					alt=""
+					width="640"
+					height="400"
+					loading="lazy"
+					decoding="async"
+					class="h-full w-full object-cover"
+				/>
+			)
+		}
+	</div>
+	<p class="mt-4 flex items-center gap-3">
+		{label && <span class="data-label">{label}</span>}
+		<span class="line-chip">{line.name}</span>
+		<time datetime={post.data.pubDate.toISOString()} class="data-label">{date}</time>
+	</p>
+	<p class="mt-2 font-display text-lg font-semibold leading-snug text-ink">
+		<span class="draw-underline">{post.data.title}</span>
+	</p>
+</a>

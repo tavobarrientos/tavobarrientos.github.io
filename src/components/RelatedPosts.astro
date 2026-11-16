@@ -1,133 +1,27 @@
 ---
-import { Image } from 'astro:assets';
 import { getEntries, type CollectionEntry } from 'astro:content';
+import PostCard from './PostCard.astro';
 
 const { related } = Astro.props;
 
-// Explicitly type relatedPosts as CollectionEntry<'blog'>[]
-const relatedPosts = await getEntries(related) as CollectionEntry<'blog'>[];
+const relatedPosts = ((await getEntries(related)) as CollectionEntry<'blog'>[]).filter(
+	(p) => p && !p.data.hidden
+);
 ---
 
-<div class="p-4 rounded-xl border border-line bg-surface">
-  <h3 class="mb-4 text-xl font-semibold text-ink">Related Posts</h3>
-  <div class="relative group overflow-hidden">
-    <!-- Left Chevron -->
-    <button
-      id="scroll-left"
-      class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-raised/90 hover:bg-raised text-ink rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 disabled:opacity-0"
-      aria-label="Scroll left"
-    >
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-      </svg>
-    </button>
-
-    <!-- Posts Container -->
-    <div id="posts-container" class="flex gap-4 overflow-x-auto scrollbar-hide">
-      {relatedPosts && relatedPosts.map((post) => (
-        <a href={`/blog/${post.id}/`} class="flex flex-col items-center flex-shrink-0 w-[150px] no-underline text-inherit hover:opacity-80 transition-opacity">
-          { post.data.heroImage && <Image src={post.data.heroImage ?? '/blog-placeholder-about.jpg'} alt={post.data.title} width={150} height={145} class="rounded-lg mb-2 object-cover w-full aspect-[150/145]" /> }
-          <div>
-            <h4 class="m-0 text-center font-light text-sm line-clamp-2">{post.data.title}</h4>
-          </div>
-        </a>
-      ))}
-    </div>
-
-    <!-- Right Chevron -->
-    <button
-      id="scroll-right"
-      class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-raised/90 hover:bg-raised text-ink rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 disabled:opacity-0"
-      aria-label="Scroll right"
-    >
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-      </svg>
-    </button>
-  </div>
-</div>
-
-<script>
-  const container = document.getElementById('posts-container');
-  const leftBtn = document.getElementById('scroll-left') as HTMLButtonElement | null;
-  const rightBtn = document.getElementById('scroll-right') as HTMLButtonElement | null;
-
-  if (container && leftBtn && rightBtn) {
-    const scrollAmount = 300;
-    let isScrolling = false;
-
-    // Update button states based on scroll position
-    const updateButtons = () => {
-      const isAtStart = container.scrollLeft <= 0;
-      const isAtEnd = container.scrollLeft >= container.scrollWidth - container.clientWidth - 1;
-
-      leftBtn.disabled = isAtStart;
-      rightBtn.disabled = isAtEnd;
-    };
-
-    // Smooth scroll with easing animation
-    const smoothScroll = (target: number) => {
-      if (isScrolling) return;
-      isScrolling = true;
-
-      const start = container.scrollLeft;
-      const distance = target - start;
-      const duration = 500; // Animation duration in ms
-      let startTime: number | null = null;
-
-      const easeInOutCubic = (t: number) => {
-        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      };
-
-      const animation = (currentTime: number) => {
-        if (startTime === null) startTime = currentTime;
-        const timeElapsed = currentTime - startTime;
-        const progress = Math.min(timeElapsed / duration, 1);
-        const easedProgress = easeInOutCubic(progress);
-
-        container.scrollLeft = start + distance * easedProgress;
-
-        if (progress < 1) {
-          requestAnimationFrame(animation);
-        } else {
-          isScrolling = false;
-          updateButtons();
-        }
-      };
-
-      requestAnimationFrame(animation);
-    };
-
-    leftBtn.addEventListener('click', () => {
-      const target = Math.max(0, container.scrollLeft - scrollAmount);
-      smoothScroll(target);
-    });
-
-    rightBtn.addEventListener('click', () => {
-      const target = Math.min(
-        container.scrollWidth - container.clientWidth,
-        container.scrollLeft + scrollAmount
-      );
-      smoothScroll(target);
-    });
-
-    container.addEventListener('scroll', updateButtons);
-
-    // Initial state
-    updateButtons();
-
-    // Update on window resize
-    window.addEventListener('resize', updateButtons);
-  }
-</script>
-
-<style>
-  #posts-container {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-  }
-
-  #posts-container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
-  }
-</style>
+{
+	relatedPosts.length > 0 && (
+		<section aria-labelledby="related-heading">
+			<h2 id="related-heading" class="text-2xl font-semibold md:text-3xl">
+				Related articles
+			</h2>
+			<ul class="mt-6 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3" data-stagger>
+				{relatedPosts.map((post) => (
+					<li data-reveal>
+						<PostCard post={post} />
+					</li>
+				))}
+			</ul>
+		</section>
+	)
+}

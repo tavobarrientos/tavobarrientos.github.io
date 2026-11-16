@@ -1,0 +1,25 @@
+---
+// A full-bleed stock photograph from public/images/stock (see CREDITS.md
+// there). Decorative by default: the text over it carries the meaning.
+interface Props {
+	name: 'earth-night' | 'towers' | 'racks' | 'office' | 'board' | 'circuit';
+	eager?: boolean;
+	alt?: string;
+	position?: string;
+}
+const { name, eager = false, alt = '', position = 'center' } = Astro.props;
+const base = `/images/stock/${name}`;
+---
+
+<img
+	src={`${base}-1280.webp`}
+	srcset={`${base}-1280.webp 1280w, ${base}-2400.webp 2400w`}
+	sizes="100vw"
+	alt={alt}
+	width="2400"
+	height="1600"
+	loading={eager ? 'eager' : 'lazy'}
+	fetchpriority={eager ? 'high' : undefined}
+	decoding="async"
+	style={`object-position:${position}`}
+/>

@@ -1,5 +1,6 @@
 ---
 import { getReadingTime } from '../utils/readingTime';
+import { lineById, type LineId } from '../data/lines';
 
 interface Props {
 	post: {
@@ -9,6 +10,8 @@ interface Props {
 			title: string;
 			description: string;
 			pubDate: Date;
+			heroImage?: string;
+			line?: LineId;
 		};
 	};
 }
@@ -16,6 +19,7 @@ interface Props {
 const { post } = Astro.props;
 const { title, description, pubDate } = post.data;
 const readingTime = getReadingTime(post.body ?? '');
+const line = lineById(post.data.line);
 
 const date = pubDate.toLocaleDateString('en-US', {
 	month: 'short',
@@ -24,34 +28,27 @@ const date = pubDate.toLocaleDateString('en-US', {
 });
 ---
 
-<!-- Ledger row: date | title + summary | reading time. The title carries a
-     per-slug view-transition name, so opening an article morphs this line
-     into the post header. -->
-<li>
+<!-- Article row (it lifts onto the surface colour under the pointer, bleeding
+     a little past the column so the text does not shift): topic and date in the gutter, title and summary. The title carries a per-slug
+     view-transition name so opening an article morphs it into the page hero. -->
+<li data-reveal>
 	<a
 		href={`/blog/${post.id}/`}
-		class="group -mx-3 grid grid-cols-1 items-baseline gap-x-6 gap-y-1 rounded-xl px-3 py-5 transition-colors duration-200 hover:bg-surface/70 sm:grid-cols-[7.5rem_minmax(0,1fr)_auto]"
+		class={`line-${line.id} -mx-4 grid rounded-[10px] px-4 transition-colors duration-[250ms] hover:bg-surface focus-visible:bg-surface grid-cols-1 items-center gap-x-8 gap-y-3 py-7 sm:grid-cols-[9rem_minmax(0,1fr)] lg:grid-cols-[10rem_minmax(0,1fr)]`}
 	>
-		<time datetime={pubDate.toISOString()} class="font-mono text-xs text-ink-lo">
-			{date}
-		</time>
+		<div class="flex flex-row items-baseline gap-4 self-start sm:flex-col sm:gap-2 sm:pt-1.5">
+			<span class="line-chip">{line.name}</span>
+			<time datetime={pubDate.toISOString()} class="font-mono text-xs text-ink-lo">{date}</time>
+		</div>
 		<div class="min-w-0">
 			<h3
-				class="font-display text-lg font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-accent md:text-xl"
+				class="font-display text-xl font-semibold leading-snug text-ink md:text-2xl"
 				transition:name={`post-title-${post.id}`}
 			>
-				{title}
+				<span class="draw-underline">{title}</span>
 			</h3>
-			<p class="mt-1.5 text-sm leading-relaxed text-ink-mid line-clamp-2">{description}</p>
+			{description && description.trim() !== title.trim() && <p class="mt-2 max-w-[62ch] leading-relaxed text-ink-mid line-clamp-2">{description}</p>}
+			<p class="mt-2 font-mono text-xs text-ink-lo">{readingTime}</p>
 		</div>
-		<span
-			class="hidden items-baseline gap-2 whitespace-nowrap font-mono text-xs text-ink-lo sm:flex"
-		>
-			{readingTime}
-			<span
-				aria-hidden="true"
-				class="inline-block text-accent transition-transform duration-300 group-hover:translate-x-1">→</span
-			>
-		</span>
 	</a>
 </li>

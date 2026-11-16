@@ -1,0 +1,44 @@
+---
+// Every post in one topic, newest first. One page per topic that has posts.
+import Layout from '../../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import PostRow from '../../../components/PostRow.astro';
+import SchemaOrg from '../../../components/SchemaOrg.astro';
+import PageHero from '../../../components/PageHero.astro';
+import TopicFilter from '../../../components/TopicFilter.astro';
+import { LINES, lineById, type LineId } from '../../../data/lines';
+
+export async function getStaticPaths() {
+	const posts = (await getCollection('blog'))
+		.filter((post) => !post.data.hidden)
+		.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+	return LINES.map((line) => ({
+		params: { topic: line.id },
+		props: {
+			line,
+			posts: posts.filter((p) => lineById(p.data.line as LineId | undefined).id === line.id),
+		},
+	})).filter((p) => p.props.posts.length > 0);
+}
+
+const { line, posts } = Astro.props;
+const pageTitle = `${line.name} | Blog | Gustavo Barrientos`;
+const pageDescription = `Articles about ${line.name}: ${line.blurb}`;
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+	<Fragment slot="head">
+		<SchemaOrg title={pageTitle} description={pageDescription} type="WebPage" />
+	</Fragment>
+
+	<PageHero slot="hero" title={line.name} lead={line.blurb} />
+
+	<TopicFilter active={line.id} />
+
+	<section class="mb-12">
+		<ul class="divide-y divide-line border-y border-line" data-stagger>
+			{posts.map((post) => <PostRow post={post} />)}
+		</ul>
+	</section>
+</Layout>

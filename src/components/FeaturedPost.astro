@@ -1,5 +1,6 @@
 ---
 import { getReadingTime } from '../utils/readingTime';
+import { lineById, type LineId } from '../data/lines';
 
 interface Props {
 	post: {
@@ -10,6 +11,7 @@ interface Props {
 			description: string;
 			pubDate: Date;
 			heroImage?: string;
+			line?: LineId;
 		};
 	};
 }
@@ -17,6 +19,7 @@ interface Props {
 const { post } = Astro.props;
 const { title, description, pubDate, heroImage } = post.data;
 const readingTime = getReadingTime(post.body ?? '');
+const line = lineById(post.data.line);
 
 const date = pubDate.toLocaleDateString('en-US', {
 	month: 'short',
@@ -25,54 +28,42 @@ const date = pubDate.toLocaleDateString('en-US', {
 });
 ---
 
-<!-- The newest article, pulled out of the ledger: the one place the signal
-     fuchsia marks editorial content. Its title carries the same per-slug
-     view-transition name as a ledger row, so opening it morphs identically. -->
+<!-- The newest article, given the room: a large image that wipes open as it
+     enters, with the title set big beside it. -->
 <a
 	href={`/blog/${post.id}/`}
-	class="group spotlight card-panel hover-lift mb-12 grid overflow-hidden rounded-3xl md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+	class={`line-${line.id} grid items-center gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14`}
 >
-	<div class="flex flex-col justify-center p-8 md:p-10">
-		<p class="flex items-center gap-2 font-mono text-xs text-accent-2">
-			<span class="relative flex h-2 w-2">
-				<span
-					class="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-2 opacity-60"
-				></span>
-				<span class="relative inline-flex h-2 w-2 rounded-full bg-accent-2"></span>
-			</span>
-			latest
-		</p>
-		<h2
-			class="mt-4 font-display text-2xl font-semibold leading-tight text-ink transition-colors duration-200 group-hover:text-accent md:text-4xl"
-			transition:name={`post-title-${post.id}`}
-		>
-			{title}
-		</h2>
-		<p class="mt-4 leading-relaxed text-ink-mid">{description}</p>
-		<p class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-ink-lo">
-			<time datetime={pubDate.toISOString()}>{date}</time>
-			<span aria-hidden="true">·</span>
-			{readingTime}
-			<span
-				aria-hidden="true"
-				class="ml-1 inline-block text-accent transition-transform duration-300 group-hover:translate-x-1"
-				>→</span
-			>
-		</p>
-	</div>
 	{
 		heroImage && (
-			<div class="relative min-h-52 border-t border-line/60 md:border-l md:border-t-0">
+			<div class="zoom-frame aspect-[16/10] rounded-lg bg-surface" data-reveal="wipe">
 				<img
 					src={heroImage}
 					alt=""
-					width={720}
-					height={405}
-					loading="eager"
+					width="1200"
+					height="750"
+					loading="lazy"
 					decoding="async"
-					class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+					class="h-full w-full object-cover"
 				/>
 			</div>
 		)
 	}
+	<div data-reveal>
+		<p class="flex items-center gap-4">
+			<span class="line-chip">{line.name}</span>
+			<span class="data-label">Latest</span>
+		</p>
+		<h3
+			class="mt-4 font-display text-3xl font-semibold leading-[1.08] text-ink md:text-5xl"
+			transition:name={`post-title-${post.id}`}
+		>
+			<span class="draw-underline">{title}</span>
+		</h3>
+		{description && description.trim() !== title.trim() && <p class="mt-5 max-w-[52ch] text-lg leading-relaxed text-ink-mid">{description}</p>}
+		<p class="tnum mt-5 flex flex-wrap items-center gap-x-4 font-mono text-xs text-ink-lo">
+			<time datetime={pubDate.toISOString()}>{date}</time>
+			{readingTime}
+		</p>
+	</div>
 </a>

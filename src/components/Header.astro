@@ -2,9 +2,10 @@
 import NavBar from './NavBar.astro';
 ---
 
-<!-- Full-width HUD bar. transition:persist keeps this exact DOM (and the
-     spring physics attached to it) alive across client-side navigations;
-     nav-physics.ts re-syncs the active link on astro:page-load. -->
-<header transition:persist="hud" class="animate-nav-drop fixed inset-x-0 top-0 z-50">
+<!-- Fixed over the top of the page: transparent at first, a translucent white
+     bar once the page scrolls (motion.ts toggles data-scrolled). transition:persist
+     keeps this exact DOM alive across client-side navigations. -->
+<header transition:persist="site-header" data-site-header
+	class="fixed inset-x-0 top-0 z-50 border-b border-transparent bg-white/0 transition-[background-color,border-color] duration-[350ms] data-scrolled:border-line data-scrolled:bg-white/86 data-scrolled:backdrop-blur-md">
 	<NavBar />
 </header>

@@ -1,5 +1,6 @@
 ---
 title: 'Corriendo Emuladores en iOS sin Jailbreak'
+line: 'hardware'
 description: 'Corriendo Emuladores en iOS sin Jailbreak'
 pubDate: 'Nov 24 2015'
 heroImage: '/blog/running_emulators_xcode.png'

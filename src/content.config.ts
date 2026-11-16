@@ -23,6 +23,8 @@ const blog = defineCollection({
 		// transform, yielding the bare string instead of { collection, id }.
 		// .prefault() applies on the input side, so the transform still runs.
 		author: reference('authors').prefault('tavobarrientos'),
+		// Which line of the site's network map this post sits on (see src/data/lines.ts)
+		line: z.enum(['ai', 'agents', 'dotnet', 'hardware']).optional(),
 		relatedPosts: z.array(reference('blog')).optional(),
 		hidden: z.boolean().optional(),
 		showAuthor: z.boolean().optional().default(true),

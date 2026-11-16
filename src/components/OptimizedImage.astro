@@ -37,7 +37,7 @@ const {
 const loading = priority ? "eager" : "lazy";
 ---
 
-<div class={`optimized-image ${className || ''}`}>
+<div class={`relative overflow-hidden ${className || ''}`}>
   <Image 
     src={src}
     alt={alt}
@@ -46,27 +46,6 @@ const loading = priority ? "eager" : "lazy";
     loading={loading}
     decoding={priority ? "sync" : "async"}
     sizes={sizes}
-    class={css || ''}
+    class={`block motion-safe:animate-fade-soft ${css || ''}`}
   />
 </div>
-
-<style>
-  .optimized-image {
-    overflow: hidden;
-    position: relative;
-  }
-
-  .optimized-image img {
-    display: block;
-  }
-
-  /* Add a minimal fade-in effect */
-  @keyframes fadeIn {
-    from { opacity: 0.6; }
-    to { opacity: 1; }
-  }
-
-  .optimized-image img {
-    animation: fadeIn 0.3s ease-in;
-  }
-</style>

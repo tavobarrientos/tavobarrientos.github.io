@@ -1,5 +1,6 @@
 ---
 title: 'Creating a simple chatbot with Promptflow'
+line: 'ai'
 description: ''
 pubDate: 'Mar 10 2025'
 heroImage: '/blog/promptflow-title.png'

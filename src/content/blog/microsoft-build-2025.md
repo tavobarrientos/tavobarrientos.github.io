@@ -1,5 +1,6 @@
 ---
 title: 'Microsoft Build 2025'
+line: 'ai'
 description: 'A quick recap of the Microsoft Build 2025'
 pubDate: 'May 23 2025'
 heroImage: '/blog/msbuild2025.png'

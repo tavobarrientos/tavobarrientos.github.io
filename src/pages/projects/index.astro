@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 import ProjectPreview from '../../components/ProjectPreview.astro';
 import SchemaOrg from '../../components/SchemaOrg.astro';
+import PageHero from '../../components/PageHero.astro';
 
 // Get all projects, filter out hidden ones, and sort by newest first
 const allProjects = (await getCollection('projects'))
@@ -22,21 +23,16 @@ const pageDescription = "Explore my portfolio of software development projects, 
 		<SchemaOrg title={pageTitle} description={pageDescription} type="WebPage" />
 	</Fragment>
 
-	<!-- Projects Header -->
-	<section class="mb-16">
-		<div class="max-w-3xl">
-			<p class="eyebrow">projects</p>
-			<h1 class="mb-6 mt-3 text-4xl font-semibold text-ink lg:text-5xl">Things I've shipped</h1>
-			<p class="text-xl leading-relaxed text-ink-mid">
-				A collection of software projects I've built, ranging from web applications to developer
-				tools and open-source contributions.
-			</p>
-		</div>
-	</section>
+	<PageHero
+		slot="hero"
+		photo="board"
+		title="Things I've shipped"
+		lead="A collection of software projects I've built, ranging from web applications to developer tools and open-source contributions."
+	/>
 
 	{
 		allProjects.length > 0 ? (
-			<div class="grid gap-8">
+			<div class="grid gap-10">
 				{allProjects.map((project) => (
 					<ProjectPreview project={project} />
 				))}

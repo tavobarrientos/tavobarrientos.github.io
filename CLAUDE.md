@@ -45,7 +45,7 @@ npm run dev -- --host
   - `index.astro`: Homepage
   - `about.astro`: About page
   - `blog/index.astro`: Blog listing (page 1)
-  - `blog/page/[page].astro`: Blog listing pages 2+ (hand-rolled pagination)
+  - `blog/page/[page].astro`: Blog listing pages 2+ (built with `paginate()`; page 1 is `blog/index.astro`)
   - `blog/[...slug].astro`: Individual blog posts
   - `projects/index.astro`: Projects listing
   - `projects/[...slug].astro`: Individual project pages

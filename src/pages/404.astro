@@ -1,24 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
 import { SITE_DESCRIPTION } from '../consts';
 ---
 
-<Layout title="404: Page Not Found" description={SITE_DESCRIPTION}>
-	<div class="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
-		<p
-			class="bg-gradient-to-r from-brand-400 to-fuchsia-400 bg-clip-text text-8xl font-bold text-transparent"
-		>
-			404
-		</p>
-		<h1 class="mt-4 text-2xl font-bold text-ink">Page not found</h1>
-		<p class="mt-2 mb-8 text-ink-mid">
-			The page you're looking for doesn't exist or has been moved.
-		</p>
-		<a
-			href="/"
-			class="inline-flex items-center rounded-lg bg-accent px-6 py-3 font-semibold text-abyss transition-all duration-300 hover:-translate-y-1 hover:bg-accent-strong glow-accent"
-		>
-			Go back to homepage
-		</a>
-	</div>
+<Layout title="404: Page Not Found" description={SITE_DESCRIPTION} fullBleed>
+	<PageHero
+		slot="hero"
+		photo="earth-night"
+		tall
+		title="Page not found"
+		lead="The page you're looking for doesn't exist or has been moved."
+	>
+		<a href="/" class="btn btn-solid">Back to the homepage</a>
+	</PageHero>
 </Layout>

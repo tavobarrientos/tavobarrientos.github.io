@@ -1,0 +1,114 @@
+---
+// A real code sample on the home page, lifted at build time from one of the
+// articles so it can never drift from what the article says. `index` picks
+// which fenced block of the given language to show.
+import { getEntry } from 'astro:content';
+import { Code } from 'astro:components';
+
+interface Props {
+	postId: string;
+	lang?: string;
+	index?: number | number[];
+}
+const { postId, lang = 'csharp', index = 0 } = Astro.props;
+
+const post = await getEntry('blog', postId);
+const fence = new RegExp('```' + lang + '\\r?\\n([\\s\\S]*?)```', 'g');
+const blocks = post?.body ? [...post.body.matchAll(fence)].map((m) => m[1].trimEnd()) : [];
+// Several indexes show consecutive snippets as one listing
+const wanted = Array.isArray(index) ? index : [index];
+const blank = String.fromCharCode(10, 10);
+const code = wanted.map((i) => blocks[i]).filter(Boolean).join(blank) || blocks[0];
+---
+
+{
+	post && code && (
+		<section class="band-dark">
+			<div class="container-x grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:gap-16 lg:py-28">
+				<div data-reveal>
+					<h2 class="text-4xl font-semibold leading-[1.05] md:text-5xl">The writing comes with the code</h2>
+					<p class="mt-5 max-w-[46ch] text-lg leading-relaxed text-ink-mid">
+						The articles show the code, not only the idea. This sample asks an agent built with
+						Microsoft Agent Framework a question, then streams the answer.
+					</p>
+					<a href={`/blog/${post.id}/`} class="link-arrow mt-6">
+						<span>Read “{post.data.title}”</span>
+						<svg class="arrow h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+							<path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round" />
+						</svg>
+					</a>
+				</div>
+				<figure class="code-proof m-0 min-w-0" data-reveal>
+					<figcaption class="flex items-center justify-between border-b border-line py-2 pl-5 pr-2">
+						<span class="data-label">C#, from the article</span>
+						<button type="button" class="copy-code" data-copy-code>Copy</button>
+					</figcaption>
+					<Code code={code} lang={lang as any} theme="github-dark" />
+				</figure>
+			</div>
+		</section>
+	)
+}
+
+<script>
+	function wire() {
+		document.querySelectorAll<HTMLButtonElement>('[data-copy-code]').forEach((btn) => {
+			if (btn.dataset.wired) return;
+			btn.dataset.wired = '1';
+			btn.addEventListener('click', async () => {
+				const pre = btn.closest('figure')?.querySelector('pre');
+				try {
+					await navigator.clipboard.writeText(pre?.textContent ?? '');
+					btn.textContent = 'Copied';
+				} catch {
+					btn.textContent = 'Copy failed';
+				}
+				window.setTimeout(() => (btn.textContent = 'Copy'), 1800);
+			});
+		});
+	}
+	wire();
+	document.addEventListener('astro:page-load', wire);
+</script>
+
+<style is:global>
+	.copy-code {
+		min-height: 2.25rem;
+		min-width: 4.5rem;
+		padding: 0 0.875rem;
+		border-radius: 999px;
+		border: 1px solid var(--line);
+		font-size: 0.8125rem;
+		font-weight: 500;
+		color: var(--text-mid);
+		transition:
+			color 0.2s ease,
+			border-color 0.2s ease;
+	}
+	.copy-code:hover {
+		color: var(--text-hi);
+		border-color: var(--line-strong);
+	}
+	.code-proof {
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		background: #0d1117;
+		overflow: hidden;
+	}
+	.code-proof pre {
+		margin: 0;
+		padding: 1.5rem 1.25rem;
+		background: transparent !important;
+		font-family: var(--font-mono);
+		font-size: 0.9375rem;
+		line-height: 1.75;
+		overflow-x: auto;
+		tab-size: 4;
+	}
+	@media (min-width: 1024px) {
+		.code-proof pre {
+			padding: 2rem 1.75rem;
+			font-size: 0.875rem;
+		}
+	}
+</style>

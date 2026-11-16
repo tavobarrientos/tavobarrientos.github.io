@@ -1,0 +1,183 @@
+---
+// The blog's tools: topics as a row of links with post counts, and a search
+// box that searches every post's title, summary and text (index fetched from
+// /blog/search.json on first use). "All" is the full list at /blog; each
+// topic has its own page at /blog/topic/<id>/, so a filtered view covers
+// every post (not just the current page) and can be linked to. `active`
+// marks the topic being shown.
+import { getCollection } from 'astro:content';
+import { LINES, lineById, type LineId } from '../data/lines';
+
+interface Props {
+	active?: LineId;
+}
+const { active } = Astro.props;
+
+const posts = (await getCollection('blog')).filter((p) => !p.data.hidden);
+const topics = LINES.map((l) => ({
+	...l,
+	count: posts.filter((p) => lineById(p.data.line as LineId | undefined).id === l.id).length,
+})).filter((t) => t.count > 0);
+
+const chip =
+	'group inline-flex min-h-10 items-center gap-2 rounded-full border border-rule px-[0.95rem] text-sm font-medium text-ink transition-colors duration-200 hover:border-ink aria-[current]:border-ink aria-[current]:bg-ink aria-[current]:text-paper';
+const count = 'font-mono text-xs tabular-nums text-ink-lo group-aria-[current]:text-inherit group-aria-[current]:opacity-70';
+---
+
+<div class="mb-10 flex flex-wrap items-center justify-between gap-4">
+	<nav aria-label="Topics" class="flex flex-wrap gap-2">
+		<a href="/blog" class={chip} aria-current={active ? undefined : 'true'}>
+			All <span class={count}>{posts.length}</span>
+		</a>
+		{
+			topics.map((t) => (
+				<a href={`/blog/topic/${t.id}/`} class={`line-${t.id} ${chip}`} aria-current={active === t.id ? 'true' : undefined}>
+					<span class="h-2 w-2 rounded-xs bg-(--c)" aria-hidden="true" />
+					{t.name} <span class={count}>{t.count}</span>
+				</a>
+			))
+		}
+	</nav>
+
+	<form role="search" class="relative max-w-none flex-[1_1_100%] sm:max-w-80 sm:flex-[1_1_14rem]" data-blog-search>
+		<label for="blog-q" class="sr-only">Search articles</label>
+		<svg
+			class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-lo"
+			viewBox="0 0 20 20"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1.75"
+			aria-hidden="true"
+		>
+			<circle cx="9" cy="9" r="5.5"></circle>
+			<path d="M13.5 13.5 17 17" stroke-linecap="round"></path>
+		</svg>
+		<!-- 16px text on phones keeps iOS from zooming the page on focus -->
+		<input
+			id="blog-q"
+			type="search"
+			name="q"
+			placeholder="Search articles"
+			autocomplete="off"
+			spellcheck="false"
+			class="h-10 w-full rounded-full border border-rule bg-paper pl-[2.4rem] pr-4 text-[1rem] text-ink transition-colors duration-200 placeholder:text-ink-lo hover:border-ink focus:border-ink sm:text-sm"
+		/>
+	</form>
+</div>
+
+<!-- Search results replace everything after this element while a query is typed -->
+<div class="mb-12" data-blog-results hidden>
+	<p class="data-label" data-blog-status role="status" aria-live="polite"></p>
+	<ul class="mt-4 divide-y divide-line border-y border-line empty:hidden"></ul>
+</div>
+
+<script>
+	type Entry = {
+		url: string;
+		title: string;
+		description: string;
+		topic: string;
+		topicId: string;
+		date: string;
+		readingTime: string;
+		body: string;
+	};
+	type Indexed = Entry & { hayTitle: string; hay: string };
+
+	let index: Promise<Indexed[]> | null = null;
+	const load = () =>
+		(index ??= fetch('/blog/search.json')
+			.then((r) => r.json())
+			.then((list: Entry[]) =>
+				list.map((e) => ({
+					...e,
+					hayTitle: e.title.toLowerCase(),
+					hay: `${e.title} ${e.description} ${e.topic} ${e.body}`.toLowerCase(),
+				}))
+			));
+
+	const el = (tag: string, cls: string, text?: string) => {
+		const n = document.createElement(tag);
+		if (cls) n.className = cls;
+		if (text) n.textContent = text;
+		return n;
+	};
+
+	function wire() {
+		const form = document.querySelector<HTMLFormElement>('[data-blog-search]');
+		const results = document.querySelector<HTMLElement>('[data-blog-results]');
+		if (!form || !results || form.dataset.wired) return;
+		form.dataset.wired = '1';
+		const input = form.querySelector('input')!;
+		const status = results.querySelector<HTMLElement>('[data-blog-status]')!;
+		const list = results.querySelector('ul')!;
+
+		// The page's own list and pagination: everything after the results box
+		const rest = () => {
+			const out: HTMLElement[] = [];
+			for (let n = results.nextElementSibling; n; n = n.nextElementSibling) out.push(n as HTMLElement);
+			return out;
+		};
+		const show = (searching: boolean) => {
+			results.hidden = !searching;
+			rest().forEach((n) => (n.hidden = searching));
+		};
+
+		let run = 0;
+		const search = async () => {
+			const typed = input.value.trim();
+			const mine = ++run;
+			if (!typed) return show(false);
+
+			let entries: Indexed[];
+			try {
+				entries = await load();
+			} catch {
+				index = null;
+				if (mine !== run) return;
+				list.replaceChildren();
+				status.textContent = 'Search could not load. Check your connection and try again.';
+				return show(true);
+			}
+			if (mine !== run) return;
+
+			const terms = typed.toLowerCase().split(/\s+/);
+			const inTitle = (e: Indexed) => Number(terms.every((t) => e.hayTitle.includes(t)));
+			// Title matches first; the index is already newest first
+			const found = entries.filter((e) => terms.every((t) => e.hay.includes(t))).sort((a, b) => inTitle(b) - inTitle(a));
+
+			list.replaceChildren(
+				...found.map((e) => {
+					const li = el('li', '');
+					const a = el(
+						'a',
+						`line-${e.topicId} -mx-4 grid gap-x-8 gap-y-3 rounded-[10px] px-4 py-7 transition-colors duration-[250ms] hover:bg-surface focus-visible:bg-surface sm:grid-cols-[9rem_minmax(0,1fr)]`
+					) as HTMLAnchorElement;
+					a.href = e.url;
+					const meta = el('div', 'flex items-baseline gap-4 sm:flex-col sm:gap-2 sm:pt-1.5');
+					meta.append(el('span', 'line-chip', e.topic), el('span', 'data-label', e.date));
+					const main = el('div', '');
+					main.append(el('h3', 'text-xl font-semibold leading-snug md:text-2xl', e.title));
+					if (e.description) main.append(el('p', 'my-2 max-w-[62ch] leading-relaxed text-ink-mid', e.description));
+					main.append(el('p', 'data-label', e.readingTime));
+					a.append(meta, main);
+					li.append(a);
+					return li;
+				})
+			);
+			status.textContent = found.length
+				? `${found.length} ${found.length === 1 ? 'article' : 'articles'} for “${typed}”`
+				: `No articles match “${typed}”. Try a different word, or pick a topic.`;
+			show(true);
+		};
+
+		input.addEventListener('focus', () => void load().catch(() => (index = null)), { once: true });
+		input.addEventListener('input', search);
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+			search();
+		});
+	}
+	wire();
+	document.addEventListener('astro:page-load', wire);
+</script>

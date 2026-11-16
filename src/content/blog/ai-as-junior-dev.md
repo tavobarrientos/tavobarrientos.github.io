@@ -1,5 +1,6 @@
 ---
 title: 'AI as a Junior Engineer'
+line: 'agents'
 description: 'Eighteen years later, I look back at how AI became the best coding buddy every junior developer wished they had.'
 pubDate: 'Nov 1 2025'
 heroImage: '/blog/junior_dev.png'

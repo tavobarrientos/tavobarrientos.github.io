@@ -1,13 +1,15 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
+import { BLOG_PAGE_SIZE } from '../../consts';
 import PostRow from '../../components/PostRow.astro';
-import FeaturedPost from '../../components/FeaturedPost.astro';
 import SchemaOrg from '../../components/SchemaOrg.astro';
 import Pagination from '../../components/Pagination.astro';
+import PageHero from '../../components/PageHero.astro';
+import TopicFilter from '../../components/TopicFilter.astro';
 
-// Number of posts per page
-const postsPerPage = 10;
+// Page 1 of the list; pages 2+ come from blog/page/[page].astro via paginate()
+const postsPerPage = BLOG_PAGE_SIZE;
 
 // Get all posts, filter out hidden ones, and sort by date in descending order (newest first)
 const allPosts = (await getCollection('blog'))
@@ -35,24 +37,19 @@ const pageDescription = 'Articles and tutorials about software development, Azur
 		{nextPage && <link rel="next" href={nextPage} />}
 	</Fragment>
 
-	<!-- Blog Header -->
-	<section class="mb-16">
-		<div class="max-w-3xl">
-			<p class="eyebrow">writing</p>
-			<h1 class="mb-6 mt-3 text-4xl font-semibold text-ink lg:text-5xl">Field notes</h1>
-			<p class="text-xl leading-relaxed text-ink-mid">
-				Tutorials, guides, and insights on AI engineering, Azure, and software development.
-			</p>
-		</div>
-	</section>
+	<PageHero
+		slot="hero"
+		photo="circuit"
+		title="Field notes"
+		lead="Tutorials, guides, and insights on AI engineering, Azure, and software development."
+	/>
 
-	<!-- Latest article, featured above the ledger -->
-	{posts.length > 0 && <FeaturedPost post={posts[0]} />}
+	<TopicFilter />
 
 	<!-- Article ledger -->
 	<section class="mb-12">
-		<ul class="divide-y divide-line/60 border-y border-line/60">
-			{posts.slice(1).map((post) => <PostRow post={post} />)}
+		<ul class="divide-y divide-line border-y border-line" data-stagger>
+			{posts.map((post) => <PostRow post={post} />)}
 		</ul>
 	</section>
 

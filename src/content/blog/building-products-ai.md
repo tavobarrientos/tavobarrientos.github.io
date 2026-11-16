@@ -1,5 +1,6 @@
 ---
 title: 'Building products with AI: rcrd'
+line: 'agents'
 description: 'Building a mobile app to track personal records at the gym using AI tools.'
 pubDate: 'Jul 12 2025'
 heroImage: '/blog/products/rcrd.jpg'

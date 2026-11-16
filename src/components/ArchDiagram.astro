@@ -1,0 +1,131 @@
+---
+// An illustrative reference architecture for the kind of system the writing
+// covers. Drawn from the stack named in profile.json; not a client system.
+// When it scrolls into view the wires draw in, then small pulses travel them:
+// a request reaching the agent, the agent fanning out to tools, models, data.
+const nodes = [
+	{ x: 24, y: 128, w: 112, h: 64, t: 'Client', s: 'Web, mobile, API' },
+	{ x: 204, y: 96, w: 128, h: 128, t: 'Agent', s: 'Orchestration' },
+	{ x: 388, y: 24, w: 108, h: 64, t: 'Tools', s: 'MCP servers' },
+	{ x: 388, y: 128, w: 108, h: 64, t: 'Models', s: 'Microsoft Foundry' },
+	{ x: 388, y: 232, w: 108, h: 64, t: 'Data', s: 'SQL, search, graph' },
+];
+
+// Each wire: its path, and when its pulse leaves (seconds into a 4.8s cycle)
+const wires = [
+	{ d: 'M136 160 H204', begin: 0 },
+	{ d: 'M332 140 H360 V56 H388', begin: 1.1 },
+	{ d: 'M332 160 H388', begin: 1.5 },
+	{ d: 'M332 180 H360 V264 H388', begin: 1.9 },
+];
+---
+
+<figure class="arch m-0" data-reveal>
+	<div class="rounded-xl border border-line bg-surface p-4 sm:p-8">
+		<svg viewBox="0 0 520 380" class="h-auto w-full" role="img" aria-labelledby="arch-t arch-d">
+			<title id="arch-t">Reference architecture for an agent system</title>
+			<desc id="arch-d">
+				A client calls an agent. The agent orchestrates tools exposed over MCP, language models in
+				Microsoft Foundry, and data stores. Evaluation, tracing and CI/CD span all of it.
+			</desc>
+			<defs>
+				<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+					<path d="M0 0 L10 5 L0 10 z" fill="var(--text-lo)"></path>
+				</marker>
+			</defs>
+
+			<g fill="none">
+				{
+					wires.map((w, i) => (
+						<path
+							class="wire"
+							d={w.d}
+							pathLength="1"
+							stroke="var(--line-strong)"
+							stroke-width="1.5"
+							marker-end="url(#arr)"
+							style={`--i:${i}`}
+						/>
+					))
+				}
+			</g>
+
+			<g class="pulses" aria-hidden="true">
+				{
+					wires.map((w) => (
+						<circle r="3.5" fill="var(--accent)" opacity="0">
+							<animateMotion dur="4.8s" begin={`${w.begin}s`} repeatCount="indefinite" path={w.d} keyPoints="0;1;1" keyTimes="0;0.22;1" calcMode="linear" />
+							<animate attributeName="opacity" dur="4.8s" begin={`${w.begin}s`} repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;0.03;0.19;0.22;1" />
+						</circle>
+					))
+				}
+			</g>
+
+			{
+				nodes.map((n, i) => (
+					<g class="node" style={`--i:${i}`}>
+						<rect
+							x={n.x}
+							y={n.y}
+							width={n.w}
+							height={n.h}
+							rx="8"
+							fill="var(--bg-raised)"
+							stroke={i === 1 ? 'var(--accent)' : 'var(--line-strong)'}
+							stroke-width={i === 1 ? 1.75 : 1.25}
+						/>
+						<text x={n.x + n.w / 2} y={n.y + n.h / 2 - 2} text-anchor="middle" font-size="15" font-weight="600" fill="var(--text-hi)">{n.t}</text>
+						<text x={n.x + n.w / 2} y={n.y + n.h / 2 + 16} text-anchor="middle" font-size="11.5" fill="var(--text-mid)">{n.s}</text>
+					</g>
+				))
+			}
+
+			<g class="node" style="--i:5">
+				<rect x="24" y="320" width="472" height="40" rx="8" fill="none" stroke="var(--line-strong)" stroke-width="1.25" stroke-dasharray="4 4"></rect>
+				<text x="260" y="345" text-anchor="middle" font-size="12.5" fill="var(--text-mid)" font-family="var(--font-mono)">evals, tracing, CI/CD</text>
+			</g>
+		</svg>
+	</div>
+	<figcaption class="data-label mt-3">Illustrative reference architecture, not a client system.</figcaption>
+</figure>
+
+<style>
+	@media (prefers-reduced-motion: reduce) {
+		.pulses {
+			display: none;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		/* Armed only when motion.ts has put `motion` on <html>; plays when the
+		   figure gets `.in` from the scroll observer. */
+		:global(.motion) .arch .node {
+			opacity: 0;
+			transform: translateY(8px);
+			transition:
+				opacity 0.6s var(--ease-out-expo),
+				transform 0.6s var(--ease-out-expo);
+			transition-delay: calc(0.15s + var(--i) * 90ms);
+		}
+		:global(.motion) .arch .wire {
+			stroke-dasharray: 1;
+			stroke-dashoffset: 1;
+			transition: stroke-dashoffset 0.9s var(--ease-out-expo);
+			transition-delay: calc(0.7s + var(--i) * 120ms);
+		}
+		:global(.motion) .arch .pulses {
+			opacity: 0;
+			transition: opacity 0.6s ease 1.6s;
+		}
+		:global(.motion) .arch.in .node {
+			opacity: 1;
+			transform: none;
+		}
+		:global(.motion) .arch.in .wire {
+			stroke-dashoffset: 0;
+		}
+		:global(.motion) .arch.in .pulses {
+			opacity: 1;
+		}
+	}
+</style>

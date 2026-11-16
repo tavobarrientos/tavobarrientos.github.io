@@ -1,5 +1,6 @@
 ---
 title: 'Developer Perspective: Microsoft Surface 7, one month later'
+line: 'dotnet'
 description: ''
 pubDate: 'Apr 24 2025'
 heroImage: '/blog/surface7_anime.png'

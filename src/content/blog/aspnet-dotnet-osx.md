@@ -1,5 +1,6 @@
 ---
 title: 'Corriendo ASP.NET vNext en OSX'
+line: 'dotnet'
 description: 'Corriendo ASP.NET vNEXT en OSX'
 pubDate: 'May 05 2015'
 heroImage: '/blog/web.png'

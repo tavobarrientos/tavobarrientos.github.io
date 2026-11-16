@@ -1,14 +1,15 @@
 ---
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import Layout from './Layout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Author from '../components/Author.astro';
 import RelatedPosts from '../components/RelatedPosts.astro';
-import ReadingTime from '../components/ReadingTime.astro';
 import SchemaOrg from '../components/SchemaOrg.astro';
 import SocialShare from '../components/SocialShare.astro';
+import PageHero from '../components/PageHero.astro';
+import PostCard from '../components/PostCard.astro';
 import { getReadingTime } from '../utils/readingTime';
+import { lineById } from '../data/lines';
 
 type Props = CollectionEntry<'blog'>['data'] & { body?: string; slug?: string };
 
@@ -21,6 +22,7 @@ const {
 	author,
 	relatedPosts,
 	showAuthor = true,
+	line: lineId,
 	body,
 	slug,
 } = Astro.props;
@@ -29,6 +31,18 @@ const {
 const keywords = `${title}, ${description}, blog, ${author?.id || 'tavobarrientos'}`;
 
 const readingTime = getReadingTime(body || title + ' ' + description);
+const line = lineById(lineId);
+
+// Neighbours in publication order, for the previous/next pair
+const ordered = (await getCollection('blog'))
+	.filter((p) => !p.data.hidden)
+	.sort((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf());
+const at = ordered.findIndex((p) => p.id === slug);
+// Skip a neighbour that is already shown under Related articles
+const shown = new Set((relatedPosts ?? []).map((r) => r.id));
+const pick = (p: (typeof ordered)[number] | undefined) => (p && !shown.has(p.id) ? p : undefined);
+const older = pick(at > 0 ? ordered[at - 1] : undefined);
+const newer = pick(at >= 0 && at < ordered.length - 1 ? ordered[at + 1] : undefined);
 ---
 
 <Layout
@@ -39,6 +53,7 @@ const readingTime = getReadingTime(body || title + ' ' + description);
 	publishDate={pubDate}
 	modifiedDate={updatedDate}
 	keywords={keywords}
+	fullBleed
 >
 	<Fragment slot="head">
 		<SchemaOrg
@@ -55,72 +70,66 @@ const readingTime = getReadingTime(body || title + ' ' + description);
 	<div
 		data-progress
 		aria-hidden="true"
-		class="fixed left-0 top-0 z-[60] h-0.5 w-0 bg-gradient-to-r from-accent to-accent-2"
+		class="fixed left-0 top-0 z-[60] h-0.5 w-0 bg-accent"
 	>
 	</div>
 
-	<article class="mx-auto w-full max-w-3xl">
-		<header class="mb-10">
-			<a
-				href="/blog"
-				class="inline-flex items-center gap-2 font-mono text-xs text-ink-lo transition-colors hover:text-accent"
-			>
-				<span aria-hidden="true">←</span> ~/writing
-			</a>
+	<PageHero
+		slot="hero"
+		photo="circuit"
+		image={heroImage}
+		narrow
+		title={title}
+		lead={description && description.trim() !== title.trim() ? description : undefined}
+		transitionName={slug ? `post-title-${slug}` : undefined}
+	>
+		<a slot="above" href="/blog" class="mb-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-ink-mid transition-colors hover:text-ink">
+			<span aria-hidden="true">←</span> All articles
+		</a>
+		<div class="tnum flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-ink-mid">
+			<span class={`line-chip line-${line.id}`}>{line.name}</span>
+			<FormattedDate date={pubDate} />
+			<span>{readingTime}</span>
+			{updatedDate && <span>updated <FormattedDate date={updatedDate} /></span>}
+		</div>
+	</PageHero>
 
-			<h1
-				class="mt-6 font-display text-3xl font-semibold leading-tight text-ink md:text-4xl lg:text-5xl"
-				transition:name={slug ? `post-title-${slug}` : undefined}
-			>
-				{title}
-			</h1>
+	<article class="container-x py-14 lg:py-20">
+		<div class="prose prose-lg mx-auto max-w-[44rem]">
+			<slot />
+		</div>
 
-			<p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-mid">{description}</p>
-
-			<div class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-ink-lo sm:text-sm">
-				<FormattedDate date={pubDate} />
-				<span aria-hidden="true">·</span>
-				<ReadingTime readingTime={readingTime} />
-				{
-					updatedDate && (
-						<>
-							<span aria-hidden="true">·</span>
-							<span>
-								updated <FormattedDate date={updatedDate} />
-							</span>
-						</>
-					)
-				}
+		<!-- End matter: share, author -->
+		<footer class="mx-auto mt-16 max-w-[44rem] divide-y divide-line border-y border-line">
+			<div class="py-6">
+				<SocialShare url={Astro.url.toString()} title={title} description={description} />
 			</div>
-		</header>
-
-		{
-			heroImage && (
-				<div class="mb-10 overflow-hidden rounded-2xl border border-line">
-					<Image
-						width={1020}
-						height={510}
-						src={heroImage}
-						alt=""
-						class="h-auto w-full object-cover"
-					/>
+			{showAuthor && (
+				<div class="py-8">
+					<Author author={author} />
 				</div>
-			)
-		}
-
-		<!-- Opaque reading surface: the article never competes with the lattice -->
-		<div class="reading-panel px-6 py-8 sm:px-10 sm:py-12 md:px-14">
-			<div class="prose prose-lg max-w-none">
-				<slot />
-			</div>
-		</div>
-
-		<div class="mt-12 border-t border-line pt-8">
-			<SocialShare url={Astro.url.toString()} title={title} description={description} />
-			{showAuthor && <Author author={author} />}
-			{relatedPosts && <RelatedPosts related={relatedPosts} />}
-		</div>
+			)}
+		</footer>
 	</article>
+
+	<!-- Keep reading -->
+	<div class="bg-surface">
+		<div class="container-x grid gap-16 py-16 lg:py-24">
+			{relatedPosts && relatedPosts.length > 0 && <RelatedPosts related={relatedPosts} />}
+
+			{
+				(older || newer) && (
+					<nav aria-label="More articles">
+						<h2 class="text-2xl font-semibold md:text-3xl">Keep reading</h2>
+						<ul class="mt-6 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3" data-stagger>
+							{newer && <li data-reveal><PostCard post={newer} label="Newer" /></li>}
+							{older && <li data-reveal><PostCard post={older} label="Older" /></li>}
+						</ul>
+					</nav>
+				)
+			}
+		</div>
+	</div>
 </Layout>
 
 <script>

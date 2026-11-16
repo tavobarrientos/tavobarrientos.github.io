@@ -1,0 +1,214 @@
+---
+// Quiet life for the home hero photograph, drawn on a canvas over it:
+// the city lights already in the photo flicker gently, and now and then a thin
+// arc travels between two of them, like traffic on a network. The light
+// positions are sampled from the photograph itself, so they sit exactly on
+// its cities. Nothing runs under reduced motion or while the hero is off-screen.
+interface Props {
+	src: string; // same-origin image to sample (the small rendition is enough)
+	aspect: number; // intrinsic width / height of the photograph
+	posY?: number; // object-position Y of the photo, 0..1
+}
+const { src, aspect, posY = 0.5 } = Astro.props;
+---
+
+<canvas
+	class="pointer-events-none absolute inset-0 h-full w-full"
+	aria-hidden="true"
+	data-hero-lights
+	data-src={src}
+	data-aspect={aspect}
+	data-pos-y={posY}></canvas>
+
+<script>
+	type Light = { u: number; v: number; r: number; ph: number; sp: number; warm: number };
+	type Arc = { a: Light; b: Light; t0: number };
+
+	const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	function sample(img: HTMLImageElement): Light[] {
+		const W = 360;
+		const H = Math.round((W * img.naturalHeight) / img.naturalWidth);
+		const c = document.createElement('canvas');
+		c.width = W;
+		c.height = H;
+		const g = c.getContext('2d', { willReadFrequently: true })!;
+		g.drawImage(img, 0, 0, W, H);
+		const d = g.getImageData(0, 0, W, H).data;
+		const found: Array<Light & { lum: number }> = [];
+		for (let y = 1; y < H - 1; y += 2) {
+			for (let x = 1; x < W - 1; x += 2) {
+				const i = (y * W + x) * 4;
+				const r = d[i];
+				const gr = d[i + 1];
+				const b = d[i + 2];
+				const lum = 0.299 * r + 0.587 * gr + 0.114 * b;
+				// city lights: bright and warmer than the night around them
+				if (lum > 120 && r > b + 18) {
+					found.push({
+						u: x / W,
+						v: y / H,
+						r: 0.6 + Math.min(1.6, (lum - 120) / 70),
+						ph: Math.random() * Math.PI * 2,
+						sp: 0.5 + Math.random() * 1.4,
+						warm: Math.min(1, (r - b) / 90),
+						lum,
+					});
+				}
+			}
+		}
+		// keep the brightest, thinned so one metropolis does not take them all
+		found.sort((p, q) => q.lum - p.lum);
+		const kept: Light[] = [];
+		for (const p of found) {
+			if (kept.length >= 170) break;
+			if (kept.every((k) => Math.hypot(k.u - p.u, k.v - p.v) > 0.012)) kept.push(p);
+		}
+		return kept;
+	}
+
+	function start(canvas: HTMLCanvasElement) {
+		if (reduce || canvas.dataset.booted) return;
+		canvas.dataset.booted = '1';
+		const ctx = canvas.getContext('2d')!;
+		const aspect = Number(canvas.dataset.aspect) || 1.5;
+		const posY = Number(canvas.dataset.posY ?? 0.5);
+		let lights: Light[] = [];
+		let arcs: Arc[] = [];
+		let w = 0;
+		let h = 0;
+		let visible = true;
+		let nextArc = 0;
+
+		const resize = () => {
+			const rect = canvas.getBoundingClientRect();
+			const dpr = Math.min(window.devicePixelRatio || 1, 2);
+			w = rect.width;
+			h = rect.height;
+			canvas.width = Math.max(1, Math.floor(w * dpr));
+			canvas.height = Math.max(1, Math.floor(h * dpr));
+			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+		};
+
+		// Same maths as object-fit: cover with object-position: center <posY>
+		const place = (l: Light): [number, number] => {
+			const s = Math.max(w / aspect, h);
+			const iw = s * aspect;
+			return [(w - iw) * 0.5 + l.u * iw, (h - s) * posY + l.v * s];
+		};
+
+		const img = new Image();
+		img.decoding = 'async';
+		img.onload = () => {
+			lights = sample(img);
+		};
+		img.src = canvas.dataset.src!;
+
+		new IntersectionObserver((e) => (visible = e[0].isIntersecting)).observe(canvas);
+		const ro = new ResizeObserver(resize);
+		ro.observe(canvas);
+		resize();
+
+		const frame = (now: number) => {
+			if (!canvas.isConnected) {
+				ro.disconnect();
+				return;
+			}
+			requestAnimationFrame(frame);
+			if (!visible || document.hidden || !lights.length) return;
+			const t = now / 1000;
+			ctx.clearRect(0, 0, w, h);
+			ctx.globalCompositeOperation = 'lighter';
+
+			for (const l of lights) {
+				const [x, y] = place(l);
+				if (x < -10 || x > w + 10 || y < -10 || y > h + 10) continue;
+				// slow breathing plus a faster, smaller shimmer
+				const k = 0.5 + 0.5 * Math.sin(t * l.sp + l.ph);
+				const a = 0.1 + 0.34 * k * k + 0.05 * Math.sin(t * 5.3 + l.ph * 3);
+				const rad = (l.r + 0.8 * k) * (w / 1400 + 0.6);
+				const g = ctx.createRadialGradient(x, y, 0, x, y, rad * 4);
+				const tint = l.warm > 0.5 ? '255, 214, 150' : '255, 236, 210';
+				g.addColorStop(0, `rgba(${tint}, ${a})`);
+				g.addColorStop(1, `rgba(${tint}, 0)`);
+				ctx.fillStyle = g;
+				ctx.beginPath();
+				ctx.arc(x, y, rad * 4, 0, Math.PI * 2);
+				ctx.fill();
+			}
+
+			// An occasional arc between two cities
+			if (t > nextArc && arcs.length < 3 && lights.length > 8) {
+				const a = lights[Math.floor(Math.random() * lights.length)];
+				const far = lights.filter((b) => {
+					const d = Math.hypot(a.u - b.u, (a.v - b.v) / aspect);
+					return d > 0.12 && d < 0.4;
+				});
+				if (far.length) arcs.push({ a, b: far[Math.floor(Math.random() * far.length)], t0: t });
+				nextArc = t + 1.6 + Math.random() * 2.4;
+			}
+			arcs = arcs.filter((arc) => t - arc.t0 < 3.4);
+			ctx.lineWidth = 1;
+			ctx.lineCap = 'round';
+			for (const arc of arcs) {
+				const p = (t - arc.t0) / 3.4;
+				const [x0, y0] = place(arc.a);
+				const [x1, y1] = place(arc.b);
+				const dist = Math.hypot(x1 - x0, y1 - y0);
+				const cx = (x0 + x1) / 2;
+				const cy = (y0 + y1) / 2 - dist * 0.28;
+				// the head travels the curve in the first 60%, then the line fades
+				const head = Math.min(1, p / 0.6);
+				const eased = 1 - Math.pow(1 - head, 3);
+				const tail = Math.max(0, eased - 0.45);
+				const fade = p < 0.6 ? 1 : 1 - (p - 0.6) / 0.4;
+				ctx.beginPath();
+				const steps = 28;
+				for (let i = 0; i <= steps; i++) {
+					const q = tail + ((eased - tail) * i) / steps;
+					const xx = (1 - q) * (1 - q) * x0 + 2 * (1 - q) * q * cx + q * q * x1;
+					const yy = (1 - q) * (1 - q) * y0 + 2 * (1 - q) * q * cy + q * q * y1;
+					if (i === 0) ctx.moveTo(xx, yy);
+					else ctx.lineTo(xx, yy);
+				}
+				ctx.strokeStyle = `rgba(170, 205, 255, ${0.42 * fade})`;
+				ctx.stroke();
+				// a small bright head
+				const hx = (1 - eased) * (1 - eased) * x0 + 2 * (1 - eased) * eased * cx + eased * eased * x1;
+				const hy = (1 - eased) * (1 - eased) * y0 + 2 * (1 - eased) * eased * cy + eased * eased * y1;
+				ctx.fillStyle = `rgba(215, 232, 255, ${0.8 * fade})`;
+				ctx.beginPath();
+				ctx.arc(hx, hy, 1.6, 0, Math.PI * 2);
+				ctx.fill();
+			}
+		};
+		requestAnimationFrame(frame);
+	}
+
+	// A few pixels of drift with the pointer, so the photograph has depth
+	function parallax() {
+		if (reduce) return;
+		const layer = document.querySelector<HTMLElement>('[data-hero-parallax]');
+		if (!layer || layer.dataset.wired) return;
+		layer.dataset.wired = '1';
+		const band = layer.closest<HTMLElement>('section')!;
+		band.addEventListener(
+			'pointermove',
+			(e) => {
+				if (e.pointerType !== 'mouse') return;
+				const r = band.getBoundingClientRect();
+				const dx = (e.clientX - r.left) / r.width - 0.5;
+				const dy = (e.clientY - r.top) / r.height - 0.5;
+				layer.style.transform = `translate3d(${(-dx * 14).toFixed(1)}px, ${(-dy * 10).toFixed(1)}px, 0)`;
+			},
+			{ passive: true }
+		);
+	}
+
+	function init() {
+		document.querySelectorAll<HTMLCanvasElement>('[data-hero-lights]').forEach(start);
+		parallax();
+	}
+	init();
+	document.addEventListener('astro:page-load', init);
+</script>

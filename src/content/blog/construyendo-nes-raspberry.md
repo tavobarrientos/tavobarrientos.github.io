@@ -1,5 +1,6 @@
 ---
 title: 'Construyendo una NES con Raspberry Pi'
+line: 'hardware'
 description: 'Lorem ipsum dolor sit amet'
 pubDate: 'Nov 04 2015'
 heroImage: '/blog/build_nes_raspi.png'

@@ -1,335 +1,139 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Globe from '../components/three/Globe.astro';
 import { Icon } from 'astro-icon/components';
-import { Image } from 'astro:assets';
+import PageHero from '../components/PageHero.astro';
 import profileData from '../data/profile.json';
 
 const profile = profileData;
 const company = profile.company;
-// Tagline mid-sentence: lowercase only the leading word, keep acronyms intact
-const taglineInline = company.tagline.charAt(0).toLowerCase() + company.tagline.slice(1);
-const coordinates = profile.coordinates;
 
-// "15+ years" -> 15, for the count-up animation in the credentials strip
 const experienceYears = parseInt(profile.experience, 10) || 0;
-
-// Where each category starts in the flat skill order, so the reveal stagger
-// keeps cascading no matter how many skills a category holds
-const skillOffsets = profile.skills.map((_, i) =>
-	profile.skills.slice(0, i).reduce((total, category) => total + category.items.length, 0)
-);
 ---
 
 <Layout
 	title="About Me - Gustavo Barrientos"
 	description="Learn about my journey as a software engineer, my expertise in Azure AI, .NET development, and how I can help bring your projects to life."
-	fullBleed
 >
 	<!-- reCAPTCHA Script: data-astro-rerun re-executes it after client-side
 	     navigations so the widget renders on every arrival at this page -->
 	<script src="https://www.google.com/recaptcha/api.js" async defer is:inline data-astro-rerun
 	></script>
 
-	<!-- Globe Hero: -mt-16 slides it behind the translucent sticky header so it
-	     covers the full first viewport -->
-	<section class="relative -mt-16 h-[100svh] min-h-[640px] overflow-hidden">
-		<Globe
-			lat={coordinates.lat}
-			lon={coordinates.lon}
-			city={coordinates.city}
-			variant="hero"
-		/>
-
-		<!-- Readability overlays (never intercept the globe drag) -->
-		<div
-			class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_38%,var(--bg-base)_0%,transparent_75%)] opacity-60"
-		>
+	<PageHero slot="hero" photo="office" tall title={`About ${profile.name.split(' ')[0]}`} lead={profile.about.intro}>
+		<div class="flex flex-wrap gap-3">
+			<a href="/cv/gustavo-barrientos-cv.pdf" download="Gustavo_Barrientos_CV.pdf" class="btn btn-solid">
+				<Icon name="heroicons:document-arrow-down" class="h-5 w-5" />
+				Download my CV (PDF)
+			</a>
+			<a href="#contact" class="btn btn-ghost">Let's work together</a>
 		</div>
-		<div
-			class="pointer-events-none absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-base via-base/70 to-transparent"
-		>
+	</PageHero>
+
+	<div>
+	<!-- Credentials -->
+	<section id="credentials" class="pb-12 lg:pb-16" data-reveal>
+		<dl class="grid grid-cols-2 border-y border-line md:grid-cols-4">
+			<div class="border-b border-line py-6 pr-4 md:border-b-0 md:border-r md:pr-6">
+				<dd class="tnum font-display text-3xl font-semibold">{experienceYears}+</dd>
+				<dt class="mt-1 text-sm text-ink-mid">Years of experience</dt>
+			</div>
+			<div class="border-b border-line py-6 pl-4 md:border-b-0 md:border-r md:px-6">
+				<dd class="tnum font-display text-3xl font-semibold">50+</dd>
+				<dt class="mt-1 text-sm text-ink-mid">Projects delivered</dt>
+			</div>
+			<div class="py-6 pr-4 md:border-r md:border-line md:px-6">
+				<dd class="font-display text-3xl font-semibold">AI-102</dd>
+				<dt class="mt-1 text-sm text-ink-mid">Azure AI Engineer certified</dt>
+			</div>
+			<div class="py-6 pl-4 md:pl-6">
+				<dd class="font-display text-3xl font-semibold">GMT-6</dd>
+				<dt class="mt-1 text-sm text-ink-mid">Remote-first, async-friendly</dt>
+			</div>
+		</dl>
+	</section>
+
+	<!-- Highlights, beside the portrait -->
+	<section class="grid gap-12 py-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-20 lg:py-16">
+		<div class="zoom-frame rounded-lg" data-reveal="wipe">
+			<img
+				src="/images/portrait.webp"
+				alt={profile.avatar.alt}
+				width="1000"
+				height="1172"
+				class="aspect-[6/7] w-full object-cover"
+				loading="lazy"
+				decoding="async"
+			/>
 		</div>
+		<div>
+			<h2 class="text-4xl font-semibold md:text-5xl" data-reveal>Key highlights</h2>
+			<ul class="mt-8 divide-y divide-line border-y border-line" data-stagger>
+				{
+					profile.about.highlights.map((highlight) => (
+						<li class="py-5" data-reveal><p class="max-w-[60ch] text-lg leading-relaxed text-ink-mid">{highlight}</p></li>
+					))
+				}
+			</ul>
+			<p class="data-label mt-4">{profile.location}</p>
+		</div>
+	</section>
 
-		<!-- Overlay content -->
-		<div
-			class="pointer-events-none relative z-10 flex h-full flex-col items-center justify-center px-6 text-center"
-		>
-			<div class="relative mb-6 h-28 w-28 animate-fade-in-scale">
-				<Image
-					src={profile.avatar.url}
-					alt={profile.avatar.alt}
-					width={112}
-					height={112}
-					class="rounded-full border-2 border-line shadow-2xl glow-accent"
-					loading="eager"
-				/>
-				<div
-					class="absolute -bottom-1 -right-1 h-6 w-6 rounded-full border-4 border-surface bg-green-500 animate-pulse-gentle"
-				>
-				</div>
-			</div>
+	<!-- Skills: one column per category, plain names -->
+	<section id="skills" class="scroll-mt-16 py-12 lg:py-16">
+		<h2 class="text-4xl font-semibold md:text-5xl" data-reveal>Technical expertise</h2>
+		<div class="mt-8 grid gap-x-12 gap-y-10 md:grid-cols-2">
+			{
+				profile.skills.map((category) => (
+					<div>
+						<h3 class="border-b border-line pb-2 font-display text-xl font-bold">{category.category}</h3>
+						<ul class="mt-3 divide-y divide-line">
+							{category.items.map((skill) => (
+								<li class="flex items-center gap-3 py-2.5">
+									<Icon name={skill.icon} class="h-5 w-5 shrink-0 text-ink-lo" />
+									<span class="font-medium text-ink">{skill.name}</span>
+								</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+		</div>
+	</section>
 
-			<p class="font-mono text-xs text-ink-lo sm:text-sm animate-fade-in-up stagger-1">
-				AI engineer · Azure AI certified · founder of Ambystech
+	<!-- Services / Ambystech -->
+	<section class="py-12 lg:py-16">
+		<div data-reveal>
+			<h2 class="text-4xl font-semibold md:text-5xl">Consulting &amp; services</h2>
+			<p class="mt-4 max-w-[60ch] text-lg leading-relaxed text-ink-mid">
+				I engage with clients directly and through <span class="font-semibold text-ink">{company.name}</span
+				>, my software company. {company.tagline}.
 			</p>
-
-			<h1
-				class="mt-4 text-4xl font-bold leading-tight text-ink md:text-5xl lg:text-6xl animate-fade-in-up stagger-2"
-			>
-				About <span class="bg-gradient-to-r from-brand-400 to-fuchsia-400 bg-clip-text text-transparent"
-					>{profile.name.split(' ')[0]}</span
-				>
-			</h1>
-
-			<p
-				class="mt-6 max-w-2xl text-lg leading-relaxed text-ink-mid md:text-xl animate-fade-in-up stagger-3"
-			>
-				{profile.about.intro}
-			</p>
-
-			<div
-				class="mt-10 flex flex-wrap items-center justify-center gap-4 animate-fade-in-up stagger-4"
-			>
-				<a
-					href="/cv/gustavo-barrientos-cv.pdf"
-					download="Gustavo_Barrientos_CV.pdf"
-					class="pointer-events-auto inline-flex items-center rounded-lg bg-gradient-to-r from-brand-500 to-fuchsia-500 px-7 py-3.5 font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl glow-accent"
-				>
-					<Icon name="heroicons:document-arrow-down" class="mr-3 h-5 w-5" />
-					Download My CV
-					<span class="ml-2 rounded bg-white/20 px-2 py-0.5 text-xs">PDF</span>
-				</a>
-				<a
-					href="#contact"
-					class="pointer-events-auto inline-flex items-center rounded-lg border border-line bg-surface/70 px-7 py-3.5 font-medium text-ink backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent/50"
-				>
-					Let's work together
-				</a>
-			</div>
-
-			<div
-				class="pointer-events-auto mt-8 inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-4 py-2 text-sm font-medium text-ink-mid backdrop-blur-sm animate-fade-in-up stagger-5"
-			>
-				<Icon name="heroicons:map-pin" class="h-4 w-4 text-accent-2" />
-				{coordinates.city} — partnering with teams worldwide
-			</div>
-
-			<a
-				href="#credentials"
-				class="pointer-events-auto absolute bottom-6 inline-flex flex-col items-center gap-1 text-ink-lo transition-colors hover:text-accent"
-				aria-label="Scroll to credentials"
-			>
-				<span class="text-[11px] font-medium uppercase tracking-[0.2em]">Drag the globe</span>
-				<svg
-					class="h-6 w-6 animate-float"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-					aria-hidden="true"
-				>
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"
-					></path>
-				</svg>
+		</div>
+		<dl class="mt-8 divide-y divide-line border-y border-line">
+			{
+				company.services.map((service) => (
+					<div class="grid gap-3 py-8 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-12">
+						<dt class="font-display text-2xl font-bold leading-snug">{service.title}</dt>
+						<dd class="max-w-[60ch] leading-relaxed text-ink-mid">{service.description}</dd>
+					</div>
+				))
+			}
+		</dl>
+		<div class="mt-8 flex flex-wrap gap-3">
+			<a href={company.url} target="_blank" rel="noopener" aria-label="Visit ambystech.com" class="btn btn-ghost gap-3">
+				<img src="/images/ambystech-lockup-dark.png" alt="" width="498" height="96" loading="lazy" decoding="async" class="h-6 w-auto" />
+				<Icon name="heroicons:arrow-top-right-on-square" class="h-4 w-4" />
 			</a>
 		</div>
 	</section>
 
-	<div class="mx-auto w-full max-w-6xl px-6 lg:px-8">
-		<!-- Credentials strip -->
-		<section id="credentials" class="reveal scroll-mt-24 py-14">
-			<div
-				class="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4"
-			>
-				<div class="bg-surface p-8 text-center">
-					<div
-						class="font-mono text-3xl font-semibold text-accent tabular-nums"
-						data-count-to={experienceYears}
-						data-count-suffix="+"
-					>
-						{experienceYears}+
-					</div>
-					<div class="mt-1 text-sm text-ink-lo">Years of experience</div>
-				</div>
-				<div class="bg-surface p-8 text-center">
-					<div
-						class="font-mono text-3xl font-semibold text-accent tabular-nums"
-						data-count-to="50"
-						data-count-suffix="+"
-					>
-						50+
-					</div>
-					<div class="mt-1 text-sm text-ink-lo">Projects delivered</div>
-				</div>
-				<div class="bg-surface p-8 text-center">
-					<div class="font-mono text-3xl font-semibold text-accent">AI-102</div>
-					<div class="mt-1 text-sm text-ink-lo">Azure AI Engineer certified</div>
-				</div>
-				<div class="bg-surface p-8 text-center">
-					<div class="font-mono text-3xl font-semibold text-accent">GMT-6</div>
-					<div class="mt-1 text-sm text-ink-lo">Remote-first, async-friendly</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- Highlights Section -->
-		<section class="reveal py-16">
-			<div class="mx-auto max-w-4xl">
-				<div class="mb-12 text-center">
-					<p class="eyebrow">background</p>
-					<h2 class="mt-3 text-3xl font-semibold text-ink md:text-4xl">Key Highlights</h2>
-					<p class="mx-auto mt-4 max-w-2xl text-ink-mid">
-						The pillars of my practice — where I've invested fifteen years of deliberate,
-						production-focused work.
-					</p>
-				</div>
-				<div class="grid gap-6 md:grid-cols-2">
-					{
-						profile.about.highlights.map((highlight) => (
-							<div class="spotlight card-panel hover-lift flex items-start gap-4 rounded-2xl p-6">
-								<div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent-soft">
-									<Icon name="heroicons:check" class="h-5 w-5 text-accent" />
-								</div>
-								<p class="leading-relaxed text-ink-mid">{highlight}</p>
-							</div>
-						))
-					}
-				</div>
-			</div>
-		</section>
-
-		<!-- Skills Section -->
-		<section class="reveal py-16">
-			<div class="mx-auto max-w-4xl">
-				<div class="mb-12 text-center">
-					<p class="eyebrow">skills</p>
-					<h2 class="mt-3 text-3xl font-semibold text-ink md:text-4xl">Technical Expertise</h2>
-					<p class="mx-auto mt-4 max-w-2xl text-ink-mid">
-						Depth across the stack — from cloud infrastructure and .NET services to
-						production-grade AI systems.
-					</p>
-				</div>
-				<div class="space-y-12">
-					{
-						profile.skills.map((skillCategory, categoryIndex) => (
-							<div>
-								<h3 class="mb-6 flex items-center text-xl font-semibold text-ink">
-									<span class="mr-3 h-6 w-1 rounded-full bg-gradient-to-b from-brand-500 to-fuchsia-400" />
-									{skillCategory.category}
-								</h3>
-								<div class="grid gap-6 md:grid-cols-2">
-									{skillCategory.items.map((skill, skillIndex) => (
-										<div
-											class="space-y-2"
-											data-skill
-											data-level={skill.level}
-											data-delay={(skillOffsets[categoryIndex] + skillIndex) * 100}
-										>
-											<div class="flex items-center justify-between">
-												<div class="flex items-center gap-3">
-													<Icon name={skill.icon} class="h-5 w-5 text-accent" />
-													<span class="font-medium text-ink">{skill.name}</span>
-												</div>
-												<span class="skill-percent text-sm font-medium text-ink-lo tabular-nums">
-													{skill.level}%
-												</span>
-											</div>
-											<div class="h-2 w-full overflow-hidden rounded-full bg-raised">
-												<div
-													class="skill-bar h-2 rounded-full bg-gradient-to-r from-brand-500 to-fuchsia-400"
-													style={`width: ${skill.level}%`}
-												/>
-											</div>
-										</div>
-									))}
-								</div>
-							</div>
-						))
-					}
-				</div>
-			</div>
-		</section>
-
-		<!-- Services / Ambystech Section -->
-		<section class="reveal py-16">
-			<div class="mx-auto max-w-5xl">
-				<div class="mb-12 text-center">
-					<p class="eyebrow">services</p>
-					<h2 class="mt-3 text-3xl font-semibold text-ink md:text-4xl">Consulting &amp; Services</h2>
-					<p class="mx-auto mt-4 max-w-2xl text-lg text-ink-mid">
-						I engage with clients directly and through <span class="font-semibold text-accent-2"
-							>{company.name}</span
-						>, my software company — {taglineInline}.
-					</p>
-				</div>
-
-				<div class="mx-auto grid max-w-3xl gap-6 md:grid-cols-2">
-					{
-						company.services.map((service) => (
-							<div class="spotlight card-panel hover-lift flex flex-col rounded-2xl p-6">
-								<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-soft">
-									<Icon name={service.icon} class="h-6 w-6 text-accent" />
-								</div>
-								<h3 class="mb-2 text-lg font-semibold text-ink">{service.title}</h3>
-								<p class="text-sm leading-relaxed text-ink-mid">{service.description}</p>
-							</div>
-						))
-					}
-				</div>
-
-				<div
-					class="relative mt-8 overflow-hidden rounded-2xl border border-line bg-surface p-8 md:p-10"
-				>
-					<div
-						class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_80%_at_80%_50%,var(--accent-soft),transparent_70%)]"
-					>
-					</div>
-					<div
-						class="relative flex flex-col items-center gap-6 text-center md:flex-row md:justify-between md:text-left"
-					>
-						<div>
-							<h3 class="text-2xl font-bold text-ink">
-								{company.name}
-								<span
-									class="ml-2 rounded-full bg-accent-soft px-3 py-1 align-middle text-xs font-medium text-accent-2"
-									>My company</span
-								>
-							</h3>
-							<p class="mt-2 max-w-xl text-ink-mid">
-								{company.tagline}. Complete intelligent products delivered end-to-end — with the
-								standards of quality and transparency your business depends on.
-							</p>
-						</div>
-						<div class="flex flex-wrap items-center justify-center gap-4">
-							<a
-								href={company.url}
-								target="_blank"
-								rel="noopener"
-								class="inline-flex items-center gap-2 rounded-lg bg-accent-2 px-6 py-3 font-semibold text-abyss transition-all duration-300 hover:-translate-y-1 glow-signal"
-							>
-								Visit ambystech.com
-								<Icon name="heroicons:arrow-top-right-on-square" class="h-4 w-4" />
-							</a>
-							<a
-								href="#contact"
-								class="inline-flex items-center rounded-lg border border-line bg-raised px-6 py-3 font-medium text-ink transition-all duration-300 hover:-translate-y-1 hover:border-accent/50"
-							>
-								Start a conversation
-							</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
 		<!-- Contact Form Section -->
-		<section class="reveal scroll-mt-24 py-16" id="contact">
-			<div class="mx-auto max-w-2xl">
-				<div class="mb-12 text-center">
-					<p class="eyebrow">contact</p>
-					<h2 class="mt-3 text-3xl font-semibold text-ink md:text-4xl">Let's Work Together</h2>
-					<p class="mt-4 text-lg text-ink-mid">
-						Whether you're planning a new product or bringing AI into an existing platform — tell
+		<section class="scroll-mt-24 py-12 lg:py-16" id="contact">
+			<div class="max-w-2xl">
+				<div class="mb-8" data-reveal>
+					<h2 class="text-4xl font-semibold md:text-5xl">Let's work together</h2>
+					<p class="mt-4 max-w-[55ch] text-lg leading-relaxed text-ink-mid">
+						Whether you're planning a new product or bringing AI into an existing platform, tell
 						me about it. I typically respond within one business day.
 					</p>
 				</div>
@@ -337,7 +141,7 @@ const skillOffsets = profile.skills.map((_, i) =>
 				<form
 					action="https://api.web3forms.com/submit"
 					method="POST"
-					class="space-y-6 bg-surface rounded-xl p-8 border border-line shadow-lg"
+					class="space-y-6 rounded-lg bg-surface p-6 sm:p-8"
 				>
 					<input type="hidden" name="access_key" value="3605798a-7225-4eab-9e19-d255812085d7" />
 					<input type="hidden" name="subject" value="New Contact Form Submission from Portfolio" />
@@ -345,46 +149,46 @@ const skillOffsets = profile.skills.map((_, i) =>
 
 					<div class="grid md:grid-cols-2 gap-6">
 						<div>
-							<label for="name" class="block text-sm font-medium text-ink-mid mb-2">Name *</label>
+							<label for="name" class="mb-2 block font-display text-sm font-bold text-ink">Name *</label>
 							<input
 								type="text"
 								id="name"
 								name="name"
 								required
-								class="w-full px-4 py-3 bg-raised border border-line text-ink rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 placeholder:text-ink-lo"
+								class="min-h-12 w-full rounded-lg border border-rule bg-raised px-4 py-3 text-ink placeholder:text-ink-lo focus:outline-2 focus:outline-offset-2 focus:outline-accent"
 								placeholder="Your full name"
 							/>
 						</div>
 						<div>
-							<label for="email" class="block text-sm font-medium text-ink-mid mb-2">Email *</label>
+							<label for="email" class="mb-2 block font-display text-sm font-bold text-ink">Email *</label>
 							<input
 								type="email"
 								id="email"
 								name="email"
 								required
-								class="w-full px-4 py-3 bg-raised border border-line text-ink rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 placeholder:text-ink-lo"
+								class="min-h-12 w-full rounded-lg border border-rule bg-raised px-4 py-3 text-ink placeholder:text-ink-lo focus:outline-2 focus:outline-offset-2 focus:outline-accent"
 								placeholder="your.email@example.com"
 							/>
 						</div>
 					</div>
 
 					<div>
-						<label for="company" class="block text-sm font-medium text-ink-mid mb-2">Company</label>
+						<label for="company" class="mb-2 block font-display text-sm font-bold text-ink">Company</label>
 						<input
 							type="text"
 							id="company"
 							name="company"
-							class="w-full px-4 py-3 bg-raised border border-line text-ink rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 placeholder:text-ink-lo"
+							class="min-h-12 w-full rounded-lg border border-rule bg-raised px-4 py-3 text-ink placeholder:text-ink-lo focus:outline-2 focus:outline-offset-2 focus:outline-accent"
 							placeholder="Your company name (optional)"
 						/>
 					</div>
 
 					<div>
-						<label for="project-type" class="block text-sm font-medium text-ink-mid mb-2">Project Type</label>
+						<label for="project-type" class="mb-2 block font-display text-sm font-bold text-ink">Project Type</label>
 						<select
 							id="project-type"
 							name="project_type"
-							class="w-full px-4 py-3 bg-raised border border-line text-ink rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200"
+							class="min-h-12 w-full rounded-lg border border-rule bg-raised px-4 py-3 text-ink placeholder:text-ink-lo focus:outline-2 focus:outline-offset-2 focus:outline-accent"
 						>
 							<option value="">Select project type</option>
 							<option value="web-development">Web Development</option>
@@ -396,19 +200,19 @@ const skillOffsets = profile.skills.map((_, i) =>
 					</div>
 
 					<div>
-						<label for="message" class="block text-sm font-medium text-ink-mid mb-2">Message *</label>
+						<label for="message" class="mb-2 block font-display text-sm font-bold text-ink">Message *</label>
 						<textarea
 							id="message"
 							name="message"
 							rows="5"
 							required
-							class="w-full px-4 py-3 bg-raised border border-line text-ink rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 placeholder:text-ink-lo"
+							class="min-h-12 w-full rounded-lg border border-rule bg-raised px-4 py-3 text-ink placeholder:text-ink-lo focus:outline-2 focus:outline-offset-2 focus:outline-accent"
 							placeholder="Tell me about your project, goals, and how I can help..."></textarea>
 					</div>
 
 					<!-- reCAPTCHA -->
-					<div class="flex justify-center">
-						<div class="g-recaptcha" data-sitekey="6LfOMYwrAAAAAEOw96zDGnyjuJPqzxr3J6fYMnDY"></div>
+					<div class="flex">
+						<div class="g-recaptcha my-4 inline-block" data-sitekey="6LfOMYwrAAAAAEOw96zDGnyjuJPqzxr3J6fYMnDY"></div>
 					</div>
 
 					<div class="flex items-center">
@@ -417,7 +221,7 @@ const skillOffsets = profile.skills.map((_, i) =>
 							id="privacy"
 							name="privacy_accepted"
 							required
-							class="w-4 h-4 text-accent border-line rounded focus:ring-accent"
+							class="h-5 w-5 accent-[var(--accent)]"
 						/>
 						<label for="privacy" class="ml-2 text-sm text-ink-mid">
 							I agree to the privacy policy and consent to data processing *
@@ -426,9 +230,8 @@ const skillOffsets = profile.skills.map((_, i) =>
 
 					<button
 						type="submit"
-						class="w-full px-8 py-4 bg-accent text-abyss font-semibold rounded-lg hover:bg-accent-strong transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 glow-accent flex items-center justify-center"
+						class="btn btn-solid w-full justify-center"
 					>
-						<Icon name="heroicons:paper-airplane" class="w-5 h-5 mr-2" />
 						Send Message
 					</button>
 				</form>
@@ -436,124 +239,7 @@ const skillOffsets = profile.skills.map((_, i) =>
 		</section>
 	</div>
 </Layout>
-
-<style>
-	/* Enhanced form styles */
-	input:focus,
-	textarea:focus,
-	select:focus {
-		outline: none;
-		box-shadow: 0 0 0 3px var(--accent-soft);
-	}
-
-	/* Success message styles */
-	.form-success {
-		background: linear-gradient(135deg, #10b981, #059669);
-		color: white;
-		padding: 1rem;
-		border-radius: 0.5rem;
-		text-align: center;
-		margin-top: 1rem;
-	}
-
-	/* reCAPTCHA styling */
-	.g-recaptcha {
-		margin: 1rem 0;
-		display: inline-block;
-	}
-
-	.g-recaptcha > div {
-		border-radius: 0.5rem;
-		overflow: hidden;
-		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-	}
-</style>
-
 <script>
-	// Skill bars: fill the bar and count the percentage from a single rAF
-	// clock so they stay perfectly in sync. Markup ships with final values,
-	// so no-JS and reduced-motion users see the real numbers.
-	const observeSkillBars = () => {
-		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-		const skills = document.querySelectorAll<HTMLElement>('[data-skill]');
-
-		// Rewind everything to 0 up front, before the section is visible
-		skills.forEach((skill) => {
-			const bar = skill.querySelector<HTMLElement>('.skill-bar');
-			const percent = skill.querySelector<HTMLElement>('.skill-percent');
-			if (bar) bar.style.width = '0%';
-			if (percent) percent.textContent = '0%';
-		});
-
-		const animate = (skill: HTMLElement) => {
-			const bar = skill.querySelector<HTMLElement>('.skill-bar');
-			const percent = skill.querySelector<HTMLElement>('.skill-percent');
-			const level = Number(skill.dataset.level ?? 0);
-			const delay = Number(skill.dataset.delay ?? 0);
-			const duration = 1500;
-
-			window.setTimeout(() => {
-				const start = performance.now();
-				const tick = (now: number) => {
-					const progress = Math.min((now - start) / duration, 1);
-					const eased = 1 - Math.pow(1 - progress, 4); // ease-out-quart
-					const value = eased * level;
-					if (bar) bar.style.width = `${value}%`;
-					if (percent) percent.textContent = `${Math.round(value)}%`;
-					if (progress < 1) requestAnimationFrame(tick);
-				};
-				requestAnimationFrame(tick);
-			}, delay);
-		};
-
-		const observer = new IntersectionObserver((entries) => {
-			entries.forEach((entry) => {
-				if (entry.isIntersecting) {
-					animate(entry.target as HTMLElement);
-					observer.unobserve(entry.target);
-				}
-			});
-		}, { threshold: 0.5 });
-
-		skills.forEach((skill) => observer.observe(skill));
-	};
-
-	// Count-up animation for the credentials strip (0 -> target on first view).
-	// Markup ships with the final value, so no-JS and reduced-motion users
-	// always see the real numbers.
-	const observeCountUps = () => {
-		const counters = document.querySelectorAll<HTMLElement>('[data-count-to]');
-		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-		const animate = (el: HTMLElement) => {
-			const target = Number(el.dataset.countTo ?? 0);
-			const suffix = el.dataset.countSuffix ?? '';
-			const duration = 1500;
-			const start = performance.now();
-
-			const tick = (now: number) => {
-				const progress = Math.min((now - start) / duration, 1);
-				const eased = 1 - Math.pow(1 - progress, 4); // ease-out-quart
-				el.textContent = `${Math.round(eased * target)}${suffix}`;
-				if (progress < 1) requestAnimationFrame(tick);
-			};
-			el.textContent = `0${suffix}`;
-			requestAnimationFrame(tick);
-		};
-
-		const observer = new IntersectionObserver((entries) => {
-			entries.forEach((entry) => {
-				if (entry.isIntersecting) {
-					animate(entry.target as HTMLElement);
-					observer.unobserve(entry.target);
-				}
-			});
-		}, { threshold: 0.6 });
-
-		counters.forEach((el) => observer.observe(el));
-	};
-
 	// Form submission handling
 	const handleFormSubmission = () => {
 		const form = document.querySelector('form') as HTMLFormElement;
@@ -591,7 +277,7 @@ const skillOffsets = profile.skills.map((_, i) =>
 
 				if (response.ok) {
 					// Success
-					form.innerHTML = '<div class="form-success">✅ Thank you! Your message has been sent successfully. I\'ll get back to you soon.</div>';
+					form.innerHTML = '<div class="mt-4 bg-ink p-4 text-center font-semibold text-paper">✅ Thank you! Your message has been sent successfully. I\'ll get back to you soon.</div>';
 				} else {
 					throw new Error('Form submission failed');
 				}
@@ -611,14 +297,12 @@ const skillOffsets = profile.skills.map((_, i) =>
 	};
 
 	// Runs on first load and on every client-side navigation back to this page.
-	// The wired flag lives on this page's own DOM (fresh per navigation), so
+	// The wired flag lives on the form's own DOM (fresh per navigation), so
 	// the double astro:page-load on initial visits can't attach anything twice.
 	function initAboutPage() {
-		const skills = document.querySelector<HTMLElement>('[data-skill]');
-		if (!skills || skills.dataset.wired) return;
-		skills.dataset.wired = '1';
-		observeSkillBars();
-		observeCountUps();
+		const form = document.querySelector<HTMLFormElement>('form[action*="web3forms"]');
+		if (!form || form.dataset.wired) return;
+		form.dataset.wired = '1';
 		handleFormSubmission();
 	}
 

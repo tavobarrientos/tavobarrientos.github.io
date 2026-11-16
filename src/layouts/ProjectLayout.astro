@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import Layout from './Layout.astro';
 import SchemaOrg from '../components/SchemaOrg.astro';
 import OptimizedImage from '../components/OptimizedImage.astro';
+import PageHero from '../components/PageHero.astro';
 
 type Props = CollectionEntry<'projects'>['data'] & {
 	slug: string;
@@ -12,6 +13,9 @@ const { title, description, heroImage, images, links, tags } = Astro.props;
 
 // Generate keyword string from title and description
 const keywords = `${title}, ${description}, project, portfolio, software development`;
+
+const navButton =
+	'pointer-events-auto mx-5 flex h-[50px] w-[50px] cursor-pointer items-center justify-center rounded-full bg-white/90 text-lg font-bold text-[#333] shadow-[0_2px_10px_rgb(0_0_0/0.3)] transition-all duration-300 hover:scale-110 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100';
 ---
 
 <Layout title={title} description={description} image={heroImage} keywords={keywords}>
@@ -19,496 +23,205 @@ const keywords = `${title}, ${description}, project, portfolio, software develop
 		<SchemaOrg title={title} description={description} image={heroImage} type="WebPage" />
 	</Fragment>
 
+	<PageHero
+		slot="hero"
+		photo="board"
+		title={title}
+		lead={description}
+		transitionName={`project-title-${Astro.props.slug}`}
+	>
+		<div class="flex flex-wrap items-center gap-3">
+			{links?.website && <a href={links.website} target="_blank" rel="noopener noreferrer" class="btn btn-solid">Visit website</a>}
+			{links?.demo && <a href={links.demo} target="_blank" rel="noopener noreferrer" class="btn btn-solid">Live demo</a>}
+			{links?.github && <a href={links.github} target="_blank" rel="noopener noreferrer" class="btn btn-ghost">View on GitHub</a>}
+		</div>
+	</PageHero>
+
 	<article class="mx-auto w-full max-w-3xl">
 		{
-			heroImage && (
-				<div class="mb-10 flex justify-center overflow-hidden rounded-xl border border-line">
-					<OptimizedImage
-						width={500}
-						height={510}
-						src={heroImage}
-						alt={`Hero image for ${title}`}
-						priority={true}
-					/>
-				</div>
+			tags && tags.length > 0 && (
+				<ul class="mb-10 flex flex-wrap gap-2">
+					{tags.map((tag) => (
+						<li class="rounded-full border border-rule px-3 py-1 font-mono text-xs text-ink-mid">{tag}</li>
+					))}
+				</ul>
 			)
 		}
-
-		<header class="mb-8 text-center">
-			<h1
-				class="font-display text-3xl font-semibold leading-tight text-ink md:text-4xl"
-				transition:name={`project-title-${Astro.props.slug}`}
-			>
-				{title}
-			</h1>
-			<p class="mt-4 text-xl text-ink-mid">{description}</p>
-
-			{
-				tags && tags.length > 0 && (
-					<div class="mt-6 flex flex-wrap justify-center gap-2">
-						{tags.map((tag) => (
-							<span class="rounded-md bg-accent-soft px-3 py-1.5 font-mono text-sm font-medium text-accent">
-								{tag}
-							</span>
-						))}
-					</div>
-				)
-			}
-
-			{
-				links && (
-					<div class="mt-6 flex flex-wrap justify-center gap-4">
-						{links.website && (
-							<a
-								href={links.website}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-semibold text-abyss transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent-strong"
-							>
-								<svg
-									width="20"
-									height="20"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									aria-hidden="true"
-								>
-									<circle cx="12" cy="12" r="10" />
-									<line x1="2" y1="12" x2="22" y2="12" />
-									<path d="m2 12c2.5-4 6-6 10-6s7.5 2 10 6c-2.5 4-6 6-10 6s-7.5-2-10-6z" />
-								</svg>
-								Visit Website
-							</a>
-						)}
-						{links.demo && (
-							<a
-								href={links.demo}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-semibold text-abyss transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent-strong"
-							>
-								<svg
-									width="20"
-									height="20"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									aria-hidden="true"
-								>
-									<polygon points="5 3 19 12 5 21 5 3" />
-								</svg>
-								View Demo
-							</a>
-						)}
-						{links.github && (
-							<a
-								href={links.github}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="inline-flex items-center gap-2 rounded-lg border border-line bg-raised px-6 py-3 font-medium text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/50"
-							>
-								<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-									<path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-								</svg>
-								View on GitHub
-							</a>
-						)}
-					</div>
-				)
-			}
-		</header>
-
-		<hr class="mb-8 border-line" />
-
 		<div class="prose prose-lg max-w-none">
 			<slot />
 		</div>
 
 		{
 			images && images.length > 0 && (
-				<div class="project-images mt-12">
+				<div class="mt-12">
 					<h3 class="mb-4 text-center text-xl font-semibold text-ink">Gallery</h3>
-					<div class="images-grid">
+					<div class="mb-8 grid grid-cols-1 gap-3 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))] md:gap-4">
 						{images.map((image, index) => (
-							<div class="image-item" data-image={image} data-index={index}>
+							<button
+								type="button"
+								data-gallery-item
+								aria-label={`Open screenshot ${index + 1} of ${images.length}`}
+								class="group relative cursor-pointer overflow-hidden rounded-lg border border-line transition-[translate,box-shadow] duration-300 hover:-translate-y-[5px] hover:shadow-[0_8px_24px_rgb(10_15_26/0.14)]"
+							>
 								<OptimizedImage
 									width={400}
 									height={250}
 									src={image}
 									alt={`${title} screenshot ${index + 1}`}
+									css="h-auto w-full transition-transform duration-300 group-hover:scale-105"
 								/>
-							</div>
+							</button>
 						))}
 					</div>
 				</div>
 			)
 		}
 
-		<!-- Image Modal -->
-		<div id="imageModal" class="modal">
-			<div class="modal-content">
-				<span class="modal-close">&times;</span>
-				<img id="modalImage" src="" alt="" />
-				<div class="modal-navigation">
-					<button id="prevImage" class="nav-button">‹</button>
-					<button id="nextImage" class="nav-button">›</button>
+		<!-- Lightbox: hidden until a gallery image is opened (the script swaps
+		     `hidden` for `flex`). It is a popover so it opens in the top layer,
+		     above the fixed header; the size and spacing classes undo the
+		     browser's default popover box. -->
+		<div
+			data-lightbox
+			popover="manual"
+			role="dialog"
+			aria-modal="true"
+			aria-label="Screenshot viewer"
+			class="fixed inset-0 m-0 hidden h-full max-h-none w-full max-w-none items-center justify-center border-0 bg-black/90 p-0 motion-safe:animate-fade-in"
+		>
+			<div class="relative m-auto flex max-h-[95%] max-w-[95%] flex-col items-center md:max-h-[90%] md:max-w-[90%]">
+				<button
+					type="button"
+					data-lightbox-close
+					aria-label="Close"
+					class="absolute -top-[35px] right-0 z-[1001] cursor-pointer text-[28px] font-bold leading-none text-white transition-colors duration-300 hover:text-[#ccc] md:-top-10 md:text-[35px]"
+				>
+					&times;
+				</button>
+				<img
+					data-lightbox-image
+					alt=""
+					class="max-h-[70vh] max-w-full touch-none rounded-lg object-contain shadow-[0_4px_20px_rgb(0_0_0/0.5)] md:max-h-[80vh] md:touch-auto"
+				/>
+				<!-- Arrows on desktop; phones swipe instead -->
+				<div class="pointer-events-none absolute top-1/2 hidden w-full -translate-y-1/2 justify-between md:flex">
+					<button type="button" data-lightbox-prev aria-label="Previous image" class={navButton}>‹</button>
+					<button type="button" data-lightbox-next aria-label="Next image" class={navButton}>›</button>
 				</div>
-				<div class="modal-counter">
-					<span id="imageCounter">1 / 1</span>
-					<div class="swipe-hint">Swipe to navigate</div>
+				<div class="mt-[15px] text-center text-sm text-white">
+					<span data-lightbox-counter>1 / 1</span>
+					<div data-lightbox-hint class="mt-2 text-xs text-white/70 md:hidden">Swipe to navigate</div>
 				</div>
 			</div>
 		</div>
 	</article>
 </Layout>
 
-<style>
-	.images-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		gap: 1rem;
-		margin-bottom: 2rem;
-	}
-
-	.image-item {
-		border-radius: 8px;
-		overflow: hidden;
-		border: 1px solid var(--line);
-		cursor: pointer;
-		transition: transform 0.3s ease, box-shadow 0.3s ease;
-		position: relative;
-	}
-
-	.image-item:hover {
-		transform: translateY(-5px);
-		box-shadow: 0 8px 25px var(--glow);
-	}
-
-	.image-item img {
-		width: 100%;
-		height: auto;
-		display: block;
-		transition: transform 0.3s ease;
-	}
-
-	.image-item:hover img {
-		transform: scale(1.05);
-	}
-
-	/* Modal Styles */
-	.modal {
-		display: none;
-		position: fixed;
-		z-index: 1000;
-		left: 0;
-		top: 0;
-		width: 100%;
-		height: 100%;
-		background-color: rgba(0, 0, 0, 0.9);
-		animation: fadeIn 0.3s ease;
-	}
-
-	.modal.show {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.modal-content {
-		position: relative;
-		max-width: 90%;
-		max-height: 90%;
-		margin: auto;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-
-	.modal-close {
-		position: absolute;
-		top: -40px;
-		right: 0;
-		color: white;
-		font-size: 35px;
-		font-weight: bold;
-		cursor: pointer;
-		z-index: 1001;
-		transition: color 0.3s ease;
-	}
-
-	.modal-close:hover {
-		color: #ccc;
-	}
-
-	#modalImage {
-		max-width: 100%;
-		max-height: 80vh;
-		object-fit: contain;
-		border-radius: 8px;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-	}
-
-	.modal-navigation {
-		position: absolute;
-		top: 50%;
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-		pointer-events: none;
-		transform: translateY(-50%);
-	}
-
-	.nav-button {
-		background: rgba(255, 255, 255, 0.9);
-		border: none;
-		color: #333;
-		font-size: 18px;
-		font-weight: bold;
-		width: 50px;
-		height: 50px;
-		cursor: pointer;
-		border-radius: 50%;
-		transition: all 0.3s ease;
-		pointer-events: all;
-		margin: 0 20px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-	}
-
-	.nav-button:hover {
-		background: rgba(255, 255, 255, 1);
-		transform: scale(1.1);
-	}
-
-	.nav-button:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-		transform: none;
-	}
-
-	.modal-counter {
-		margin-top: 15px;
-		color: white;
-		font-size: 14px;
-		text-align: center;
-	}
-
-	.swipe-hint {
-		margin-top: 8px;
-		color: rgba(255, 255, 255, 0.7);
-		font-size: 12px;
-		text-align: center;
-		display: none;
-	}
-
-	@keyframes fadeIn {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
-
-	/* Mobile responsive modal */
-	@media (max-width: 768px) {
-		.modal-content {
-			max-width: 95%;
-			max-height: 95%;
-		}
-
-		.modal-close {
-			top: -35px;
-			font-size: 28px;
-		}
-
-		#modalImage {
-			max-height: 70vh;
-			touch-action: none;
-		}
-
-		.modal-navigation {
-			display: none; /* Hide buttons on mobile, use swipe instead */
-		}
-
-		.swipe-hint {
-			display: block;
-		}
-
-		.images-grid {
-			grid-template-columns: 1fr;
-			gap: 0.75rem;
-		}
-	}
-</style>
-
 <script>
-	// Gallery Modal Functionality
-	document.addEventListener('DOMContentLoaded', function() {
-		const modal = document.getElementById('imageModal');
-		const modalImage = document.getElementById('modalImage') as HTMLImageElement;
-		const modalClose = document.querySelector('.modal-close');
-		const prevButton = document.getElementById('prevImage') as HTMLButtonElement;
-		const nextButton = document.getElementById('nextImage') as HTMLButtonElement;
-		const imageCounter = document.getElementById('imageCounter');
-		const swipeHint = document.querySelector('.swipe-hint') as HTMLElement;
-		const imageItems = document.querySelectorAll('.image-item');
+	// Gallery lightbox. Re-wired on every client-side navigation; the previous
+	// page's document-level listeners are dropped through the AbortController.
+	let wired: AbortController | null = null;
 
-		if (!modal || !modalImage || !modalClose || !prevButton || !nextButton || !imageCounter || !swipeHint) {
-			return; // Exit if essential elements are missing
-		}
+	function initLightbox() {
+		wired?.abort();
+		const box = document.querySelector<HTMLElement>('[data-lightbox]');
+		const image = document.querySelector<HTMLImageElement>('[data-lightbox-image]');
+		const close = document.querySelector<HTMLButtonElement>('[data-lightbox-close]');
+		const prev = document.querySelector<HTMLButtonElement>('[data-lightbox-prev]');
+		const next = document.querySelector<HTMLButtonElement>('[data-lightbox-next]');
+		const counter = document.querySelector<HTMLElement>('[data-lightbox-counter]');
+		const hint = document.querySelector<HTMLElement>('[data-lightbox-hint]');
+		const items = Array.from(document.querySelectorAll<HTMLElement>('[data-gallery-item]'));
+		if (!box || !image || !close || !prev || !next || !counter || !hint || !items.length) return;
 
-		let currentImageIndex = 0;
-		let images: { src: string; alt: string }[] = [];
-		let touchStartX = 0;
-		let touchEndX = 0;
-		let touchStartY = 0;
-		let touchEndY = 0;
+		wired = new AbortController();
+		const { signal } = wired;
 
-		// Collect all images from the gallery
-		imageItems.forEach((item, index) => {
+		const images = items.flatMap((item, i) => {
 			const img = item.querySelector('img');
-			if (img) {
-				images.push({
-					src: img.src,
-					alt: img.alt || `Image ${index + 1}`
-				});
-			}
+			return img ? [{ src: img.src, alt: img.alt || `Image ${i + 1}` }] : [];
 		});
+		let current = 0;
+		let opener: HTMLElement | null = null;
+		const isOpen = () => !box.classList.contains('hidden');
 
-		// Open modal when clicking on an image
-		imageItems.forEach((item, index) => {
-			item.addEventListener('click', function() {
-				currentImageIndex = index;
-				showModal();
-			});
-		});
-
-		// Close modal when clicking the close button
-		modalClose.addEventListener('click', hideModal);
-
-		// Close modal when clicking outside the image
-		modal.addEventListener('click', function(e) {
-			if (e.target === modal) {
-				hideModal();
-			}
-		});
-
-		// Navigation buttons
-		prevButton.addEventListener('click', function() {
-			if (currentImageIndex > 0) {
-				currentImageIndex--;
-				updateModalImage();
-			}
-		});
-
-		nextButton.addEventListener('click', function() {
-			if (currentImageIndex < images.length - 1) {
-				currentImageIndex++;
-				updateModalImage();
-			}
-		});
-
-		// Keyboard navigation
-		document.addEventListener('keydown', function(e) {
-			if (!modal.classList.contains('show')) return;
-
-			switch(e.key) {
-				case 'Escape':
-					hideModal();
-					break;
-				case 'ArrowLeft':
-					if (currentImageIndex > 0) {
-						currentImageIndex--;
-						updateModalImage();
-					}
-					break;
-				case 'ArrowRight':
-					if (currentImageIndex < images.length - 1) {
-						currentImageIndex++;
-						updateModalImage();
-					}
-					break;
-			}
-		});
-
-		// Touch/Swipe support for mobile
-		modalImage.addEventListener('touchstart', function(e) {
-			touchStartX = e.changedTouches[0].screenX;
-			touchStartY = e.changedTouches[0].screenY;
-		}, false);
-
-		modalImage.addEventListener('touchend', function(e) {
-			touchEndX = e.changedTouches[0].screenX;
-			touchEndY = e.changedTouches[0].screenY;
-			handleSwipe();
-		}, false);
-
-		function handleSwipe() {
-			const swipeThreshold = 50;
-			const swipeDistanceX = Math.abs(touchEndX - touchStartX);
-			const swipeDistanceY = Math.abs(touchEndY - touchStartY);
-
-			// Only process horizontal swipes (ignore vertical scrolling)
-			if (swipeDistanceX > swipeThreshold && swipeDistanceX > swipeDistanceY) {
-				if (touchEndX < touchStartX) {
-					// Swipe left - next image
-					if (currentImageIndex < images.length - 1) {
-						currentImageIndex++;
-						updateModalImage();
-					}
-				} else {
-					// Swipe right - previous image
-					if (currentImageIndex > 0) {
-						currentImageIndex--;
-						updateModalImage();
-					}
-				}
-			}
-		}
-
-		function showModal() {
-			if (!modal) return;
-			modal.classList.add('show');
+		const render = () => {
+			const shown = images[current];
+			if (!shown) return;
+			image.src = shown.src;
+			image.alt = shown.alt;
+			counter.textContent = `${current + 1} / ${images.length}`;
+			prev.disabled = current === 0;
+			next.disabled = current === images.length - 1;
+			// One image: nothing to navigate
+			const single = images.length <= 1;
+			prev.hidden = single;
+			next.hidden = single;
+			hint.hidden = single;
+		};
+		const go = (step: number) => {
+			const to = current + step;
+			if (to < 0 || to > images.length - 1) return;
+			current = to;
+			render();
+		};
+		const open = (index: number, from: HTMLElement) => {
+			current = index;
+			opener = from;
+			box.showPopover();
+			box.classList.replace('hidden', 'flex');
 			document.body.style.overflow = 'hidden';
-			updateModalImage();
-		}
+			render();
+			close.focus();
+		};
+		const shut = () => {
+			box.classList.replace('flex', 'hidden');
+			box.hidePopover();
+			document.body.style.overflow = '';
+			opener?.focus();
+		};
 
-		function hideModal() {
-			if (!modal) return;
-			modal.classList.remove('show');
-			document.body.style.overflow = 'auto';
-		}
+		items.forEach((item, i) => item.addEventListener('click', () => open(i, item), { signal }));
+		close.addEventListener('click', shut, { signal });
+		// A click on the backdrop, outside the image, closes it
+		box.addEventListener('click', (e) => e.target === box && shut(), { signal });
+		prev.addEventListener('click', () => go(-1), { signal });
+		next.addEventListener('click', () => go(1), { signal });
 
-		function updateModalImage() {
-			if (images.length === 0 || !modalImage || !imageCounter || !prevButton || !nextButton || !swipeHint) return;
+		document.addEventListener(
+			'keydown',
+			(e) => {
+				if (!isOpen()) return;
+				if (e.key === 'Escape') shut();
+				else if (e.key === 'ArrowLeft') go(-1);
+				else if (e.key === 'ArrowRight') go(1);
+			},
+			{ signal }
+		);
 
-			const currentImage = images[currentImageIndex];
-			modalImage.src = currentImage.src;
-			modalImage.alt = currentImage.alt;
+		// Horizontal swipes on the image change it; vertical movement is ignored
+		let startX = 0;
+		let startY = 0;
+		image.addEventListener(
+			'touchstart',
+			(e) => {
+				startX = e.changedTouches[0].screenX;
+				startY = e.changedTouches[0].screenY;
+			},
+			{ signal, passive: true }
+		);
+		image.addEventListener(
+			'touchend',
+			(e) => {
+				const dx = e.changedTouches[0].screenX - startX;
+				const dy = e.changedTouches[0].screenY - startY;
+				if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+			},
+			{ signal, passive: true }
+		);
+	}
 
-			// Update counter
-			imageCounter.textContent = `${currentImageIndex + 1} / ${images.length}`;
-
-			// Update navigation buttons
-			prevButton.disabled = currentImageIndex === 0;
-			nextButton.disabled = currentImageIndex === images.length - 1;
-
-			// Hide navigation buttons if only one image
-			if (images.length <= 1) {
-				prevButton.style.display = 'none';
-				nextButton.style.display = 'none';
-				swipeHint.style.display = 'none';
-			} else {
-				prevButton.style.display = 'block';
-				nextButton.style.display = 'block';
-				// Show swipe hint only on mobile (check if nav buttons are hidden)
-				swipeHint.style.display = window.innerWidth <= 768 ? 'block' : 'none';
-			}
-		}
-	});
+	document.addEventListener('astro:page-load', initLightbox);
+	// Leaving the page with the lightbox open must not leave scrolling locked
+	document.addEventListener('astro:before-swap', () => (document.body.style.overflow = ''));
 </script>
