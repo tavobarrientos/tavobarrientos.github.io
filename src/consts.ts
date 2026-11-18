@@ -2,7 +2,7 @@
 // You can import this data from anywhere in your site by using the `import` keyword.
 
 export const SITE_TITLE = 'Gustavo Barrientos';
-export const SITE_DESCRIPTION = 'Personal website of Gustavo Barrientos - Developer, writer, and tech enthusiast sharing knowledge about AI, Azure, and software development.';
+export const SITE_DESCRIPTION = 'Gustavo Barrientos is an AI engineer who builds agents and LLM systems on Azure and .NET, and writes about how they work.';
 export const AUTHOR = 'Gustavo Barrientos';
 export const SITE_URL = 'https://barrientos.io';
 export const TWITTER_HANDLE = '@tavobarrientos'; // Replace with your actual handle

@@ -26,21 +26,21 @@ const arrow = 'M3 8h10M9 4l4 4-4 4';
 	     with its city lights quietly alive (HeroLights). -->
 	<section slot="hero" class="container-x pt-32 lg:pt-44">
 		<h1 class="rise-lines text-[2.75rem] leading-[1.02] sm:text-7xl lg:text-[6rem]">
-			<span class="line" style="--i:0"><span>I ship AI systems</span></span>
+			<span class="line" style="--i:0"><span>I build AI systems</span></span>
 			<span class="line" style="--i:1"><span>on Azure and .NET,</span></span>
-			<span class="line" style="--i:2"><span>and write down how.</span></span>
+			<span class="line" style="--i:2"><span>and write about it.</span></span>
 		</h1>
 		<div class="mt-8 grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end">
 			<p class="hero-follow max-w-[54ch] text-lg leading-relaxed text-ink-mid lg:text-xl" style="--i:1">
-				{profile.name} is an Azure AI certified engineer building agents and production LLM
-				systems. The writing here is the work, in the open.
+				I'm {profile.name}, a Microsoft-certified Azure AI engineer. I build agents and
+				production LLM systems, and this is where I share what I learn along the way.
 			</p>
 			<div class="hero-follow flex flex-wrap gap-3 lg:justify-end" style="--i:2">
 				<a href="/blog" class="btn btn-solid">
-					Read the writing
+					Read the blog
 					<svg class="arrow h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d={arrow} stroke-linecap="round" stroke-linejoin="round"></path></svg>
 				</a>
-				<a href="/about#contact" class="btn btn-ghost">Start a conversation</a>
+				<a href="/about#contact" class="btn btn-ghost">Get in touch</a>
 			</div>
 		</div>
 		<div class="plate hero-follow mt-14 aspect-[4/3] bg-[#070b14] sm:aspect-[21/9] lg:mt-20" style="--i:3">
@@ -117,7 +117,7 @@ const arrow = 'M3 8h10M9 4l4 4-4 4';
 					{company.services.map((service) => <li class="border-b border-line py-4 text-lg font-medium text-ink">{service.title}</li>)}
 				</ul>
 				<a href="/about" class="link-arrow mt-8">
-					About me and what I offer
+					More about me and my services
 					<svg class="arrow h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d={arrow} stroke-linecap="round" stroke-linejoin="round"></path></svg>
 				</a>
 			</div>
@@ -146,13 +146,13 @@ const arrow = 'M3 8h10M9 4l4 4-4 4';
 		<section class="grid gap-6 border-t border-line py-18 first:border-t-0 lg:grid-cols-[minmax(0,3fr)_minmax(0,9fr)] lg:gap-8 lg:py-30" aria-labelledby="h-contact">
 			<h2 id="h-contact" class="font-sans text-[1rem] font-medium leading-normal tracking-normal text-ink-lo font-stretch-[100%] lg:sticky lg:top-24 lg:self-start">Contact</h2>
 			<div>
-				<p class="max-w-[20ch] text-balance font-display text-[length:clamp(2rem,1.2rem+3.4vw,4rem)] font-[650] leading-[1.05] tracking-[-0.035em] text-ink font-stretch-[114%]">Have an AI project in mind?</p>
+				<p class="max-w-[20ch] text-balance font-display text-[length:clamp(2rem,1.2rem+3.4vw,4rem)] font-[650] leading-[1.05] tracking-[-0.035em] text-ink font-stretch-[114%]">Working on an AI project? Let's talk.</p>
 				<p class="mt-6 max-w-[54ch] text-lg leading-relaxed text-ink-mid">
-					Tell me about it. I respond within one business day, personally or through {company.name}.
+					Tell me what you're building. I'll get back to you within one business day.
 				</p>
 				<div class="mt-8 flex flex-wrap gap-3">
 					<a href="/about#contact" class="btn btn-solid">
-						Start a conversation
+						Get in touch
 						<svg class="arrow h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d={arrow} stroke-linecap="round" stroke-linejoin="round"></path></svg>
 					</a>
 					<a href={profile.social.github} target="_blank" rel="noopener" class="btn btn-ghost">GitHub</a>

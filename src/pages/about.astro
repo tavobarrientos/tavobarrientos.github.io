@@ -12,7 +12,7 @@ const experienceYears = parseInt(profile.experience, 10) || 0;
 
 <Layout
 	title="About Me - Gustavo Barrientos"
-	description="Learn about my journey as a software engineer, my expertise in Azure AI, .NET development, and how I can help bring your projects to life."
+	description="About Gustavo Barrientos: a software engineer with 15+ years of experience in Azure AI and .NET, and how to work with him."
 >
 	<!-- reCAPTCHA Script: data-astro-rerun re-executes it after client-side
 	     navigations so the widget renders on every arrival at this page -->
@@ -23,7 +23,7 @@ const experienceYears = parseInt(profile.experience, 10) || 0;
 		<div class="flex flex-wrap gap-3">
 			<a href="/cv/gustavo-barrientos-cv.pdf" download="Gustavo_Barrientos_CV.pdf" class="btn btn-solid">
 				<Icon name="heroicons:document-arrow-down" class="h-5 w-5" />
-				Download my CV (PDF)
+				Download my résumé (PDF)
 			</a>
 			<a href="#contact" class="btn btn-ghost">Let's work together</a>
 		</div>
@@ -43,7 +43,7 @@ const experienceYears = parseInt(profile.experience, 10) || 0;
 			</div>
 			<div class="py-6 pr-4 md:border-r md:border-line md:px-6">
 				<dd class="font-display text-3xl font-semibold">AI-102</dd>
-				<dt class="mt-1 text-sm text-ink-mid">Azure AI Engineer certified</dt>
+				<dt class="mt-1 text-sm text-ink-mid">Certified Azure AI Engineer</dt>
 			</div>
 			<div class="py-6 pl-4 md:pl-6">
 				<dd class="font-display text-3xl font-semibold">GMT-6</dd>
@@ -105,7 +105,7 @@ const experienceYears = parseInt(profile.experience, 10) || 0;
 		<div data-reveal>
 			<h2 class="text-4xl font-semibold md:text-5xl">Consulting &amp; services</h2>
 			<p class="mt-4 max-w-[60ch] text-lg leading-relaxed text-ink-mid">
-				I engage with clients directly and through <span class="font-semibold text-ink">{company.name}</span
+				I work with clients directly and through <span class="font-semibold text-ink">{company.name}</span
 				>, my software company. {company.tagline}.
 			</p>
 		</div>
@@ -134,7 +134,7 @@ const experienceYears = parseInt(profile.experience, 10) || 0;
 					<h2 class="text-4xl font-semibold md:text-5xl">Let's work together</h2>
 					<p class="mt-4 max-w-[55ch] text-lg leading-relaxed text-ink-mid">
 						Whether you're planning a new product or bringing AI into an existing platform, tell
-						me about it. I typically respond within one business day.
+						me about it. I usually reply within one business day.
 					</p>
 				</div>
 
@@ -184,13 +184,13 @@ const experienceYears = parseInt(profile.experience, 10) || 0;
 					</div>
 
 					<div>
-						<label for="project-type" class="mb-2 block font-display text-sm font-bold text-ink">Project Type</label>
+						<label for="project-type" class="mb-2 block font-display text-sm font-bold text-ink">Project type</label>
 						<select
 							id="project-type"
 							name="project_type"
 							class="min-h-12 w-full rounded-lg border border-rule bg-raised px-4 py-3 text-ink placeholder:text-ink-lo focus:outline-2 focus:outline-offset-2 focus:outline-accent"
 						>
-							<option value="">Select project type</option>
+							<option value="">Select a project type</option>
 							<option value="web-development">Web Development</option>
 							<option value="ai-integration">AI Integration</option>
 							<option value="cloud-architecture">Cloud Architecture</option>
@@ -232,7 +232,7 @@ const experienceYears = parseInt(profile.experience, 10) || 0;
 						type="submit"
 						class="btn btn-solid w-full justify-center"
 					>
-						Send Message
+						Send message
 					</button>
 				</form>
 			</div>
@@ -277,7 +277,7 @@ const experienceYears = parseInt(profile.experience, 10) || 0;
 
 				if (response.ok) {
 					// Success
-					form.innerHTML = '<div class="mt-4 bg-ink p-4 text-center font-semibold text-paper">✅ Thank you! Your message has been sent successfully. I\'ll get back to you soon.</div>';
+					form.innerHTML = '<div class="mt-4 bg-ink p-4 text-center font-semibold text-paper">Thanks! Your message was sent. I\'ll get back to you within one business day.</div>';
 				} else {
 					throw new Error('Form submission failed');
 				}
@@ -291,7 +291,7 @@ const experienceYears = parseInt(profile.experience, 10) || 0;
 					(window as any).grecaptcha.reset();
 				}
 
-				alert('Sorry, there was an error sending your message. Please try again or contact me directly.');
+				alert('Sorry, your message could not be sent. Please try again in a moment.');
 			}
 		});
 	};

@@ -1,6 +1,6 @@
 ---
 title: "TacoMapper"
-description: "A Lightweight Object to Object mapper"
+description: "A lightweight object-to-object mapper for .NET"
 heroImage: '/blog/tacomapper.png'
 links:
   github: "https://github.com/tavobarrientos/TacoMapper"

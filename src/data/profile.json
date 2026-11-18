@@ -14,7 +14,7 @@
     "services": [
       {
         "title": "Intelligent Software",
-        "description": "Custom web and mobile products with AI built in from day one — .NET, TypeScript, and Python on cloud-native architecture, from MVP to enterprise scale.",
+        "description": "Custom web and mobile products with AI built in from day one. We use .NET, TypeScript, and Python on cloud-native architecture, from MVP to enterprise scale.",
         "icon": "heroicons:sparkles"
       },
       {
@@ -25,11 +25,11 @@
     ]
   },
   "about": {
-    "intro": "I'm a software engineer with over 15 years of experience designing and delivering scalable applications and intelligent systems. My work spans the full spectrum — from enterprise web platforms to production AI solutions — always focused on building technology that creates measurable business value.",
+    "intro": "I'm a software engineer with over 15 years of experience designing and delivering scalable applications and intelligent systems. My work ranges from enterprise web platforms to production AI solutions, and the goal is always the same: technology that delivers measurable business value.",
     "highlights": [
-      "Azure AI Certified Engineer with deep expertise in cloud architecture",
-      "Specialized in .NET ecosystem and modern web technologies",
-      "Experience with Large Language Models (LLMs) and AI integration",
+      "Microsoft-certified Azure AI Engineer with deep expertise in cloud architecture",
+      "Specialist in the .NET ecosystem and modern web technologies",
+      "Hands-on experience with large language models (LLMs) and AI integration",
       "Strong background in full-stack development and system design",
       "Advocate for clean code, testing, and sustainable development practices"
     ]
