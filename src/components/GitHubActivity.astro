@@ -33,7 +33,9 @@ const arrow = 'M3 8h10M9 4l4 4-4 4';
 			data-gh-activity
 			data-gh-user={username}
 			style={`--gh-color: ${color}`}
-			class="grid gap-6 border-t border-line py-18 first:border-t-0 lg:grid-cols-[minmax(0,3fr)_minmax(0,9fr)] lg:gap-8 lg:py-30"
+			data-loading
+			aria-busy="true"
+			class="group grid gap-6 border-t border-line py-18 first:border-t-0 lg:grid-cols-[minmax(0,3fr)_minmax(0,9fr)] lg:gap-8 lg:py-30"
 			aria-labelledby="h-github"
 		>
 			<h2
@@ -43,8 +45,15 @@ const arrow = 'M3 8h10M9 4l4 4-4 4';
 				GitHub
 			</h2>
 			<div class="min-w-0">
-				<p class="text-lg text-ink-mid">
-					<span data-gh-total class="tnum font-medium text-ink">…</span> contributions in the past year
+				<!-- Loading state: skeleton blocks the size of the total line and the
+				     calendar, pulsing until the data arrives. The text is for screen
+				     readers only. -->
+				<p role="status" class="hidden h-7 items-center group-data-loading:flex">
+					<span class="h-5 w-72 max-w-full rounded-[4px] bg-[#eceef3] bg-[linear-gradient(90deg,#eceef3_25%,#d6dae3_50%,#eceef3_75%)] bg-size-[200%_100%] motion-safe:animate-skeleton-shimmer" aria-hidden="true" />
+					<span class="sr-only">Loading contributions…</span>
+				</p>
+				<p class="text-lg text-ink-mid group-data-loading:hidden">
+					<span data-gh-total class="tnum font-medium text-ink" /> contributions in the past year
 				</p>
 				<!-- Legend and link share the calendar's width -->
 				<div class="w-fit max-w-full">
@@ -53,13 +62,20 @@ const arrow = 'M3 8h10M9 4l4 4-4 4';
 						data-gh-grid
 						role="img"
 						aria-label="GitHub contribution calendar"
-						class="grid w-max grid-flow-col grid-rows-7 gap-[3px] opacity-40 transition-opacity duration-500 data-loaded:opacity-100"
+						class="grid w-max grid-flow-col grid-rows-7 gap-[3px] transition-opacity duration-500"
 					>
-						{cells.map(() => <span class="h-[11px] w-[11px] rounded-[2px] bg-[#eceef3]" />)}
+						{/* While loading, each cell darkens briefly in turn, column by column,
+						     so a band sweeps across the calendar (delay = week index) */}
+						{cells.map((_, i) => (
+							<span
+								class="h-[11px] w-[11px] rounded-[2px] bg-[#eceef3] motion-safe:group-data-loading:animate-skeleton-wave"
+								style={`animation-delay: ${Math.floor(i / 7) * 22 + (i % 7) * 8}ms`}
+							/>
+						))}
 					</div>
 				</div>
 				<div class="mt-4 flex flex-wrap items-center justify-between gap-4">
-					<p class="flex items-center gap-1.5 font-mono text-xs text-ink-lo" aria-hidden="true">
+					<p class="flex items-center gap-1.5 font-mono text-xs text-ink-lo transition-opacity duration-500 group-data-loading:invisible" aria-hidden="true">
 						Less
 						{levels.map((c) => <span class={`h-[11px] w-[11px] rounded-[2px] ${c}`} />)}
 						More
@@ -155,7 +171,8 @@ const arrow = 'M3 8h10M9 4l4 4-4 4';
 		const text = total.toLocaleString('en-US');
 		totalEl.textContent = text;
 		grid.setAttribute('aria-label', `GitHub contribution calendar: ${text} contributions in the past year`);
-		grid.toggleAttribute('data-loaded', true);
+		section.removeAttribute('data-loading');
+		section.removeAttribute('aria-busy');
 		// On narrow screens show the latest weeks first
 		scroller.scrollLeft = scroller.scrollWidth;
 	}

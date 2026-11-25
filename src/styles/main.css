@@ -25,6 +25,9 @@
   --animate-fade-in: fadeIn 0.3s ease both;
   --animate-fade-soft: fadeSoft 0.3s ease-in;
   --animate-nudge: nudge 1.8s ease-in-out infinite;
+  /* Skeletons: a light band sweeping left to right (GitHubActivity) */
+  --animate-skeleton-wave: skeletonWave 1.8s ease-in-out infinite;
+  --animate-skeleton-shimmer: skeletonShimmer 1.8s ease-in-out infinite;
 
   @keyframes lineRise {
     from {
@@ -48,6 +51,26 @@
   @keyframes fadeIn {
     from {
       opacity: 0;
+    }
+  }
+
+  @keyframes skeletonWave {
+    0%,
+    60%,
+    100% {
+      background-color: #eceef3;
+    }
+    30% {
+      background-color: #d6dae3;
+    }
+  }
+
+  @keyframes skeletonShimmer {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: -100% 0;
     }
   }
 
