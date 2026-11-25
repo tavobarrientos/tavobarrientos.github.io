@@ -38,6 +38,7 @@ npm run dev -- --host
   - `BaseHead.astro`: SEO meta tags, schema.org markup
   - `Header.astro` & `Footer.astro`: Site navigation and footer
   - `BlogPostMeta.astro`: Post metadata display
+  - `GitHubActivity.astro`: Home-page contribution calendar. Account from `src/data/profile.json` (`social.github`); data fetched in the browser from github-contributions-api.jogruber.de (public proxy, no token). The section hides itself if the request fails. Optional `color` prop (any CSS colour, default the page ink) sets the busiest-day colour; lighter levels are tints of it
   - `ui/`: UI-specific components like pagination
 
 ### Page Routing

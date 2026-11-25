@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Photo from '../components/Photo.astro';
 import HeroLights from '../components/HeroLights.astro';
+import GitHubActivity from '../components/GitHubActivity.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import profileData from '../data/profile.json';
 import { lineById } from '../data/lines';
@@ -59,7 +60,7 @@ const arrow = 'M3 8h10M9 4l4 4-4 4';
 		     the top, so it is clear there is more below. It fades out once the
 		     visitor scrolls (script at the end of this file). -->
 		<a
-			href="#writing"
+			href="#more"
 			data-scroll-cue
 			class="group fixed bottom-6 left-1/2 z-40 inline-flex h-11 -translate-x-1/2 items-center gap-2 rounded-full border border-line bg-white/90 pl-4 pr-3 text-sm font-medium text-ink shadow-[0_6px_24px_rgb(10_15_26/0.12)] backdrop-blur-md transition-[opacity,translate,border-color] duration-300 hover:border-ink data-hidden:pointer-events-none data-hidden:translate-y-3 data-hidden:opacity-0"
 		>
@@ -71,7 +72,9 @@ const arrow = 'M3 8h10M9 4l4 4-4 4';
 	</section>
 	<!-- Below the hero the page is an index: section name in the left column,
 	     content in the right, a rule between sections. No images, no cards. -->
-	<div class="container-x">
+	<div id="more" class="container-x scroll-mt-16">
+		<GitHubActivity />
+
 		<section id="writing" class="grid gap-6 border-t border-line py-18 first:border-t-0 lg:grid-cols-[minmax(0,3fr)_minmax(0,9fr)] lg:gap-8 lg:py-30" aria-labelledby="h-writing">
 			<h2 id="h-writing" class="font-sans text-[1rem] font-medium leading-normal tracking-normal text-ink-lo font-stretch-[100%] lg:sticky lg:top-24 lg:self-start">Writing</h2>
 			<div>

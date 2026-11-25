@@ -1,0 +1,177 @@
+---
+// GitHub contribution calendar for the home page. The account comes from
+// profile.json (social.github); data is fetched live in the browser from
+// github-contributions-api.jogruber.de, a public proxy for GitHub's
+// contribution calendar (GitHub's own API needs a token). If the request
+// fails, the script hides the whole section.
+import profileData from '../data/profile.json';
+
+interface Props {
+	/** Colour of the busiest days; quieter days are lighter tints of it.
+	 *  Any CSS colour. Defaults to the page's ink (near-black). */
+	color?: string;
+}
+const { color = 'var(--color-ink)' } = Astro.props;
+
+const profileUrl: string | undefined = profileData.social?.github;
+let username: string | undefined;
+try {
+	username = profileUrl ? new URL(profileUrl).pathname.split('/').filter(Boolean)[0] : undefined;
+} catch {
+	username = undefined;
+}
+
+const WEEKS = 53;
+const cells = Array.from({ length: WEEKS * 7 });
+const levels = ['bg-[#eceef3]', 'bg-(--gh-color)/25', 'bg-(--gh-color)/50', 'bg-(--gh-color)/75', 'bg-(--gh-color)'];
+const arrow = 'M3 8h10M9 4l4 4-4 4';
+---
+
+{
+	username && (
+		<section
+			data-gh-activity
+			data-gh-user={username}
+			style={`--gh-color: ${color}`}
+			class="grid gap-6 border-t border-line py-18 first:border-t-0 lg:grid-cols-[minmax(0,3fr)_minmax(0,9fr)] lg:gap-8 lg:py-30"
+			aria-labelledby="h-github"
+		>
+			<h2
+				id="h-github"
+				class="font-sans text-[1rem] font-medium leading-normal tracking-normal text-ink-lo font-stretch-[100%] lg:sticky lg:top-24 lg:self-start"
+			>
+				GitHub
+			</h2>
+			<div class="min-w-0">
+				<p class="text-lg text-ink-mid">
+					<span data-gh-total class="tnum font-medium text-ink">…</span> contributions in the past year
+				</p>
+				<!-- Legend and link share the calendar's width -->
+				<div class="w-fit max-w-full">
+				<div data-gh-scroll class="mt-6 overflow-x-auto pb-2">
+					<div
+						data-gh-grid
+						role="img"
+						aria-label="GitHub contribution calendar"
+						class="grid w-max grid-flow-col grid-rows-7 gap-[3px] opacity-40 transition-opacity duration-500 data-loaded:opacity-100"
+					>
+						{cells.map(() => <span class="h-[11px] w-[11px] rounded-[2px] bg-[#eceef3]" />)}
+					</div>
+				</div>
+				<div class="mt-4 flex flex-wrap items-center justify-between gap-4">
+					<p class="flex items-center gap-1.5 font-mono text-xs text-ink-lo" aria-hidden="true">
+						Less
+						{levels.map((c) => <span class={`h-[11px] w-[11px] rounded-[2px] ${c}`} />)}
+						More
+					</p>
+					<a href={profileUrl} target="_blank" rel="noopener" class="link-arrow">
+						View GitHub profile
+						<svg class="arrow h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+							<path d={arrow} stroke-linecap="round" stroke-linejoin="round" />
+						</svg>
+					</a>
+				</div>
+				</div>
+			</div>
+		</section>
+	)
+}
+
+<script>
+	// Level classes as literal strings so Tailwind generates them
+	const LEVELS = ['bg-[#eceef3]', 'bg-(--gh-color)/25', 'bg-(--gh-color)/50', 'bg-(--gh-color)/75', 'bg-(--gh-color)'];
+
+	interface Day {
+		date: string;
+		count: number;
+		level: number;
+	}
+	interface Calendar {
+		total: number;
+		days: Day[];
+	}
+
+	// One request per page session, shared across client-side navigations
+	const cache = new Map<string, Promise<Calendar>>();
+
+	function load(user: string): Promise<Calendar> {
+		let p = cache.get(user);
+		if (!p) {
+			const ctrl = new AbortController();
+			const timer = window.setTimeout(() => ctrl.abort(), 8000);
+			p = fetch(`https://github-contributions-api.jogruber.de/v4/${encodeURIComponent(user)}?y=last`, { signal: ctrl.signal })
+				.then((r) => {
+					if (!r.ok) throw new Error(`HTTP ${r.status}`);
+					return r.json();
+				})
+				.then((data) => {
+					const total = data?.total?.lastYear;
+					const days = data?.contributions;
+					if (typeof total !== 'number' || !Array.isArray(days) || !days.length) throw new Error('Unexpected response');
+					return { total, days: days as Day[] };
+				})
+				.finally(() => window.clearTimeout(timer));
+			// A failed request may be retried on the next visit to the page
+			p.catch(() => cache.delete(user));
+			cache.set(user, p);
+		}
+		return p;
+	}
+
+	const fmtDate = (iso: string) =>
+		new Date(`${iso}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+	function render(section: HTMLElement, { total, days }: Calendar) {
+		const grid = section.querySelector<HTMLElement>('[data-gh-grid]');
+		const totalEl = section.querySelector<HTMLElement>('[data-gh-total]');
+		const scroller = section.querySelector<HTMLElement>('[data-gh-scroll]');
+		if (!grid || !totalEl || !scroller) return;
+		const cells = Array.from(grid.children) as HTMLElement[];
+
+		// Each column is one week, rows Sunday to Saturday (as on GitHub). The
+		// last column ends on the latest day, so take whole weeks before it
+		// plus the days of the current week, which makes the first one a Sunday.
+		const lastDow = new Date(`${days[days.length - 1].date}T00:00:00`).getDay();
+		const fit = cells.length - 6 + lastDow;
+		const shown = days.slice(-fit);
+		// If fewer days came back than fit, pad the start up to a Sunday
+		const lead = (new Date(`${shown[0].date}T00:00:00`).getDay() + 7) % 7;
+		const visible: (Day | null)[] = [...Array(lead).fill(null), ...shown];
+
+		cells.forEach((cell, i) => {
+			const day = visible[i];
+			cell.className = cell.className.replace(/\bbg-\S+/g, '').trim();
+			if (!day) {
+				cell.classList.add('invisible');
+				cell.removeAttribute('title');
+				return;
+			}
+			cell.classList.remove('invisible');
+			cell.classList.add(LEVELS[Math.min(Math.max(day.level, 0), 4)]);
+			const n = day.count;
+			cell.title = `${n === 0 ? 'No' : n.toLocaleString('en-US')} contribution${n === 1 ? '' : 's'} on ${fmtDate(day.date)}`;
+		});
+
+		const text = total.toLocaleString('en-US');
+		totalEl.textContent = text;
+		grid.setAttribute('aria-label', `GitHub contribution calendar: ${text} contributions in the past year`);
+		grid.toggleAttribute('data-loaded', true);
+		// On narrow screens show the latest weeks first
+		scroller.scrollLeft = scroller.scrollWidth;
+	}
+
+	function initGitHubActivity() {
+		const section = document.querySelector<HTMLElement>('[data-gh-activity]');
+		if (!section || section.dataset.wired) return;
+		section.dataset.wired = '1';
+		const user = section.dataset.ghUser;
+		if (!user) return;
+		load(user)
+			.then((cal) => render(section, cal))
+			.catch(() => {
+				section.hidden = true;
+			});
+	}
+
+	document.addEventListener('astro:page-load', initGitHubActivity);
+</script>
