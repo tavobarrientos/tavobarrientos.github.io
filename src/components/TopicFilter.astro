@@ -6,7 +6,7 @@
 // every post (not just the current page) and can be linked to. `active`
 // marks the topic being shown.
 import { getCollection } from 'astro:content';
-import { LINES, lineById, type LineId } from '../data/lines';
+import { LINES, hasLine, type LineId } from '../data/lines';
 
 interface Props {
 	active?: LineId;
@@ -16,7 +16,7 @@ const { active } = Astro.props;
 const posts = (await getCollection('blog')).filter((p) => !p.data.hidden);
 const topics = LINES.map((l) => ({
 	...l,
-	count: posts.filter((p) => lineById(p.data.line as LineId | undefined).id === l.id).length,
+	count: posts.filter((p) => hasLine(p.data.line, l.id)).length,
 })).filter((t) => t.count > 0);
 
 const chip =
@@ -78,6 +78,7 @@ const count = 'font-mono text-xs tabular-nums text-ink-lo group-aria-[current]:t
 		description: string;
 		topic: string;
 		topicId: string;
+		topics: { id: string; name: string }[];
 		date: string;
 		readingTime: string;
 		body: string;
@@ -155,7 +156,9 @@ const count = 'font-mono text-xs tabular-nums text-ink-lo group-aria-[current]:t
 					) as HTMLAnchorElement;
 					a.href = e.url;
 					const meta = el('div', 'flex items-baseline gap-4 sm:flex-col sm:gap-2 sm:pt-1.5');
-					meta.append(el('span', 'line-chip', e.topic), el('span', 'data-label', e.date));
+					const chips = el('span', 'flex flex-wrap gap-x-3 gap-y-2');
+					chips.append(...e.topics.map((t) => el('span', `line-chip line-${t.id}`, t.name)));
+					meta.append(chips, el('span', 'data-label', e.date));
 					const main = el('div', '');
 					main.append(el('h3', 'text-xl font-semibold leading-snug md:text-2xl', e.title));
 					if (e.description) main.append(el('p', 'my-2 max-w-[62ch] leading-relaxed text-ink-mid', e.description));

@@ -1,20 +1,20 @@
 ---
-// Four topics as a ruled table: name, what it covers, how many posts, and the
+// The topics as a ruled table: name, what it covers, how many posts, and the
 // newest one. Counts and titles come from the collection.
 import { getCollection } from 'astro:content';
-import { LINES, lineById, type LineId } from '../data/lines';
+import { LINES, hasLine } from '../data/lines';
 
 const posts = (await getCollection('blog'))
 	.filter((p) => !p.data.hidden)
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const topics = LINES.map((l) => {
-	const mine = posts.filter((p) => lineById(p.data.line as LineId | undefined).id === l.id);
+	const mine = posts.filter((p) => hasLine(p.data.line, l.id));
 	return { ...l, count: mine.length, latest: mine[0] };
 }).filter((t) => t.count > 0);
 ---
 
-<ul class="grid border-y border-line sm:grid-cols-2 lg:grid-cols-4">
+<ul class="grid border-y border-line sm:grid-cols-2 lg:grid-cols-5">
 	{
 		topics.map((t) => (
 			<li class={`line-${t.id} border-line p-5 max-lg:border-b max-lg:last:border-b-0 lg:border-r lg:last:border-r-0 lg:first:pl-0 lg:last:pr-0`}>

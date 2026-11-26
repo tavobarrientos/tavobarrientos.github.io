@@ -6,7 +6,7 @@ import PostRow from '../../../components/PostRow.astro';
 import SchemaOrg from '../../../components/SchemaOrg.astro';
 import PageHero from '../../../components/PageHero.astro';
 import TopicFilter from '../../../components/TopicFilter.astro';
-import { LINES, lineById, type LineId } from '../../../data/lines';
+import { LINES, hasLine } from '../../../data/lines';
 
 export async function getStaticPaths() {
 	const posts = (await getCollection('blog'))
@@ -17,7 +17,7 @@ export async function getStaticPaths() {
 		params: { topic: line.id },
 		props: {
 			line,
-			posts: posts.filter((p) => lineById(p.data.line as LineId | undefined).id === line.id),
+			posts: posts.filter((p) => hasLine(p.data.line, line.id)),
 		},
 	})).filter((p) => p.props.posts.length > 0);
 }

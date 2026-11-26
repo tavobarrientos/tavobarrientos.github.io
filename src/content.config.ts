@@ -7,6 +7,9 @@ import { glob } from 'astro/loaders';
 const idFromFilename = ({ entry }: { entry: string }) =>
 	entry.replace(/\.(md|mdx)$/, '');
 
+// Topics a post can sit on; keep in step with LineId in src/data/lines.ts
+const LineEnum = z.enum(['ai', 'agents', 'dotnet', 'typescript', 'hardware']);
+
 const blog = defineCollection({
 	loader: glob({
 		pattern: '**/*.{md,mdx}',
@@ -23,8 +26,11 @@ const blog = defineCollection({
 		// transform, yielding the bare string instead of { collection, id }.
 		// .prefault() applies on the input side, so the transform still runs.
 		author: reference('authors').prefault('tavobarrientos'),
-		// Which line of the site's network map this post sits on (see src/data/lines.ts)
-		line: z.enum(['ai', 'agents', 'dotnet', 'hardware']).optional(),
+		// Which line(s) of the site's network map this post sits on (see src/data/lines.ts).
+		// One id, or a list when the post covers several topics; the first is its main line.
+		line: z
+			.union([LineEnum, z.array(LineEnum).min(1)])
+			.optional(),
 		relatedPosts: z.array(reference('blog')).optional(),
 		hidden: z.boolean().optional(),
 		showAuthor: z.boolean().optional().default(true),

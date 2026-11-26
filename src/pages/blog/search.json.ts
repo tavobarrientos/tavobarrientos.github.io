@@ -3,7 +3,7 @@
 // the box is used, so it costs nothing on a normal page view.
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { lineById, type LineId } from '../../data/lines';
+import { linesOf } from '../../data/lines';
 import { getReadingTime } from '../../utils/readingTime';
 
 const plain = (md: string) =>
@@ -23,13 +23,14 @@ export const GET: APIRoute = async () => {
 		.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 	const index = posts.map((p) => {
-		const line = lineById(p.data.line as LineId | undefined);
+		const lines = linesOf(p.data.line);
 		return {
 			url: `/blog/${p.id}/`,
 			title: p.data.title,
 			description: p.data.description?.trim() === p.data.title.trim() ? '' : (p.data.description ?? ''),
-			topic: line.name,
-			topicId: line.id,
+			topic: lines.map((l) => l.name).join(' '),
+			topicId: lines[0].id,
+			topics: lines.map(({ id, name }) => ({ id, name })),
 			date: p.data.pubDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
 			readingTime: getReadingTime(p.body ?? ''),
 			body: plain(p.body ?? ''),

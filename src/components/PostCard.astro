@@ -1,18 +1,19 @@
 ---
 // Compact article card with artwork, used for related posts and the
 // previous/next pair at the end of an article.
-import { lineById, type LineId } from '../data/lines';
+import { linesOf, type LineField } from '../data/lines';
 
 interface Props {
 	post: {
 		id: string;
-		data: { title: string; pubDate: Date; heroImage?: string; line?: LineId };
+		data: { title: string; pubDate: Date; heroImage?: string; line?: LineField };
 	};
 	label?: string;
 }
 
 const { post, label } = Astro.props;
-const line = lineById(post.data.line);
+const lines = linesOf(post.data.line);
+const line = lines[0];
 const date = post.data.pubDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 ---
 
@@ -34,7 +35,7 @@ const date = post.data.pubDate.toLocaleDateString('en-US', { month: 'short', yea
 	</div>
 	<p class="mt-4 flex items-center gap-3">
 		{label && <span class="data-label">{label}</span>}
-		<span class="line-chip">{line.name}</span>
+		{lines.map((l) => <span class={`line-chip line-${l.id}`}>{l.name}</span>)}
 		<time datetime={post.data.pubDate.toISOString()} class="data-label">{date}</time>
 	</p>
 	<p class="mt-2 font-display text-lg font-semibold leading-snug text-ink">

@@ -1,6 +1,6 @@
 ---
 import { getReadingTime } from '../utils/readingTime';
-import { lineById, type LineId } from '../data/lines';
+import { linesOf, type LineField } from '../data/lines';
 
 interface Props {
 	post: {
@@ -11,7 +11,7 @@ interface Props {
 			description: string;
 			pubDate: Date;
 			heroImage?: string;
-			line?: LineId;
+			line?: LineField;
 		};
 	};
 }
@@ -19,7 +19,8 @@ interface Props {
 const { post } = Astro.props;
 const { title, description, pubDate } = post.data;
 const readingTime = getReadingTime(post.body ?? '');
-const line = lineById(post.data.line);
+const lines = linesOf(post.data.line);
+const line = lines[0];
 
 const date = pubDate.toLocaleDateString('en-US', {
 	month: 'short',
@@ -37,7 +38,7 @@ const date = pubDate.toLocaleDateString('en-US', {
 		class={`line-${line.id} -mx-4 grid rounded-[10px] px-4 transition-colors duration-[250ms] hover:bg-surface focus-visible:bg-surface grid-cols-1 items-center gap-x-8 gap-y-3 py-7 sm:grid-cols-[9rem_minmax(0,1fr)] lg:grid-cols-[10rem_minmax(0,1fr)]`}
 	>
 		<div class="flex flex-row items-baseline gap-4 self-start sm:flex-col sm:gap-2 sm:pt-1.5">
-			<span class="line-chip">{line.name}</span>
+			<span class="flex flex-wrap gap-x-3 gap-y-2">{lines.map((l) => <span class={`line-chip line-${l.id}`}>{l.name}</span>)}</span>
 			<time datetime={pubDate.toISOString()} class="font-mono text-xs text-ink-lo">{date}</time>
 		</div>
 		<div class="min-w-0">

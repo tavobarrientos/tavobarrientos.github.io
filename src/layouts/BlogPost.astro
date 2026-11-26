@@ -9,7 +9,7 @@ import SocialShare from '../components/SocialShare.astro';
 import PageHero from '../components/PageHero.astro';
 import PostCard from '../components/PostCard.astro';
 import { getReadingTime } from '../utils/readingTime';
-import { lineById } from '../data/lines';
+import { linesOf } from '../data/lines';
 
 type Props = CollectionEntry<'blog'>['data'] & { body?: string; slug?: string };
 
@@ -31,7 +31,7 @@ const {
 const keywords = `${title}, ${description}, blog, ${author?.id || 'tavobarrientos'}`;
 
 const readingTime = getReadingTime(body || title + ' ' + description);
-const line = lineById(lineId);
+const lines = linesOf(lineId);
 
 // Neighbours in publication order, for the previous/next pair
 const ordered = (await getCollection('blog'))
@@ -87,7 +87,7 @@ const newer = pick(at >= 0 && at < ordered.length - 1 ? ordered[at + 1] : undefi
 			<span aria-hidden="true">←</span> All articles
 		</a>
 		<div class="tnum flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-ink-mid">
-			<span class={`line-chip line-${line.id}`}>{line.name}</span>
+			{lines.map((l) => <span class={`line-chip line-${l.id}`}>{l.name}</span>)}
 			<FormattedDate date={pubDate} />
 			<span>{readingTime}</span>
 			{updatedDate && <span>updated <FormattedDate date={updatedDate} /></span>}

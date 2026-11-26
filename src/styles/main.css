@@ -103,6 +103,7 @@
   --line-ai: #1d4ed8;
   --line-agents: #7c3aed;
   --line-dotnet: #0f766e;
+  --line-typescript: #be123c;
   --line-hardware: #b45309;
 
   --header-h: 4rem;
@@ -123,6 +124,7 @@
   --line-ai: #8ab6ff;
   --line-agents: #c4a1ff;
   --line-dotnet: #5fd4c4;
+  --line-typescript: #ff8fa3;
   --line-hardware: #f0b45c;
 
   background-color: var(--bg-base);
@@ -344,6 +346,9 @@
   }
   .line-dotnet {
     --c: var(--line-dotnet);
+  }
+  .line-typescript {
+    --c: var(--line-typescript);
   }
   .line-hardware {
     --c: var(--line-hardware);

@@ -5,7 +5,7 @@ import HeroLights from '../components/HeroLights.astro';
 import GitHubActivity from '../components/GitHubActivity.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import profileData from '../data/profile.json';
-import { lineById } from '../data/lines';
+import { linesOf } from '../data/lines';
 import { getCollection } from 'astro:content';
 
 const profile = profileData;
@@ -87,7 +87,7 @@ const arrow = 'M3 8h10M9 4l4 4-4 4';
 										<span class="draw-underline">{post.data.title}</span>
 									</h3>
 									<p class="tnum flex gap-4 whitespace-nowrap font-mono text-xs text-ink-lo">
-										<span>{lineById(post.data.line).name}</span>
+										<span>{linesOf(post.data.line).map((l) => l.name).join(' · ')}</span>
 										<time datetime={post.data.pubDate.toISOString()}>{fmt(post.data.pubDate)}</time>
 									</p>
 								</a>
